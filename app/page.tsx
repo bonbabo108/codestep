@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { ArrowRight, Check, ChevronRight, Code2, Lightbulb, RotateCcw, X } from 'lucide-react'
+import { ArrowRight, Check, CheckCircle2, ChevronRight, Code2, Lightbulb, RotateCcw, UserRound, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type Question = {
@@ -67,9 +67,15 @@ export default function Page() {
             <span className="flex size-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-200"><Code2 className="size-5" /></span>
             <span className="text-lg">CodeStep</span>
           </Link>
-          <Link href="/question" className="group flex items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-blue-600">
-            管理画面へ <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-          </Link>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2.5 rounded-full border border-slate-200 bg-slate-50 py-1.5 pl-1.5 pr-3">
+              <span className="flex size-8 items-center justify-center rounded-full bg-blue-100 text-blue-700"><UserRound className="size-4" /></span>
+              <span className="text-sm font-semibold text-slate-700">テストユーザー</span>
+            </div>
+            <Link href="/question" className="group hidden items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-blue-600 sm:flex">
+              管理画面へ <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
         </div>
       </header>
 
@@ -77,7 +83,10 @@ export default function Page() {
         <div className="flex items-center justify-between">
           <div>
             <p className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-blue-600">Learning step {String(index + 1).padStart(2, '0')}</p>
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">今日のコーディング問題</h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">今日のコーディング問題</h1>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700 ring-1 ring-inset ring-emerald-200"><CheckCircle2 className="size-4" />クリア済</span>
+            </div>
           </div>
           <div className="hidden items-center gap-1.5 text-sm text-slate-400 sm:flex"><span className="font-semibold text-slate-600">{index + 1}</span> / {questions.length}</div>
         </div>
@@ -91,6 +100,9 @@ export default function Page() {
             <div className="rounded-2xl bg-slate-50 px-5 py-5 sm:px-6">
               <p className="mb-2 text-xs font-bold tracking-wide text-blue-600">QUESTION</p>
               <p className="text-base leading-7 text-slate-700">Q. {question.prompt}</p>
+            </div>
+            <div className="rounded-xl border border-blue-100 bg-blue-50/70 px-4 py-3 text-sm text-blue-800">
+              <span className="font-bold">※前回の正解コードを復元しました</span><span className="ml-2 text-blue-600">学習進捗はアカウントに同期されています。</span>
             </div>
             <div className="flex flex-col gap-2.5">
               <label htmlFor="answer" className="text-sm font-bold text-slate-700">あなたの解答</label>
