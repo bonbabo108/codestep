@@ -1,8 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 
-// .env.local に書いた鍵を読み込む
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+// .env.local から読み込みつつ、念のため .trim() で見えないゴミを掃除します
+const supabaseUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim();
+const supabaseKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim();
 
-// Supabaseとの接続クライアントを作成してエクスポート
 export const supabase = createClient(supabaseUrl, supabaseKey);

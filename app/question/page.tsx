@@ -33,18 +33,22 @@ export default function QuestionAdminPage() {
   }, [])
 
   // ← 追加：Supabaseから問題を全件取得する関数
+  // ▼ ここから
   async function fetchQuestions() {
     const { data, error } = await supabase
       .from('questions')
       .select('*')
-      .order('created_at', { ascending: false }) // 新しい順に並べる
+      .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('取得エラー:', error)
+      // 隠されたエラーメッセージを画面に強制表示します！
+      alert(`【通信エラーの詳細】\nメッセージ: ${error.message}\nヒント: ${error.hint || 'なし'}`)
+      console.error('取得エラー詳細:', error)
     } else if (data) {
       setQuestions(data as Question[])
     }
   }
+  // ▲ ここまで
 
   function updateField(field: keyof typeof form, value: string) { setForm((current) => ({ ...current, [field]: value })) }
   
