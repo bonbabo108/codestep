@@ -131,8 +131,9 @@ export default function QuestionAdminPage() {
   return (
     <main className="min-h-screen bg-[#f7f9fc] text-slate-900">
       {/* 以前ここに直書きされていた <header>...</header> を丸ごと削除しました */}
+     
 
-      <div className="mx-auto grid max-w-[1440px] gap-6 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(320px,40%)_1fr] lg:gap-8 lg:py-10">
+     <div className="mx-auto grid max-w-[1440px] gap-6 px-5 py-8 sm:px-8 lg:grid-cols-[minmax(320px,40%)_1fr] lg:gap-8 lg:py-10">
         
         {/* 左側：フォーム領域 */}
         <section className="h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_16px_45px_-25px_rgba(30,64,175,0.22)] sm:p-8">

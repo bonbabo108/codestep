@@ -61,24 +61,6 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-[#f7f9fc] text-slate-900">
-      <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur">
-        <div className="mx-auto flex h-18 max-w-6xl items-center justify-between px-5 sm:px-8">
-          <Link href="/" className="flex items-center gap-2.5 font-bold tracking-tight text-slate-900">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm shadow-blue-200"><Code2 className="size-5" /></span>
-            <span className="text-lg">CodeStep</span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2.5 rounded-full border border-slate-200 bg-slate-50 py-1.5 pl-1.5 pr-3">
-              <span className="flex size-8 items-center justify-center rounded-full bg-blue-100 text-blue-700"><UserRound className="size-4" /></span>
-              <span className="text-sm font-semibold text-slate-700">テストユーザー</span>
-            </div>
-            <Link href="/question" className="group hidden items-center gap-1.5 text-sm font-medium text-slate-500 transition-colors hover:text-blue-600 sm:flex">
-              管理画面へ <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          </div>
-        </div>
-      </header>
-
       <div className="mx-auto flex max-w-3xl flex-col gap-6 px-5 py-10 sm:px-8 sm:py-14">
         <div className="flex items-center justify-between">
           <div>
