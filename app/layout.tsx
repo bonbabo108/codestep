@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import Header from "@/components/Header";
 
 export const metadata: Metadata = {
   title: 'CodeStep | 楽しく学ぶコーディング',
@@ -41,6 +42,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="antialiased">
+        <Header /> {/* ★ここに追加 */}
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

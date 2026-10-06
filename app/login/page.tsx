@@ -9,7 +9,7 @@ import { Code2, ArrowRight } from 'lucide-react'
 export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [isSignUp, setIsSignUp] = useState(false) // ログインか新規登録かの切り替え
+  const [isSignUp, setIsSignUp] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -21,23 +21,20 @@ export default function LoginPage() {
 
     try {
       if (isSignUp) {
-        // 【新規登録モード】
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
         })
         if (signUpError) throw signUpError
 
-        // ★登録成功したら、先ほど作った profiles（プロフィール箱）にもデータを入れる
         if (data.user) {
           const { error: profileError } = await supabase.from('profiles').insert({
             id: data.user.id,
-            name: email.split('@')[0], // 例：test@abc.com なら「test」を名前にする
+            name: email.split('@')[0],
           })
           if (profileError) throw profileError
         }
       } else {
-        // 【ログインモード】
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -45,7 +42,6 @@ export default function LoginPage() {
         if (signInError) throw signInError
       }
 
-      // 成功したら学習画面（トップページ）へ移動してリロード
       router.push('/')
       router.refresh()
     } catch (err: any) {
@@ -76,53 +72,23 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">メールアドレス</label>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition"
-                placeholder="hello@example.com"
-              />
+              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="hello@example.com" />
             </div>
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">パスワード (6文字以上)</label>
-              <input
-                type="password"
-                required
-                minLength={6}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition"
-                placeholder="••••••••"
-              />
+              <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="••••••••" />
             </div>
 
-            {error && (
-              <p className="text-sm font-bold text-rose-600 bg-rose-50 p-3 rounded-lg border border-rose-100 text-center">
-                {error}
-              </p>
-            )}
+            {error && <p className="text-sm font-bold text-rose-600 bg-rose-50 p-3 rounded-lg border border-rose-100 text-center">{error}</p>}
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="h-12 w-full rounded-xl bg-blue-600 font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 disabled:opacity-50"
-            >
+            <Button type="submit" disabled={loading} className="h-12 w-full rounded-xl bg-blue-600 font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 disabled:opacity-50">
               {loading ? '処理中...' : isSignUp ? '登録して始める' : 'ログイン'}
               {!loading && <ArrowRight className="ml-2 size-4" />}
             </Button>
           </form>
 
           <div className="mt-8 text-center">
-            <button
-              type="button"
-              onClick={() => {
-                setIsSignUp(!isSignUp)
-                setError('') // 切り替え時にエラーメッセージを消す
-              }}
-              className="text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors"
-            >
+            <button type="button" onClick={() => { setIsSignUp(!isSignUp); setError('') }} className="text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
               {isSignUp ? 'すでにアカウントをお持ちの方はこちら' : '初めての方はこちら（新規登録）'}
             </button>
           </div>
