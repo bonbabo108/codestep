@@ -1,10 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Code2, ArrowRight } from 'lucide-react'
+import { authenticate, authErrorMessage } from '@/lib/auth-actions'
+import { createOperationLock } from '@/lib/admin'
+import { useAuth } from '@/components/AuthProvider'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -12,41 +15,30 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const lock = useRef(createOperationLock())
   const router = useRouter()
+  const { status, pending } = useAuth()
+  const unavailable = loading || status === 'loading' || pending
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (unavailable || !lock.current.acquire()) return
     setLoading(true)
     setError('')
-
+    setNotice('')
     try {
-      if (isSignUp) {
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        })
-        if (signUpError) throw signUpError
-
-        if (data.user) {
-          const { error: profileError } = await supabase.from('profiles').insert({
-            id: data.user.id,
-            name: email.split('@')[0],
-          })
-          if (profileError) throw profileError
-        }
-      } else {
-        const { error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
-        if (signInError) throw signInError
+      const outcome = await authenticate(supabase, email, password, isSignUp)
+      if (outcome === 'confirm-email') {
+        setNotice('確認メールを確認してください。確認後にログインできます。')
+        return
       }
-
       router.push('/')
       router.refresh()
-    } catch (err: any) {
-      setError(err.message || 'エラーが発生しました。入力内容を確認してください。')
+    } catch (cause) {
+      setError(authErrorMessage(cause))
     } finally {
+      lock.current.release()
       setLoading(false)
     }
   }
@@ -71,24 +63,25 @@ export default function LoginPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">メールアドレス</label>
-              <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="hello@example.com" />
+              <label htmlFor="email" className="block text-sm font-bold text-slate-700 mb-2">メールアドレス</label>
+              <input id="email" type="email" required disabled={unavailable} value={email} onChange={(e) => setEmail(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="hello@example.com" />
             </div>
             <div>
-              <label className="block text-sm font-bold text-slate-700 mb-2">パスワード (6文字以上)</label>
-              <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="••••••••" />
+              <label htmlFor="password" className="block text-sm font-bold text-slate-700 mb-2">パスワード (6文字以上)</label>
+              <input id="password" type="password" required minLength={6} disabled={unavailable} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="••••••••" />
             </div>
 
-            {error && <p className="text-sm font-bold text-rose-600 bg-rose-50 p-3 rounded-lg border border-rose-100 text-center">{error}</p>}
+            {notice && <p role="status" className="text-sm text-blue-700">{notice}</p>}
+            {error && <p role="alert" className="text-sm font-bold text-rose-600 bg-rose-50 p-3 rounded-lg border border-rose-100 text-center">{error}</p>}
 
-            <Button type="submit" disabled={loading} className="h-12 w-full rounded-xl bg-blue-600 font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 disabled:opacity-50">
-              {loading ? '処理中...' : isSignUp ? '登録して始める' : 'ログイン'}
-              {!loading && <ArrowRight className="ml-2 size-4" />}
+            <Button type="submit" disabled={unavailable} className="h-12 w-full rounded-xl bg-blue-600 font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 disabled:opacity-50">
+              {loading ? '処理中...' : unavailable ? '認証状態を確認中...' : isSignUp ? '登録して始める' : 'ログイン'}
+              {!unavailable && <ArrowRight className="ml-2 size-4" />}
             </Button>
           </form>
 
           <div className="mt-8 text-center">
-            <button type="button" onClick={() => { setIsSignUp(!isSignUp); setError('') }} className="text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
+            <button type="button" disabled={unavailable} onClick={() => { setIsSignUp(!isSignUp); setError(''); setNotice('') }} className="text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
               {isSignUp ? 'すでにアカウントをお持ちの方はこちら' : '初めての方はこちら（新規登録）'}
             </button>
           </div>

@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "project_id": "ezjzgebehancbxqpgany",
+  "name": "codestep_staging_bootstrap",
+  "sql_file": "docs/sql/staging-bootstrap.sql",
+  "sha256": "471571d743080915ecda2b0dae50f6c88754c62262d02eaaa4a82ea159ceb7b1"
+}
