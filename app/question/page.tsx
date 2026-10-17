@@ -40,7 +40,6 @@ function QuestionManager() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
-  const [reload, setReload] = useState(0)
   const lock = useRef(createOperationLock())
   const lifetime = useRef<AbortController | null>(null)
 
@@ -57,7 +56,7 @@ function QuestionManager() {
       if (!controller.signal.aborted) setLoading(false)
     })
     return () => controller.abort()
-  }, [reload])
+  }, [])
 
   function updateField(field: keyof QuestionForm, value: string) {
     if (field === 'category' && value !== '' && !isCategory(value)) return
@@ -128,11 +127,10 @@ function QuestionManager() {
 
   return (
     <main className="min-h-screen bg-[#f7f9fc] text-slate-900">
-      <div className="mx-auto max-w-[1440px] space-y-2 px-5 pt-5" aria-live="polite">
+      <div className="mx-auto max-w-[1440px] space-y-2 px-5 pt-5 empty:hidden" aria-live="polite">
         {error && <p role="alert" className="rounded-xl bg-rose-50 p-3 text-rose-700">{error}</p>}
         {notice && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-emerald-700">{notice}</p>}
         {loading && <p role="status">問題を読み込み中...</p>}
-        <Button type="button" variant="outline" disabled={busy || loading} onClick={() => setReload(value => value + 1)}>一覧を再読み込み</Button>
       </div>
      
 
