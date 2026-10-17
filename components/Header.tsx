@@ -12,11 +12,11 @@ export default function Header() {
     <header className="flex flex-wrap items-center justify-between gap-3 border-b bg-white p-4">
       <Link href="/" className="flex items-center gap-2 text-xl font-bold text-slate-900">CodeStep</Link>
       <nav aria-label="メインナビゲーション" className="flex flex-wrap items-center gap-4">
-        {pathname.startsWith('/question') ? (
+        {pathname.startsWith('/question') || pathname === '/admin' || pathname.startsWith('/admin/') ? (
           <Link href="/" className="text-sm font-bold text-slate-500 transition-colors hover:text-blue-600">学習画面へ戻る</Link>
-        ) : isAdmin ? (
-          <Link href="/question" className="text-sm font-bold text-slate-500 transition-colors hover:text-blue-600">管理画面へ</Link>
-        ) : null}
+        ) : (
+          <Link href={isAdmin ? '/admin' : '/admin/login'} className="text-sm font-bold text-slate-500 transition-colors hover:text-blue-600">管理画面へ</Link>
+        )}
         {status === 'loading' || (pending && !session) ? <span role="status" className="border-l pl-4 text-sm text-gray-400">Loading...</span> : session ? (
           <div className="flex items-center gap-4 border-l pl-4">
             <span className="max-w-28 truncate text-sm font-semibold text-slate-700">{session.user.email?.split('@')[0]} さん</span>

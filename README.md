@@ -12,6 +12,8 @@ Web開発の初学者がコード問題へ回答し、その場の解説で理�
 
 [公開前の確認・反映順序・失敗時の対応](./docs/release-readiness.md)に、PCで確認する内容をまとめています。
 
+2026-10-17追記：管理者専用入口 `/admin/login` と管理画面 `/admin` をローカル実装しました。「管理画面へ」は未ログイン・一般ユーザーにも表示し、管理者以外は専用入口で案内します。一般ユーザーのログインは維持し、本人が選んだ場合だけ別アカウントへ切り替えます。管理者用の新規登録はありません。学習者用 `/login`、共有Auth、RLS、既存CRUDは継続利用します。新しい入口はローカル本番ビルド＋APIモックで検証済み、Preview未反映・実staging未検証です。
+
 ## 機能と状態
 
 | 機能 | ローカル実装 | 検証・公開状態 |
@@ -31,7 +33,7 @@ Web開発の初学者がコード問題へ回答し、その場の解説で理�
 
 | 技術 | CodeStepでの役割 |
 | --- | --- |
-| Next.js App Router | /、/login、/questionの画面構成・ビルド |
+| Next.js App Router | /、/login、/admin/login、/adminと既存/questionの画面構成・ビルド |
 | React | フォーム、判定、保存状態、セッション別の表示 |
 | TypeScript | データ型と応答処理の静的検査。DB応答は実行時にも確認 |
 | Tailwind CSS | レスポンシブな画面・共通ボタン |
@@ -54,7 +56,8 @@ stagingにはペア一意制約を追加し、同時INSERTが競合した時だ�
 
 - app/page.tsx：DB出題・回答・保存/復元画面。
 - lib/learning.ts：本人進捗とプロフィール確認、lib/auth-actions.ts：認証応答の分岐。
-- app/question/page.tsx・lib/questions.ts：管理CRUD。
+- app/admin/page.tsx：既存app/question/page.tsxの権限ガード・管理CRUDを共用。lib/questions.ts：DB操作。
+- components/LoginForm.tsx：学習者/loginと管理者/admin/loginの共通フォーム。管理者入口には登録機能なし。
 - components/AuthProvider.tsx：共有セッション、components/Header.tsx：権限に応じた案内。
 - [設計資料一覧](./docs/README.md)、[Week9全5シートの照合・変更提案](./docs/design-review.md)。外部スプレッドシートは未編集。
 - [ER図原本](./docs/er-diagram.png)、[ワイヤーフレーム原本](./docs/wireframe.png)、[旧学習画面画像](./docs/app-learning.png)。原本を保持。画像は旧版で、現機能の証拠にはしません。

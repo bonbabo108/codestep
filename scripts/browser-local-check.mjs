@@ -10,6 +10,7 @@ const require = createRequire(import.meta.url)
 const { chromium } = require(process.env.CODESTEP_PLAYWRIGHT_MODULE || 'playwright')
 const origin = 'http://127.0.0.1:3117'
 const api = 'http://127.0.0.1:54321'
+const screenshotDir = process.env.CODESTEP_UI_SCREENSHOT_DIR || '/tmp/codestep-admin-entry-ui'
 const env = Object.fromEntries(Object.entries(process.env).filter(([k]) => !/KEY|TOKEN|SECRET|PASSWORD|STAGING_CREDENTIAL/.test(k)))
 Object.assign(env, { NEXT_PUBLIC_SUPABASE_URL: api, NEXT_PUBLIC_SUPABASE_ANON_KEY: 'local-ui-fictional-key', NEXT_TELEMETRY_DISABLED: '1' })
 const serverArgs = process.env.CODESTEP_UI_USE_BUILD === '1' ? ['start'] : ['dev', '--webpack']
@@ -22,7 +23,8 @@ async function fixture(role, mode = 'normal') {
   const context = await browser.newContext()
   const state = { questions: [{ ...q }], progress: [], requests: [], dialogs: 0 }
   const logoutGate = new Promise(resolve => { state.finishLogout = resolve })
-  const user = { id: 'local-learner', email: 'portfolio@example.invalid', aud: 'authenticated', role: 'authenticated', app_metadata: { codestep_admin: role === 'admin' }, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' }
+  const loginGate = new Promise(resolve => { state.finishLogin = resolve })
+  const user = { id: 'local-learner', email: 'portfolio@example.invalid', aud: 'authenticated', role: 'authenticated', app_metadata: { codestep_admin: role === 'admin' || mode === 'admin-login' || mode === 'slow-login' }, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' }
   const exp = Math.floor(Date.now() / 1000) + 3600
   const enc = v => Buffer.from(JSON.stringify(v)).toString('base64url')
   const session = { access_token: `${enc({ alg: 'HS256', typ: 'JWT' })}.${enc({ sub: user.id, exp, role: 'authenticated' })}.local-fixture-signature`, refresh_token: 'local-fixture-refresh', expires_in: 3600, expires_at: exp, token_type: 'bearer', user }
@@ -38,20 +40,27 @@ async function fixture(role, mode = 'normal') {
     if (url.origin !== api) return route.abort()
     const table = url.pathname.split('/').at(-1), method = request.method()
     state.requests.push({ table, method })
-    const send = (body, status = 200) => route.fulfill({ status, contentType: 'application/json', body: JSON.stringify(body) })
+    const send = (body, status = 200) => route.fulfill({ status, contentType: 'application/json', headers: { 'x-supabase-api-version': '2024-01-01', 'access-control-expose-headers': 'x-supabase-api-version' }, body: JSON.stringify(body) })
     const fail = code => send({ code, message: 'private fixture detail' }, code === '23503' ? 409 : 403)
     if (url.pathname === '/auth/v1/user') return send(user)
     if (url.pathname === '/auth/v1/logout') {
       if (mode === 'slow-logout') await logoutGate
+      if (mode === 'logout-error') return send({ message: 'private fixture detail' }, 500)
       return route.fulfill({ status: 204 })
     }
     if (url.pathname === '/auth/v1/signup') return send({ user, session: null })
-    if (url.pathname === '/auth/v1/token') return send(session)
+    if (url.pathname === '/auth/v1/token') {
+      if (mode === 'login-invalid') return send({ code: 'invalid_credentials', message: 'private fixture detail' }, 400)
+      if (mode === 'login-network') return send({ message: 'private fixture detail' }, 503)
+      if (mode === 'slow-login') await loginGate
+      if (mode === 'switch-admin' && url.searchParams.get('grant_type') === 'password') user.app_metadata.codestep_admin = true
+      return send(session)
+    }
     const singular = (request.headers().accept || '').includes('vnd.pgrst.object')
     const rows = value => send(singular ? value[0] ?? null : value)
     if (table === 'questions') {
       if (method === 'GET') return rows(state.questions)
-      if (role !== 'admin') return fail('42501')
+      if (user.app_metadata.codestep_admin !== true) return fail('42501')
       if (mode === 'network') return send({ message: 'private fixture detail' }, 503)
       if (mode === 'denied') return fail('42501')
       if (mode === 'zero') return rows([])
@@ -88,7 +97,7 @@ async function fixture(role, mode = 'normal') {
 }
 
 async function check(name, role, mode, action) {
-  if (process.env.CODESTEP_UI_TEST_FILTER && !name.includes(process.env.CODESTEP_UI_TEST_FILTER)) return
+  if (process.env.CODESTEP_UI_TEST_FILTER && !process.env.CODESTEP_UI_TEST_FILTER.split('|').some(term => name.includes(term))) return
   const f = await fixture(role, mode)
   try {
     await action(f)
@@ -185,7 +194,7 @@ try {
     await f.page.getByRole('heading', { name: q.title, exact: true }).waitFor()
     await assertNoExtraUi(f.page)
     assert.ok(f.state.requests.some(r => r.table === 'questions' && r.method === 'GET'))
-    assert.equal(await f.page.getByRole('link', { name: '管理画面へ', exact: true }).count(), 0)
+    assert.equal(await f.page.getByRole('link', { name: '管理画面へ', exact: true }).getAttribute('href'), '/admin/login')
     assert.equal(await f.page.getByText('クリア済', { exact: true }).count(), 0)
     assert.equal(await f.page.getByText(restoredMessage, { exact: true }).count(), 0)
     await f.page.getByLabel('あなたの解答').fill('let')
@@ -231,7 +240,7 @@ try {
     assert.equal(await f.page.getByLabel('あなたの解答').inputValue(), q.answer_code)
     assert.ok(await f.page.getByText('クリア済', { exact: true }).isVisible())
     await assertNoExtraUi(f.page)
-    assert.equal(await f.page.getByRole('link', { name: '管理画面へ', exact: true }).count(), 0)
+    assert.equal(await f.page.getByRole('link', { name: '管理画面へ', exact: true }).getAttribute('href'), '/admin/login')
     await f.page.getByRole('button', { name: 'ログアウト', exact: true }).click()
     await f.page.getByRole('link', { name: 'ログイン', exact: true }).waitFor()
     assert.equal(await f.page.getByLabel('あなたの解答').inputValue(), '')
@@ -256,7 +265,7 @@ try {
     await loginForm(f.page)
     await f.page.getByRole('heading', { name: q.title, exact: true }).waitFor()
   })
-  await check('UI-R05 権限取得は専用拒否画面で維持・ログアウトで管理導線消去', 'learner', 'normal', async f => {
+  await check('UI-R05 権限取得は専用拒否画面で維持・ログアウトで管理入口へ変更', 'learner', 'normal', async f => {
     await f.page.goto(`${origin}/question`)
     await f.page.getByRole('heading', { name: '問題管理は管理者専用です', exact: true }).waitFor()
     f.user.app_metadata.codestep_admin = true
@@ -266,7 +275,7 @@ try {
     await f.page.getByRole('link', { name: '管理画面へ', exact: true }).waitFor()
     await f.page.getByRole('button', { name: 'ログアウト', exact: true }).click()
     await f.page.getByRole('link', { name: 'ログイン', exact: true }).waitFor()
-    assert.equal(await f.page.getByRole('link', { name: '管理画面へ', exact: true }).count(), 0)
+    assert.equal(await f.page.getByRole('link', { name: '管理画面へ', exact: true }).getAttribute('href'), '/admin/login')
   })
   await check('UI-R07 ログアウト完了まではログイン導線を出さず管理操作も隠す', 'admin', 'slow-logout', async f => {
     await manage(f.page)
@@ -278,28 +287,129 @@ try {
     await f.page.getByRole('link', { name: 'ログイン', exact: true }).waitFor()
     await f.page.getByRole('heading', { name: '問題管理は管理者専用です', exact: true }).waitFor()
   })
-  await mkdir('docs/screenshots/ui-restored', { recursive: true })
+  await mkdir(screenshotDir, { recursive: true })
   for (const width of [1440, 390]) await check(`UI-R06 ${width}px学習/管理/ログイン/登録のレイアウト`, 'admin', 'normal', async f => {
     await f.page.setViewportSize({ width, height: 900 })
     await f.page.goto(origin)
     await f.page.getByRole('heading', { name: q.title, exact: true }).waitFor()
     await assertNoOverflow(f.page)
     await assertNoExtraUi(f.page)
-    await f.page.screenshot({ path: `docs/screenshots/ui-restored/learning-${width}.png`, fullPage: true })
+    await f.page.screenshot({ path: `${screenshotDir}/learning-${width}.png`, fullPage: true })
     await f.page.getByRole('link', { name: '管理画面へ', exact: true }).click()
     await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).waitFor()
     await assertNoOverflow(f.page)
-    await f.page.screenshot({ path: `docs/screenshots/ui-restored/admin-${width}.png`, fullPage: true })
+    await f.page.screenshot({ path: `${screenshotDir}/admin-${width}.png`, fullPage: true })
     await f.page.getByRole('button', { name: 'ログアウト', exact: true }).click()
     await f.page.getByRole('link', { name: 'ログイン', exact: true }).waitFor()
     await f.page.goto(`${origin}/login`)
     await f.page.getByRole('heading', { name: 'ログイン', exact: true }).waitFor()
     await assertNoOverflow(f.page)
-    await f.page.screenshot({ path: `docs/screenshots/ui-restored/login-${width}.png`, fullPage: true })
+    await f.page.screenshot({ path: `${screenshotDir}/login-${width}.png`, fullPage: true })
     await f.page.getByRole('button', { name: '初めての方はこちら（新規登録）', exact: true }).click()
     await f.page.getByRole('heading', { name: 'アカウント作成', exact: true }).waitFor()
     await assertNoOverflow(f.page)
-    await f.page.screenshot({ path: `docs/screenshots/ui-restored/signup-${width}.png`, fullPage: true })
+    await f.page.screenshot({ path: `${screenshotDir}/signup-${width}.png`, fullPage: true })
+  })
+
+  await check('UI-A01 未ログインの管理入口→管理者ログイン→adminで既存CRUD', 'guest', 'admin-login', async f => {
+    await f.page.goto(origin)
+    await f.page.getByRole('heading', { name: q.title, exact: true }).waitFor()
+    await f.page.getByRole('link', { name: '管理画面へ', exact: true }).click()
+    await f.page.getByRole('heading', { name: '管理者ログイン', exact: true }).waitFor()
+    assert.equal(await f.page.getByRole('button', { name: /新規登録/ }).count(), 0)
+    assert.ok(f.page.url().endsWith('/admin/login'))
+    await loginForm(f.page)
+    await f.page.waitForURL(`${origin}/admin`)
+    await f.page.getByRole('heading', { name: '新規問題を作成', exact: true }).waitFor()
+    await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await f.page.getByText('問題を削除しました。', { exact: true }).waitFor()
+    assert.equal(f.state.questions.length, 0)
+    assert.equal(f.state.requests.filter(r => r.table === 'signup').length, 0)
+  })
+  await check('UI-A02 認証済み管理者はadmin/loginから直接adminへ・再読込維持', 'admin', 'normal', async f => {
+    await f.page.goto(`${origin}/admin/login`)
+    await f.page.waitForURL(`${origin}/admin`)
+    await f.page.getByRole('heading', { name: '新規問題を作成', exact: true }).waitFor()
+    await f.page.reload()
+    await f.page.getByRole('heading', { name: '新規問題を作成', exact: true }).waitFor()
+    assert.equal(f.state.requests.filter(r => r.table === 'token').length, 0)
+  })
+  await check('UI-A03 一般ユーザーはセッション維持・本人の操作でアカウント切替', 'learner', 'switch-admin', async f => {
+    await f.page.goto(origin)
+    await f.page.getByRole('link', { name: '管理画面へ', exact: true }).click()
+    await f.page.getByRole('alert').filter({ hasText: 'このアカウントには管理者権限がありません。' }).waitFor()
+    assert.equal(writes(f).length, 0)
+    assert.equal(await f.page.locator('form').count(), 0)
+    await f.page.getByRole('link', { name: '学習画面へ戻る', exact: true }).last().click()
+    await f.page.getByRole('button', { name: 'ログアウト', exact: true }).waitFor()
+    await f.page.getByRole('link', { name: '管理画面へ', exact: true }).click()
+    await f.page.getByRole('button', { name: 'ログアウトして別のアカウントでログイン', exact: true }).click()
+    await f.page.getByRole('heading', { name: '管理者ログイン', exact: true }).waitFor()
+    assert.equal(f.state.requests.filter(r => r.table === 'logout').length, 1)
+    await loginForm(f.page)
+    await f.page.waitForURL(`${origin}/admin`)
+    await f.page.getByRole('heading', { name: '新規問題を作成', exact: true }).waitFor()
+  })
+  await check('UI-A04 専用入口で一般アカウントがログインしても管理画面を開かない', 'guest', 'normal', async f => {
+    await f.page.goto(`${origin}/admin/login`)
+    await loginForm(f.page)
+    await f.page.getByRole('alert').filter({ hasText: 'このアカウントには管理者権限がありません。' }).waitFor()
+    assert.ok(f.page.url().endsWith('/admin/login'))
+    assert.equal(await f.page.getByRole('button', { name: '問題を作成する', exact: true }).count(), 0)
+    assert.equal(f.state.requests.filter(r => r.table === 'logout').length, 0)
+    for (const path of ['/admin', '/question']) {
+      await f.page.goto(`${origin}${path}`)
+      await f.page.getByRole('heading', { name: '問題管理は管理者専用です', exact: true }).waitFor()
+      assert.equal(await f.page.getByRole('button', { name: '問題を作成する', exact: true }).count(), 0)
+    }
+    assert.equal(f.state.requests.filter(r => r.table === 'questions' && r.method !== 'GET').length, 0)
+  })
+  for (const [mode, message] of [
+    ['login-invalid', 'メールアドレスとパスワードを確認してください。'],
+    ['login-network', '認証を完了できませんでした。入力内容と通信状態を確認してください。'],
+  ]) await check(`UI-A05 管理者ログイン失敗 ${mode}`, 'guest', mode, async f => {
+    await f.page.goto(`${origin}/admin/login`)
+    await f.page.getByLabel('メールアドレス', { exact: true }).fill('portfolio@example.invalid')
+    await f.page.getByLabel('パスワード (6文字以上)', { exact: true }).fill('local-fixture-password')
+    await f.page.getByRole('button', { name: 'ログイン', exact: true }).click()
+    await f.page.getByRole('alert').filter({ hasText: message }).waitFor()
+    assert.equal(await f.page.getByLabel('パスワード (6文字以上)', { exact: true }).inputValue(), '')
+    assert.ok(f.page.url().endsWith('/admin/login'))
+    assert.ok(!(await f.page.locator('body').innerText()).includes('private fixture detail'))
+  })
+  await check('UI-A06 管理者ログイン中の二重送信防止', 'guest', 'slow-login', async f => {
+    await f.page.goto(`${origin}/admin/login`)
+    await f.page.getByLabel('メールアドレス', { exact: true }).fill('portfolio@example.invalid')
+    await f.page.getByLabel('パスワード (6文字以上)', { exact: true }).fill('local-fixture-password')
+    await f.page.locator('form').evaluate(form => { form.requestSubmit(); form.requestSubmit() })
+    await f.page.getByRole('button', { name: '処理中...', exact: true }).waitFor()
+    assert.equal(await f.page.getByRole('button', { name: '処理中...', exact: true }).isDisabled(), true)
+    f.state.finishLogin()
+    await f.page.waitForURL(`${origin}/admin`)
+    assert.equal(f.state.requests.filter(r => r.table === 'token').length, 1)
+  })
+  await check('UI-A07 切替ログアウト失敗時はログインフォームを出さず再試行案内', 'learner', 'logout-error', async f => {
+    await f.page.goto(`${origin}/admin/login`)
+    await f.page.getByRole('button', { name: 'ログアウトして別のアカウントでログイン', exact: true }).click()
+    await f.page.getByRole('button', { name: 'ログアウトを再試行', exact: true }).last().waitFor()
+    assert.equal(await f.page.locator('form').count(), 0)
+    assert.equal(f.state.requests.filter(r => r.table === 'token').length, 0)
+  })
+  for (const width of [1440, 390]) await check(`UI-A08 ${width}px専用ログイン/拒否表示`, 'guest', 'normal', async f => {
+    await f.page.setViewportSize({ width, height: 900 })
+    await f.page.goto(origin)
+    await f.page.getByRole('heading', { name: q.title, exact: true }).waitFor()
+    await assertNoOverflow(f.page)
+    await f.page.screenshot({ path: `${screenshotDir}/guest-learning-${width}.png`, fullPage: true })
+    await f.page.getByRole('link', { name: '管理画面へ', exact: true }).click()
+    await f.page.getByRole('heading', { name: '管理者ログイン', exact: true }).waitFor()
+    await assertNoOverflow(f.page)
+    await assertNoExtraUi(f.page)
+    await f.page.screenshot({ path: `${screenshotDir}/admin-login-${width}.png`, fullPage: true })
+    await loginForm(f.page)
+    await f.page.getByRole('heading', { name: '問題管理は管理者専用です', exact: true }).waitFor()
+    await assertNoOverflow(f.page)
+    await f.page.screenshot({ path: `${screenshotDir}/admin-denied-${width}.png`, fullPage: true })
   })
   console.log(JSON.stringify({ environment: 'local browser + API mocks; no real DB', pass: report.filter(r => r.result === 'pass').length, fail: report.filter(r => r.result === 'fail').length }))
   process.exitCode = report.some(r => r.result === 'fail') ? 1 : 0

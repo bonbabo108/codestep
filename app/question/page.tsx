@@ -24,7 +24,8 @@ export default function QuestionAdminPage() {
     <main className="mx-auto max-w-xl space-y-4 p-8">
       <h1 className="text-xl font-bold">問題管理は管理者専用です</h1>
       <p>{status === 'error' ? 'ログイン状態を確認できません。' : '管理操作を利用するには管理者権限が必要です。'}</p>
-      {session ? <Button onClick={() => void refresh()}>権限情報を更新</Button> : <Link href="/login" className="text-blue-600 underline">ログインへ</Link>}
+      {session && <Button onClick={() => void refresh()}>権限情報を更新</Button>}
+      <p><Link href="/admin/login" className="text-blue-600 underline">管理者ログインへ</Link></p>
       <p><Link href="/" className="text-blue-600 underline">学習画面へ戻る</Link></p>
     </main>
   )
