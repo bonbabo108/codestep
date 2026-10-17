@@ -4,11 +4,12 @@ import Link from 'next/link'
 import { useState, useEffect, useRef } from 'react'
 import type { FormEvent } from 'react'
 import { FilePlus2, Pencil, Trash2, X } from 'lucide-react'
+import { AlertDialog } from '@base-ui/react/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/components/AuthProvider'
 import { createOperationLock } from '@/lib/admin'
 import { supabase } from '@/lib/supabase'
-import { deleteQuestion, emptyQuestionForm, fetchQuestions, isCategory, isUnchanged, questionErrorMessage, questionToForm, saveQuestion } from '@/lib/questions'
+import { deleteQuestion, emptyQuestionForm, fetchQuestions, inspectQuestionDeletion, isCategory, isUnchanged, questionErrorMessage, questionToForm, saveQuestion } from '@/lib/questions'
 import type { Category, Question, QuestionForm } from '@/lib/questions'
 
 const categoryClass: Record<Category, string> = {
@@ -41,6 +42,8 @@ function QuestionManager() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [deletion, setDeletion] = useState<{ question: Question; hasProgress: boolean | null; error: string; notice: string } | null>(null)
+  const deletionVersion = useRef(0)
   const lock = useRef(createOperationLock())
   const lifetime = useRef<AbortController | null>(null)
 
@@ -104,22 +107,50 @@ function QuestionManager() {
     }
   }
 
-  async function remove(id: string) {
+  function cancelDeletion() {
+    if (busy) return
+    deletionVersion.current += 1
+    setDeletion(null)
+  }
+
+  async function confirmDeletion(question: Question) {
     const signal = lifetime.current?.signal
     if (loading || busy || !signal || signal.aborted) return
-    if (!window.confirm('本当にこの問題を削除しますか？')) return
+    const version = ++deletionVersion.current
+    setDeletion({ question, hasProgress: null, error: '', notice: '' })
+    try {
+      const result = await inspectQuestionDeletion(supabase, question.id, signal)
+      if (!signal.aborted && deletionVersion.current === version) {
+        setDeletion({ question, hasProgress: result.hasProgress, error: '', notice: '' })
+      }
+    } catch (cause) {
+      if (!signal.aborted && deletionVersion.current === version) {
+        setDeletion({ question, hasProgress: null, error: questionErrorMessage(cause), notice: '' })
+      }
+    }
+  }
+
+  async function remove() {
+    const signal = lifetime.current?.signal
+    if (loading || busy || !signal || signal.aborted || !deletion || deletion.hasProgress === null || deletion.error) return
     if (!lock.current.acquire()) return
+    const id = deletion.question.id
     setBusy(true)
     setError('')
     setNotice('')
     try {
-      await deleteQuestion(supabase, id, signal)
+      const result = await deleteQuestion(supabase, id, signal, deletion.hasProgress)
       if (signal.aborted) return
+      if (!result.deleted) {
+        setDeletion({ ...deletion, hasProgress: true, notice: '学習進捗が追加されました。削除する内容をもう一度確認してください。' })
+        return
+      }
+      setDeletion(null)
       setQuestions(current => current.filter(q => q.id !== id))
       if (editingId === id) cancelEdit()
       setNotice('問題を削除しました。')
     } catch (cause) {
-      if (!signal.aborted) setError(questionErrorMessage(cause))
+      if (!signal.aborted) setDeletion({ ...deletion, error: questionErrorMessage(cause) })
     } finally {
       lock.current.release()
       if (!signal.aborted) setBusy(false)
@@ -128,6 +159,26 @@ function QuestionManager() {
 
   return (
     <main className="min-h-screen bg-[#f7f9fc] text-slate-900">
+      <AlertDialog.Root open={deletion !== null} onOpenChange={open => { if (!open) cancelDeletion() }}>
+        <AlertDialog.Portal>
+          <AlertDialog.Backdrop className="fixed inset-0 z-50 bg-slate-900/40" />
+          <AlertDialog.Popup className="fixed left-1/2 top-1/2 z-50 w-[calc(100%_-_2.5rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-3xl border border-slate-200 bg-white p-6 text-slate-900 shadow-xl sm:p-8">
+            <AlertDialog.Title className="text-xl font-bold">問題を削除しますか？</AlertDialog.Title>
+            <AlertDialog.Description className="mt-4 space-y-3 text-sm leading-6" render={<div />}>
+              <p className="break-words font-semibold">{deletion?.question.title}</p>
+              {deletion?.hasProgress === null && !deletion.error && <p role="status">学習履歴を確認中...</p>}
+              {deletion?.hasProgress === true && <p className="font-bold text-rose-700">この問題に紐づく学習進捗も削除され、元に戻せません</p>}
+              {deletion?.hasProgress === false && <p>この問題を削除します。元に戻せません。</p>}
+            </AlertDialog.Description>
+            {deletion?.notice && <p role="status" className="mt-3 text-sm text-rose-700">{deletion.notice}</p>}
+            {deletion?.error && <p role="alert" className="mt-3 text-sm text-rose-700">{deletion.error}</p>}
+            <div className="mt-6 flex flex-wrap justify-end gap-3">
+              <AlertDialog.Close render={<Button variant="outline" disabled={busy} />}>いいえ</AlertDialog.Close>
+              <Button disabled={busy || deletion?.hasProgress == null || !!deletion?.error} onClick={() => void remove()} className="bg-rose-600 text-white hover:bg-rose-700">{busy ? '削除中...' : 'はい、削除する'}</Button>
+            </div>
+          </AlertDialog.Popup>
+        </AlertDialog.Portal>
+      </AlertDialog.Root>
       <div className="mx-auto max-w-[1440px] space-y-2 px-5 pt-5 empty:hidden" aria-live="polite">
         {error && <p role="alert" className="rounded-xl bg-rose-50 p-3 text-rose-700">{error}</p>}
         {notice && <p role="status" className="rounded-xl bg-emerald-50 p-3 text-emerald-700">{notice}</p>}
@@ -211,7 +262,7 @@ function QuestionManager() {
                     <Button variant="ghost" size="icon" disabled={busy || loading} aria-label={`${question.title}を編集`} onClick={() => handleEdit(question)} className="text-slate-400 hover:text-amber-600">
                       <Pencil className="size-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" disabled={busy || loading} aria-label={`${question.title}を削除`} onClick={() => remove(question.id)} className="text-slate-400 hover:text-rose-600">
+                    <Button variant="ghost" size="icon" disabled={busy || loading} aria-label={`${question.title}を削除`} onClick={() => void confirmDeletion(question)} className="text-slate-400 hover:text-rose-600">
                       <Trash2 className="size-4" />
                     </Button>
                   </div>

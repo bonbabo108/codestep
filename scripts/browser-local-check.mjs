@@ -24,6 +24,8 @@ async function fixture(role, mode = 'normal') {
   const state = { questions: [{ ...q }], progress: [], requests: [], dialogs: 0 }
   const logoutGate = new Promise(resolve => { state.finishLogout = resolve })
   const loginGate = new Promise(resolve => { state.finishLogin = resolve })
+  const deleteGate = new Promise(resolve => { state.finishDelete = resolve })
+  if (['delete-history', 'fk', 'delete-preview-error'].includes(mode)) state.progress = [{ id: 'local-linked', question_id: q.id }]
   const user = { id: 'local-learner', email: 'portfolio@example.invalid', aud: 'authenticated', role: 'authenticated', app_metadata: { codestep_admin: role === 'admin' || mode === 'admin-login' || mode === 'slow-login' }, user_metadata: {}, created_at: '2026-01-01T00:00:00Z' }
   const exp = Math.floor(Date.now() / 1000) + 3600
   const enc = v => Buffer.from(JSON.stringify(v)).toString('base64url')
@@ -39,7 +41,7 @@ async function fixture(role, mode = 'normal') {
     if (url.origin === origin) return route.continue()
     if (url.origin !== api) return route.abort()
     const table = url.pathname.split('/').at(-1), method = request.method()
-    state.requests.push({ table, method })
+    state.requests.push({ table, method, confirm: table === 'delete_question_with_progress' ? request.postDataJSON().p_confirm : undefined })
     const send = (body, status = 200) => route.fulfill({ status, contentType: 'application/json', headers: { 'x-supabase-api-version': '2024-01-01', 'access-control-expose-headers': 'x-supabase-api-version' }, body: JSON.stringify(body) })
     const fail = code => send({ code, message: 'private fixture detail' }, code === '23503' ? 409 : 403)
     if (url.pathname === '/auth/v1/user') return send(user)
@@ -58,6 +60,28 @@ async function fixture(role, mode = 'normal') {
     }
     const singular = (request.headers().accept || '').includes('vnd.pgrst.object')
     const rows = value => send(singular ? value[0] ?? null : value)
+    if (table === 'delete_question_with_progress') {
+      if (user.app_metadata.codestep_admin !== true) return fail('42501')
+      const args = request.postDataJSON()
+      const target = state.questions.find(q => q.id === args.p_question_id)
+      if (!target) return send({ code: 'P0002' }, 400)
+      if (mode === 'delete-preview-error' && !args.p_confirm) return send({ message: 'private fixture detail' }, 503)
+      if (args.p_confirm) {
+        if (mode === 'slow-delete') await deleteGate
+        if (mode === 'network') return send({ message: 'private fixture detail' }, 503)
+        if (mode === 'denied') return fail('42501')
+        if (mode === 'zero') return rows([])
+        if (mode === 'fk') return fail('23503')
+        if (mode === 'delete-race' && !args.p_delete_progress) state.progress = [{ id: 'local-linked', question_id: target.id }]
+      }
+      const has = state.progress.some(p => p.question_id === target.id)
+      const deleted = args.p_confirm && (!has || args.p_delete_progress)
+      if (deleted) {
+        state.progress = state.progress.filter(p => p.question_id !== target.id)
+        state.questions = state.questions.filter(q => q.id !== target.id)
+      }
+      return rows([{ question_id: target.id, has_progress: has, deleted }])
+    }
     if (table === 'questions') {
       if (method === 'GET') return rows(state.questions)
       if (user.app_metadata.codestep_admin !== true) return fail('42501')
@@ -113,6 +137,8 @@ async function check(name, role, mode, action) {
 const manage = async page => { await page.goto(`${origin}/question`); await page.getByRole('heading', { name: '新規問題を作成' }).waitFor(); await page.getByRole('button', { name: `${q.title}を削除`, exact: true }).waitFor() }
 const learn = async page => { await page.goto(origin); await page.getByRole('heading', { name: q.title }).waitFor(); await page.getByLabel('あなたの解答').fill('const'); await page.getByRole('button', { name: '回答をチェックする' }).click() }
 const writes = f => f.state.requests.filter(r => r.method !== 'GET')
+const confirmedDeletes = f => f.state.requests.filter(r => r.table === 'delete_question_with_progress' && r.confirm === true)
+const approveDelete = async page => { await page.getByRole('alertdialog').getByRole('button', { name: 'はい、削除する', exact: true }).click() }
 const correctMessage = '正解です！すばらしいです。'
 const restoredMessage = '※前回の正解コードを復元しました'
 const assertNoExtraUi = async page => {
@@ -144,24 +170,27 @@ try {
   await check('UI-M02 管理者の削除確認と成功表示', 'admin', 'normal', async f => {
     await manage(f.page)
     await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await approveDelete(f.page)
     await f.page.getByText('問題を削除しました。', { exact: true }).waitFor()
     assert.equal(f.state.questions.length, 0)
-    assert.equal(f.state.dialogs, 1)
-    assert.equal(writes(f).length, 1)
+    assert.equal(f.state.dialogs, 0)
+    assert.equal(confirmedDeletes(f).length, 1)
   })
   for (const [mode, label, message] of [
-    ['fk', 'UI-M03 FK拒否', '学習履歴がある問題は削除できません。'],
+    ['fk', 'UI-M03 予期しないFK不整合', '関連データとの整合性を確認できないため、削除を中止しました。'],
     ['zero', 'UI-M04 0件削除', '対象の問題を変更できませんでした。権限や一覧を確認してください。'],
     ['network', 'UI-M05 通信失敗', '通信または操作に失敗しました。結果を一覧で確認してから再試行してください。'],
     ['denied', 'UI-M06 権限拒否', '操作する権限を確認できません。権限情報を更新するか、もう一度ログインしてください。'],
   ]) await check(label, 'admin', mode, async f => {
     await manage(f.page)
     await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await approveDelete(f.page)
     await f.page.getByRole('alert').filter({ hasText: message }).waitFor()
     assert.equal(f.state.questions.length, 1)
-    assert.equal(writes(f).length, 1)
+    assert.equal(confirmedDeletes(f).length, 1)
     assert.equal(await f.page.getByText('問題を削除しました。', { exact: true }).count(), 0)
     assert.ok(!(await f.page.locator('body').innerText()).includes('private fixture detail'))
+    assert.equal(await f.page.getByRole('button', { name: 'はい、削除する', exact: true }).isDisabled(), true)
   })
   await check('UI-M07 0件更新は成功表示しない', 'admin', 'zero', async f => {
     await manage(f.page)
@@ -322,6 +351,7 @@ try {
     await f.page.waitForURL(`${origin}/admin`)
     await f.page.getByRole('heading', { name: '新規問題を作成', exact: true }).waitFor()
     await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await approveDelete(f.page)
     await f.page.getByText('問題を削除しました。', { exact: true }).waitFor()
     assert.equal(f.state.questions.length, 0)
     assert.equal(f.state.requests.filter(r => r.table === 'signup').length, 0)
@@ -410,6 +440,64 @@ try {
     await f.page.getByRole('heading', { name: '問題管理は管理者専用です', exact: true }).waitFor()
     await assertNoOverflow(f.page)
     await f.page.screenshot({ path: `${screenshotDir}/admin-denied-${width}.png`, fullPage: true })
+  })
+  await check('UI-D01 履歴ありの警告・キャンセルは進捗も問題も残す', 'admin', 'delete-history', async f => {
+    await manage(f.page)
+    await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await f.page.getByText('この問題に紐づく学習進捗も削除され、元に戻せません', { exact: true }).waitFor()
+    await f.page.getByRole('button', { name: 'いいえ', exact: true }).click()
+    await f.page.getByRole('alertdialog').waitFor({ state: 'detached' })
+    assert.equal(f.state.questions.length, 1)
+    assert.equal(f.state.progress.length, 1)
+    assert.equal(confirmedDeletes(f).length, 0)
+    assert.equal(await f.page.getByRole('alertdialog').count(), 0)
+    assert.equal(f.state.dialogs, 0)
+  })
+  await check('UI-D02 履歴ありの明示承認で関連進捗と問題を削除', 'admin', 'delete-history', async f => {
+    await f.page.setViewportSize({ width: 390, height: 900 })
+    await manage(f.page)
+    await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await f.page.getByText('この問題に紐づく学習進捗も削除され、元に戻せません', { exact: true }).waitFor()
+    await assertNoOverflow(f.page)
+    await f.page.screenshot({ path: `${screenshotDir}/delete-warning-390.png`, fullPage: true })
+    await approveDelete(f.page)
+    await f.page.getByText('問題を削除しました。', { exact: true }).waitFor()
+    assert.equal(f.state.questions.length, 0)
+    assert.equal(f.state.progress.length, 0)
+    assert.equal(confirmedDeletes(f).length, 1)
+  })
+  await check('UI-D03 履歴取得失敗は削除ボタン無効・キャンセル可能', 'admin', 'delete-preview-error', async f => {
+    await manage(f.page)
+    await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await f.page.getByRole('alertdialog').getByRole('alert').waitFor()
+    assert.equal(await f.page.getByRole('button', { name: 'はい、削除する', exact: true }).isDisabled(), true)
+    await f.page.getByRole('button', { name: 'いいえ', exact: true }).click()
+    assert.equal(confirmedDeletes(f).length, 0)
+    assert.equal(f.state.progress.length, 1)
+  })
+  await check('UI-D04 確認後の履歴追加は警告を出し再確認まで削除しない', 'admin', 'delete-race', async f => {
+    await manage(f.page)
+    await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await approveDelete(f.page)
+    await f.page.getByText('この問題に紐づく学習進捗も削除され、元に戻せません', { exact: true }).waitFor()
+    assert.equal(f.state.questions.length, 1)
+    assert.equal(f.state.progress.length, 1)
+    assert.equal(confirmedDeletes(f).length, 1)
+    await approveDelete(f.page)
+    await f.page.getByText('問題を削除しました。', { exact: true }).waitFor()
+    assert.equal(f.state.questions.length, 0)
+    assert.equal(f.state.progress.length, 0)
+  })
+  await check('UI-D05 削除中の二重送信防止', 'admin', 'slow-delete', async f => {
+    await manage(f.page)
+    await f.page.getByRole('button', { name: `${q.title}を削除`, exact: true }).click()
+    await approveDelete(f.page)
+    await f.page.getByRole('button', { name: '削除中...', exact: true }).waitFor()
+    assert.equal(await f.page.getByRole('button', { name: '削除中...', exact: true }).isDisabled(), true)
+    assert.equal(await f.page.getByRole('button', { name: 'いいえ', exact: true }).isDisabled(), true)
+    f.state.finishDelete()
+    await f.page.getByText('問題を削除しました。', { exact: true }).waitFor()
+    assert.equal(confirmedDeletes(f).length, 1)
   })
   console.log(JSON.stringify({ environment: 'local browser + API mocks; no real DB', pass: report.filter(r => r.result === 'pass').length, fail: report.filter(r => r.result === 'fail').length }))
   process.exitCode = report.some(r => r.result === 'fail') ? 1 : 0

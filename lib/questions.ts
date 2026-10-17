@@ -19,6 +19,7 @@ export type QuestionForm = {
 }
 
 type Client = Pick<SupabaseClient, 'from'>
+type DeletionClient = Pick<SupabaseClient, 'rpc'>
 const columns = 'id,title,question_text,answer_code,explanation,category,created_at'
 
 export function isCategory(value: unknown): value is Category {
@@ -78,7 +79,8 @@ export function questionErrorMessage(error: unknown): string {
   if (code === '42501' || code === 'PGRST301' || code === 'PGRST303') {
     return '操作する権限を確認できません。権限情報を更新するか、もう一度ログインしてください。'
   }
-  if (code === '23503') return '学習履歴がある問題は削除できません。'
+  if (code === '23503') return '関連データとの整合性を確認できないため、削除を中止しました。'
+  if (code === 'P0002') return '対象の問題を変更できませんでした。権限や一覧を確認してください。'
   // DBの内部エラー・ヒント・入力データを画面やコンソールへ出さない。
   if (error instanceof Error && !('code' in error) && [
     'カテゴリとすべての入力項目を確認してください。',
@@ -108,9 +110,26 @@ export async function saveQuestion(client: Client, form: QuestionForm, id: strin
   return readQuestion(data)
 }
 
-export async function deleteQuestion(client: Client, id: string, signal: AbortSignal): Promise<void> {
-  const { data, error } = await client.from('questions').delete().eq('id', id)
-    .select('id').abortSignal(signal).maybeSingle()
+export type QuestionDeletion = { hasProgress: boolean; deleted: boolean }
+
+async function requestQuestionDeletion(client: DeletionClient, id: string, signal: AbortSignal, confirm: boolean, deleteProgress: boolean): Promise<QuestionDeletion> {
+  const { data, error } = await client.rpc('delete_question_with_progress', {
+    p_question_id: id, p_confirm: confirm, p_delete_progress: deleteProgress,
+  }).abortSignal(signal).maybeSingle()
   if (error) throw error
-  if (!data || data.id !== id) throw new Error('対象の問題を変更できませんでした。権限や一覧を確認してください。')
+  const row = data && typeof data === 'object' ? data as Record<string, unknown> : null
+  if (!row || row.question_id !== id || typeof row.has_progress !== 'boolean'
+    || typeof row.deleted !== 'boolean' || (!confirm && row.deleted)
+    || (confirm && !row.deleted && (!row.has_progress || deleteProgress))) {
+    throw new Error('対象の問題を変更できませんでした。権限や一覧を確認してください。')
+  }
+  return { hasProgress: row.has_progress, deleted: row.deleted }
+}
+
+export async function inspectQuestionDeletion(client: DeletionClient, id: string, signal: AbortSignal): Promise<QuestionDeletion> {
+  return requestQuestionDeletion(client, id, signal, false, false)
+}
+
+export async function deleteQuestion(client: DeletionClient, id: string, signal: AbortSignal, deleteProgress = false): Promise<QuestionDeletion> {
+  return requestQuestionDeletion(client, id, signal, true, deleteProgress)
 }
