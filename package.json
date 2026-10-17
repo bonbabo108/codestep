@@ -11,8 +11,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit --incremental false --noUnusedLocals --noUnusedParameters",
-    "typecheck": "tsc --noEmit --incremental false",
+    "lint": "eslint . --max-warnings 0",
+    "typecheck": "tsc --noEmit --incremental false --noUnusedLocals --noUnusedParameters",
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
@@ -34,6 +34,8 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@typescript-eslint/parser": "8.71.2",
+    "eslint": "10.13.0",
     "postcss": "^8.5",
     "tailwindcss": "^4.3.3",
     "typescript": "5.7.3"
