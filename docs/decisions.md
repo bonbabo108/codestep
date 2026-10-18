@@ -182,3 +182,13 @@ Google Sheets全5シートを読取。外部シートは変更せず、design-re
 2026-10-18ローカルでワークフローと同じ順のnpm run lint→npm run typecheck→npm testが終了コード0、58成功/0失敗/0省略。YAML構文と実行順/Node24/権限/失敗を無視しない設定の静的確認も成功。既存のNode MODULE_TYPELESS_PACKAGE_JSON警告は残るがテスト失敗ではなく、今回変更しない。ビルド/画面/実DB試験は変更対象外のため再実行しない。
 
 既存run39031564825のESLint単独成功を読取APIで確認したが、新しい3検査のActions成功とは扱わない。現HEADはd950f3f、変更は未コミット/未pushで、新設定のGitHub Actions実行は未実施。pushはAGENTS.mdにより別途明示承認が必要。対象はcodex/admin-rls-portfolioのみで、既存連携によるVercel Preview自動更新を伴う。本番/main/DB/設定変更や、Actions成功を待つデプロイ制御は今回追加しない。既存の未コミット資料/画像は保持する。
+
+## 2026-10-18 ESLint第1段階：基本3ルール追加（未コミット）
+
+.eslintrc.jsonへno-constant-binary-expression/no-unsafe-finally/prefer-constをerrorで追加し、既存no-debuggerを維持。eslint.config.mjsのJSON読込形式/検査対象/除外、依存、アプリ/UI/DB/SQL/既存58テスト/Actionsを変更しない。AI生成コードの意味のない条件式・finallyによる例外/戻り値の上書き・不必要なletを早期検出するため。
+
+成功：npm run lint（警告/エラー0）→npm run typecheck→npm test（58成功/失敗0/取消0/省略0）。4ルールの意図的な違反をインメモリで検出し、正常例の成功も確認。例示のコードはファイル化せず自動修正なし。既存のNodeモジュール種別警告は残るが、ルールを緩めたりアプリを変更したりしていない。
+
+本番/検証用の.envを複製せず、既存依存を参照するGit外の隔離コピーで、ダミー127.0.0.1接続と架空公開キーによるnpm run build -- --webpackが終了コード0、全7静的ページ生成成功。元のnext-env.d.tsを含む追跡ファイル全て（意図した.eslintrc.jsonを除く）が開始時のSHA-256と一致した後、判断/テスト記録へ本節だけ追記。実ブラウザ/実DB試験と新ルールのGitHub Actions実行は未実施。既存未コミット資料/画像は保持。コミット/push/デプロイ/本番・staging変更なし。
+
+次のReact Hooks段階は未着手。プラグインのESLint10互換性確認が必要。依存配列やEffect修正は認証・再取得・保存復元へ影響するため、警告回避だけの機械的変更はせず関連回帰で確認する。現lintのmax-warnings0ではwarnもCI失敗になる。

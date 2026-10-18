@@ -1,5 +1,8 @@
 {
   "rules": {
-    "no-debugger": "error"
+    "no-debugger": "error",
+    "no-constant-binary-expression": "error",
+    "no-unsafe-finally": "error",
+    "prefer-const": "error"
   }
 }
