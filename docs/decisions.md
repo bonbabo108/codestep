@@ -174,3 +174,11 @@ Google Sheets全5シートを読取。外部シートは変更せず、design-re
 - 実stagingに接続する隔離ローカル本番ビルド＋Chromeでも、PC/390pxの警告、取消後の問題1/関連進捗2不変、再確認後の両方削除、履歴なしUI削除が成功。ネイティブdialog0/未処理pageerror0。29クライアントJSに秘密キー/テストパスワード/本番参照IDなしを検査。試験セッションはlocalスコープで終了するようハーネスを修正し、別の利用中セッションを巻き込まない。
 - 後片付けと別のREAD ONLY監査で、開始時の既存4問題/3profile/4進捗の全行・RLS/ACL/FK/デモ管理者メタデータ不変、試験問題0/試験トリガー0を確認した。これは前回の3/2/3ではなく、ユーザー操作後の新しい開始値。本番/Auth/main/Production/TodoApp/課金/commit/pushなし。stagingの新RPCは残すが、Previewはac4692bの旧コードで別途push承認が必要。
 - 最終確認で保護対象12ファイルがHEADと一致し、以前のREADME/公開判断の未コミット差分も変更していない。限定機密パターン0/ローカルリンク欠落0/承認SQLハッシュ一致/ステージ0件、diff --checkと生成ファイル復元後の型検査成功、試験ポート3117/3126の待受なし。準備段階のハーネスは既定のsignOutスコープだったため、以降はlocalへ修正した。同じテストアカウントの既存セッションでは再ログインが必要になる可能性があるが、管理者フラグは保持している。
+
+## 2026-10-18 既存の型チェック・58テストをActionsへ追加（ローカル検証済み）
+
+.github/workflows/lint.ymlの既存Run ESLintの後ろにCheck TypeScript types（npm run typecheck）、Run tests（npm test）の2ステップだけを追加。Node24、npm ci、発火条件、contents:read、10分上限、既存のESLintを維持。continue-on-error等で検査を緩めず、前段の失敗時は後段検査を実行しない既定の挙動を使う。アプリ/画面/依存/型設定/58テスト/DB/Auth/環境値は変更しない。
+
+2026-10-18ローカルでワークフローと同じ順のnpm run lint→npm run typecheck→npm testが終了コード0、58成功/0失敗/0省略。YAML構文と実行順/Node24/権限/失敗を無視しない設定の静的確認も成功。既存のNode MODULE_TYPELESS_PACKAGE_JSON警告は残るがテスト失敗ではなく、今回変更しない。ビルド/画面/実DB試験は変更対象外のため再実行しない。
+
+既存run39031564825のESLint単独成功を読取APIで確認したが、新しい3検査のActions成功とは扱わない。現HEADはd950f3f、変更は未コミット/未pushで、新設定のGitHub Actions実行は未実施。pushはAGENTS.mdにより別途明示承認が必要。対象はcodex/admin-rls-portfolioのみで、既存連携によるVercel Preview自動更新を伴う。本番/main/DB/設定変更や、Actions成功を待つデプロイ制御は今回追加しない。既存の未コミット資料/画像は保持する。

@@ -341,3 +341,11 @@ release-readiness.mdを公開判断の入口とする。新しい本番SQLは最
 途中の失敗：RPC応答の型をunknownとして検査する修正、モック取消試験のダイアログunmount待ち追加、試験進捗INSERTから禁止列updated_atを除去（読み取りで試験進捗0を確認後に残作業だけ再開）。いずれも権限/RLS緩和で解消していない。関連成功以外の全テストは再実行していない。
 
 実DBハーネスはscripts/question-deletion-staging-check.mjs（明示opt-in、staging固定、0600設定、IDマニフェスト限定）。今回のマニフェストは/tmp/codestep-question-deletion-test-state.jsonで片付け済み。古いmanifest/setupやフラグ解除付き復元処理を再実行しない。新しい試験には新規スナップショットを用意する。実UI画像はGit外の/tmp/codestep-delete-real-warning-pc.png / mobile.png。認証情報を画像・資料・ログへ転記しない。
+
+## 2026-10-18 既存の型チェック・58テストをActionsへ追加（ローカル検証済み）
+
+.github/workflows/lint.ymlの既存Run ESLintの後ろにCheck TypeScript types（npm run typecheck）、Run tests（npm test）の2ステップだけを追加。Node24、npm ci、発火条件、contents:read、10分上限、既存のESLintを維持。continue-on-error等で検査を緩めず、前段の失敗時は後段検査を実行しない既定の挙動を使う。アプリ/画面/依存/型設定/58テスト/DB/Auth/環境値は変更しない。
+
+2026-10-18ローカルでワークフローと同じ順のnpm run lint→npm run typecheck→npm testが終了コード0、58成功/0失敗/0省略。YAML構文と実行順/Node24/権限/失敗を無視しない設定の静的確認も成功。既存のNode MODULE_TYPELESS_PACKAGE_JSON警告は残るがテスト失敗ではなく、今回変更しない。ビルド/画面/実DB試験は変更対象外のため再実行しない。
+
+既存run39031564825のESLint単独成功を読取APIで確認したが、新しい3検査のActions成功とは扱わない。現HEADはd950f3f、変更は未コミット/未pushで、新設定のGitHub Actions実行は未実施。pushはAGENTS.mdにより別途明示承認が必要。対象はcodex/admin-rls-portfolioのみで、既存連携によるVercel Preview自動更新を伴う。本番/main/DB/設定変更や、Actions成功を待つデプロイ制御は今回追加しない。既存の未コミット資料/画像は保持する。
