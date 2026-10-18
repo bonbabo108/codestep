@@ -359,3 +359,24 @@ release-readiness.mdを公開判断の入口とする。新しい本番SQLは最
 本番/検証用の.envを複製せず、既存依存を参照するGit外の隔離コピーで、ダミー127.0.0.1接続と架空公開キーによるnpm run build -- --webpackが終了コード0、全7静的ページ生成成功。元のnext-env.d.tsを含む追跡ファイル全て（意図した.eslintrc.jsonを除く）が開始時のSHA-256と一致した後、判断/テスト記録へ本節だけ追記。実ブラウザ/実DB試験と新ルールのGitHub Actions実行は未実施。既存未コミット資料/画像は保持。コミット/push/デプロイ/本番・staging変更なし。
 
 次のReact Hooks段階は未着手。プラグインのESLint10互換性確認が必要。依存配列やEffect修正は認証・再取得・保存復元へ影響するため、警告回避だけの機械的変更はせず関連回帰で確認する。現lintのmax-warnings0ではwarnもCI失敗になる。
+
+
+## 2026-10-18 ESLint第2段階：React Hooks正式導入の検証
+
+対象：開発依存eslint-plugin-react-hooks 7.1.1固定、既存JSON/flat config連携へrules-of-hooks / exhaustive-depsをerrorで追加。既存4ルール、files/ignores、アプリ/テスト/Actionsを維持。
+
+| 検証 | 結果 |
+| --- | --- |
+| npm run lint | 成功。既存と同じ32ファイル、エラー0・警告0 |
+| npm run typecheck | 成功。終了コード0 |
+| npm test | 成功。既存58件、失敗0・取消0・省略0 |
+| 正式設定＋インメモリの条件分岐内useState | 成功。react-hooks/rules-of-hooksがerrorを検出 |
+| 正式設定＋インメモリのuseEffect依存不足 | 成功。react-hooks/exhaustive-depsがerrorを検出 |
+| 正常なHooks例＋既存4ルールの有効性 | 成功。正常例指摘0件、既存4ルールはerrorのまま |
+| 隔離コピーでnpm run build -- --webpack | 成功。終了コード0、7静的ページ生成。環境ファイルなし・ダミー接続のみ |
+| lockfileの既存version/integrity照合 | 成功。変更0。新規はプラグインと必要な間接開発依存3件 |
+| 開始時105ファイルの照合（記録追記前） | 成功。変化は.eslintrc.json/eslint.config.mjs/package.json/package-lock.jsonのみ。既存未コミット作業も保持 |
+
+既存のNodeモジュール種別警告、隔離ビルドでの複数lockfileによるNextルート推定警告は観測したが検査は成功。ルール緩和・自動修正・useEffect依存配列の変更なし。記録は既存2文書へ追記のみ。
+
+未実施：Turbopack経路、実ブラウザ/実DB試験、今回設定のGitHub Actions実行。静的検査と既存モック等の58テストは、実DB/Auth/RLSや通信競合の動作保証ではない。アプリ未変更のため無関係な実環境試験は繰り返さない。コミット/push/デプロイは依頼により実施しない。

@@ -192,3 +192,18 @@ Google Sheets全5シートを読取。外部シートは変更せず、design-re
 本番/検証用の.envを複製せず、既存依存を参照するGit外の隔離コピーで、ダミー127.0.0.1接続と架空公開キーによるnpm run build -- --webpackが終了コード0、全7静的ページ生成成功。元のnext-env.d.tsを含む追跡ファイル全て（意図した.eslintrc.jsonを除く）が開始時のSHA-256と一致した後、判断/テスト記録へ本節だけ追記。実ブラウザ/実DB試験と新ルールのGitHub Actions実行は未実施。既存未コミット資料/画像は保持。コミット/push/デプロイ/本番・staging変更なし。
 
 次のReact Hooks段階は未着手。プラグインのESLint10互換性確認が必要。依存配列やEffect修正は認証・再取得・保存復元へ影響するため、警告回避だけの機械的変更はせず関連回帰で確認する。現lintのmax-warnings0ではwarnもCI失敗になる。
+
+
+## 2026-10-18 ESLint第2段階：React Hooksの2ルールを正式導入（ローカル完了）
+
+前回の互換性調査・指摘0件の結果を再利用し、eslint-plugin-react-hooksを開発依存の7.1.1に完全固定。ESLint10.13.0の既存flat configでプラグインを登録し、引き続き.eslintrc.jsonからrulesを読み込む。react-hooks/rules-of-hooks / react-hooks/exhaustive-depsの2件だけをerrorで追加した。推奨プリセット全体は使わず、既存4ルール・検査対象・除外・max-warnings0を維持。
+
+現状の不具合修正ではなく、今後AI/人間が追加する条件分岐内のHookやEffectの依存不足を早期検出する予防策。0件だったため既存の認証・問題取得・回答保存・進捗復元処理や依存配列を変更せず導入できた。HooksはReactの状態や処理を扱う仕組みで、呼出順序の違反と古い値を参照し続ける問題を検査する。静的検査だけで通信順序・RLS・実画面の動作を保証するものではない。
+
+npm installはignore-scripts/no-audit/no-fund付きで実施。既存lockfile全パッケージのversion/integrityは不変。追加は指定プラグインと必要な間接開発依存3件のみ。React/Next/TypeScript/ESLint本体・アプリ・UI・Auth・SQL・DB・Actions・58テストは変更なし。
+
+成功：npm run lint（32ファイル、警告/エラー0）→npm run typecheck→npm test（58成功/失敗0/取消0/省略0）。正式設定を使うlintTextで条件分岐内useStateをrules-of-hooksが、依存配列にvalueがないuseEffectをexhaustive-depsがそれぞれerrorで検出。正常例は指摘0件。自動修正や試験用アプリファイル追加はしていない。
+
+.envを持ち込まないGit外の隔離コピーで、127.0.0.1のダミー接続先/架空公開キーによるnpm run build -- --webpackが終了コード0・7ページ生成成功。既存のNode MODULE_TYPELESS_PACKAGE_JSON警告と、隔離コピーの親にもバックアップlockfileがあることによるNextのルート推定警告を観測したが、いずれも成功を妨げず、このための無関係な設定変更はしない。webpack経路のビルド結果であり、今回Turbopack経路は未実施。
+
+記録追記前に開始時105ファイルのSHA-256を照合し、今回の設定/依存4ファイルだけが変化したことを確認。既存未コミット文書/画像とnext-env.d.tsを保持。その後は本節とtest-plan.mdの対応節だけ追記。実ブラウザ/実DB試験・今回設定のGitHub Actions実行は未実施。コミット/push/デプロイ/本番・staging変更なし。
