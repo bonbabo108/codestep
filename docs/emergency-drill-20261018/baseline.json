@@ -1,0 +1,2033 @@
+{
+  "project": {
+    "id": "ezjzgebehancbxqpgany",
+    "name": "codestep-staging",
+    "version": "17.11.0.003"
+  },
+  "observations": {
+    "R1": {
+      "read_only": "on",
+      "observed_at": "2026-10-18 09:53:08.403368+00",
+      "acl": [
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "id",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "name",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "name",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "answer_code",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "answer_code",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16486",
+          "grantor": "16388",
+          "column_name": "answer_code",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "category",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "category",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16486",
+          "grantor": "16388",
+          "column_name": "category",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "explanation",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "explanation",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16486",
+          "grantor": "16388",
+          "column_name": "explanation",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "question_text",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "question_text",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16486",
+          "grantor": "16388",
+          "column_name": "question_text",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "title",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "title",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16486",
+          "grantor": "16388",
+          "column_name": "title",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "is_completed",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "is_completed",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "question_id",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "submitted_code",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "submitted_code",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "updated_at",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "column",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "user_id",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "DELETE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "MAINTAIN"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16486",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "profiles",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "DELETE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "MAINTAIN"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16484",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "DELETE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16486",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "questions",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "DELETE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "INSERT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "MAINTAIN"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "REFERENCES"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "TRIGGER"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "TRUNCATE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16388",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "UPDATE"
+        },
+        {
+          "scope": "table",
+          "grantee": "16485",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        },
+        {
+          "scope": "table",
+          "grantee": "16486",
+          "grantor": "16388",
+          "column_name": "",
+          "object_name": "user_progress",
+          "is_grantable": false,
+          "privilege_type": "SELECT"
+        }
+      ]
+    },
+    "R2": {
+      "read_only": "on",
+      "tables": [
+        {
+          "rls": true,
+          "owner": "postgres",
+          "relname": "profiles",
+          "force_rls": false
+        },
+        {
+          "rls": true,
+          "owner": "postgres",
+          "relname": "questions",
+          "force_rls": false
+        },
+        {
+          "rls": true,
+          "owner": "postgres",
+          "relname": "user_progress",
+          "force_rls": false
+        }
+      ],
+      "policies": [
+        {
+          "cmd": "INSERT",
+          "qual": null,
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "profiles",
+          "permissive": "PERMISSIVE",
+          "policyname": "Insert own profile",
+          "with_check": "(( SELECT auth.uid() AS uid) = id)"
+        },
+        {
+          "cmd": "SELECT",
+          "qual": "(( SELECT auth.uid() AS uid) = id)",
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "profiles",
+          "permissive": "PERMISSIVE",
+          "policyname": "Read own profile",
+          "with_check": null
+        },
+        {
+          "cmd": "UPDATE",
+          "qual": "(( SELECT auth.uid() AS uid) = id)",
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "profiles",
+          "permissive": "PERMISSIVE",
+          "policyname": "Update own profile",
+          "with_check": "(( SELECT auth.uid() AS uid) = id)"
+        },
+        {
+          "cmd": "SELECT",
+          "qual": "true",
+          "roles": [
+            "public"
+          ],
+          "tablename": "questions",
+          "permissive": "PERMISSIVE",
+          "policyname": "Anyone can read questions",
+          "with_check": null
+        },
+        {
+          "cmd": "DELETE",
+          "qual": "((( SELECT auth.uid() AS uid) IS NOT NULL) AND COALESCE((( SELECT auth.jwt() AS jwt) @> '{\"app_metadata\": {\"codestep_admin\": true}}'::jsonb), false))",
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "questions",
+          "permissive": "PERMISSIVE",
+          "policyname": "CodeStep admins delete questions",
+          "with_check": null
+        },
+        {
+          "cmd": "INSERT",
+          "qual": null,
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "questions",
+          "permissive": "PERMISSIVE",
+          "policyname": "CodeStep admins insert questions",
+          "with_check": "((( SELECT auth.uid() AS uid) IS NOT NULL) AND COALESCE((( SELECT auth.jwt() AS jwt) @> '{\"app_metadata\": {\"codestep_admin\": true}}'::jsonb), false))"
+        },
+        {
+          "cmd": "UPDATE",
+          "qual": "((( SELECT auth.uid() AS uid) IS NOT NULL) AND COALESCE((( SELECT auth.jwt() AS jwt) @> '{\"app_metadata\": {\"codestep_admin\": true}}'::jsonb), false))",
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "questions",
+          "permissive": "PERMISSIVE",
+          "policyname": "CodeStep admins update questions",
+          "with_check": "((( SELECT auth.uid() AS uid) IS NOT NULL) AND COALESCE((( SELECT auth.jwt() AS jwt) @> '{\"app_metadata\": {\"codestep_admin\": true}}'::jsonb), false))"
+        },
+        {
+          "cmd": "INSERT",
+          "qual": null,
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "user_progress",
+          "permissive": "PERMISSIVE",
+          "policyname": "Insert own progress",
+          "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
+        },
+        {
+          "cmd": "SELECT",
+          "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "user_progress",
+          "permissive": "PERMISSIVE",
+          "policyname": "Read own progress",
+          "with_check": null
+        },
+        {
+          "cmd": "UPDATE",
+          "qual": "(( SELECT auth.uid() AS uid) = user_id)",
+          "roles": [
+            "authenticated"
+          ],
+          "tablename": "user_progress",
+          "permissive": "PERMISSIVE",
+          "policyname": "Update own progress",
+          "with_check": "(( SELECT auth.uid() AS uid) = user_id)"
+        }
+      ],
+      "policy_fingerprint": "c65a21b9b4319768ec1cd689eaac0cc7"
+    },
+    "R3": {
+      "read_only": "on",
+      "functions": [
+        {
+          "acl": [
+            {
+              "grantee": "16388",
+              "grantor": "16388",
+              "is_grantable": false,
+              "privilege_type": "EXECUTE"
+            },
+            {
+              "grantee": "16485",
+              "grantor": "16388",
+              "is_grantable": false,
+              "privilege_type": "EXECUTE"
+            }
+          ],
+          "args": "uuid, boolean, boolean",
+          "name": "delete_question_with_progress",
+          "owner": "postgres",
+          "config": [
+            "search_path=\"\"",
+            "lock_timeout=5s"
+          ],
+          "schema": "codestep_private",
+          "definer": true,
+          "body_sha256": "75388e66aaa9dcec71a2b8b39276608ff3631cba8e7016982ffaf9d592417758",
+          "anon_execute": false,
+          "service_execute": false,
+          "definition_sha256": "87f2aab0c5ce1e704cb3f2b415ab32025407b2247c3e806012480a5747ef5b06",
+          "authenticated_execute": true
+        },
+        {
+          "acl": [
+            {
+              "grantee": "16388",
+              "grantor": "16388",
+              "is_grantable": false,
+              "privilege_type": "EXECUTE"
+            },
+            {
+              "grantee": "16485",
+              "grantor": "16388",
+              "is_grantable": false,
+              "privilege_type": "EXECUTE"
+            }
+          ],
+          "args": "uuid, boolean, boolean",
+          "name": "delete_question_with_progress",
+          "owner": "postgres",
+          "config": [
+            "search_path=\"\""
+          ],
+          "schema": "public",
+          "definer": false,
+          "body_sha256": "9ed7d947ed84468e22784e1afb1bd0c96f53b0aa9294c5d5894d0e0677fd8214",
+          "anon_execute": false,
+          "service_execute": false,
+          "definition_sha256": "d0351e1eddb7bbc60beb5cdc43999fba58c71475c0906f11acb66d9f15f733bd",
+          "authenticated_execute": true
+        }
+      ]
+    },
+    "R4": {
+      "read_only": "on",
+      "roles": [
+        {
+          "oid": "16484",
+          "rolname": "anon",
+          "rolsuper": false,
+          "rolbypassrls": false
+        },
+        {
+          "oid": "16485",
+          "rolname": "authenticated",
+          "rolsuper": false,
+          "rolbypassrls": false
+        },
+        {
+          "oid": "16388",
+          "rolname": "postgres",
+          "rolsuper": false,
+          "rolbypassrls": true
+        },
+        {
+          "oid": "16486",
+          "rolname": "service_role",
+          "rolsuper": false,
+          "rolbypassrls": true
+        }
+      ],
+      "memberships": []
+    },
+    "R5": {
+      "read_only": "on",
+      "observed_at": "2026-10-18 09:54:47.923995+00",
+      "estimates": [
+        {
+          "table": "users",
+          "schema": "auth",
+          "last_analyze": null,
+          "estimated_rows": 6
+        },
+        {
+          "table": "questions",
+          "schema": "public",
+          "last_analyze": null,
+          "estimated_rows": 3
+        },
+        {
+          "table": "profiles",
+          "schema": "public",
+          "last_analyze": null,
+          "estimated_rows": 3
+        },
+        {
+          "table": "user_progress",
+          "schema": "public",
+          "last_analyze": null,
+          "estimated_rows": 3
+        }
+      ],
+      "other_active_connections": 0,
+      "other_transactions": 0
+    },
+    "R6": {
+      "acl_fingerprint": "34359cdf23e85be0c1309b1280d24020"
+    }
+  },
+  "readSql": {
+    "R1": {
+      "sql": "BEGIN TRANSACTION READ ONLY;\nWITH acl AS (\n  SELECT 'table' AS scope, c.relname::text AS object_name, ''::text AS column_name,\n    a.grantor, a.grantee, a.privilege_type, a.is_grantable\n  FROM pg_class c CROSS JOIN LATERAL\n    aclexplode(COALESCE(c.relacl, acldefault('r', c.relowner))) a\n  WHERE c.oid IN ('public.questions'::regclass,\n    'public.profiles'::regclass, 'public.user_progress'::regclass)\n  UNION ALL\n  SELECT 'column', c.relname::text, x.attname::text,\n    a.grantor, a.grantee, a.privilege_type, a.is_grantable\n  FROM pg_class c JOIN pg_attribute x ON x.attrelid=c.oid\n  CROSS JOIN LATERAL aclexplode(x.attacl) a\n  WHERE c.oid IN ('public.questions'::regclass,\n    'public.profiles'::regclass, 'public.user_progress'::regclass)\n    AND x.attnum>0 AND NOT x.attisdropped\n)\nSELECT current_setting('transaction_read_only') AS read_only,\n  CURRENT_TIMESTAMP AS observed_at, jsonb_agg(to_jsonb(acl)\n    ORDER BY scope,object_name,column_name,grantor,grantee,privilege_type) AS acl\nFROM acl;\nCOMMIT;",
+      "sha256": "a2b82869de95fe770cd24fdca4363879b56164b6bb7505663f8d42a3b0d62b81"
+    },
+    "R2": {
+      "sql": "BEGIN TRANSACTION READ ONLY;\nWITH policies AS (\n  SELECT tablename,policyname,permissive,roles,cmd,qual,with_check\n  FROM pg_policies WHERE schemaname='public'\n    AND tablename IN ('questions','profiles','user_progress')\n), tables AS (\n  SELECT relname,pg_get_userbyid(relowner) AS owner,\n    relrowsecurity AS rls,relforcerowsecurity AS force_rls\n  FROM pg_class WHERE oid IN ('public.questions'::regclass,\n    'public.profiles'::regclass,'public.user_progress'::regclass)\n)\nSELECT current_setting('transaction_read_only') AS read_only,\n  (SELECT jsonb_agg(to_jsonb(t) ORDER BY relname) FROM tables t) AS tables,\n  (SELECT jsonb_agg(to_jsonb(p) ORDER BY tablename,policyname)\n    FROM policies p) AS policies,\n  (SELECT md5(jsonb_agg(to_jsonb(p) ORDER BY tablename,policyname)::text)\n    FROM policies p) AS policy_fingerprint;\nCOMMIT;",
+      "sha256": "eb79545fe0957185dcb1be21f84d58de8ff73ec548e7fa1e8a895dd0ee325312"
+    },
+    "R3": {
+      "sql": "BEGIN TRANSACTION READ ONLY;\nSELECT current_setting('transaction_read_only') AS read_only,\n  COALESCE(jsonb_agg(jsonb_build_object(\n    'schema',n.nspname,'name',p.proname,'args',oidvectortypes(p.proargtypes),\n    'owner',pg_get_userbyid(p.proowner),'definer',p.prosecdef,'config',p.proconfig,\n    'body_sha256',encode(sha256(convert_to(p.prosrc,'UTF8')),'hex'),\n    'definition_sha256',encode(sha256(convert_to(pg_get_functiondef(p.oid),'UTF8')),'hex'),\n    'acl',(SELECT jsonb_agg(to_jsonb(a) ORDER BY grantor,grantee,privilege_type)\n      FROM aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a),\n    'anon_execute',has_function_privilege('anon',p.oid,'EXECUTE'),\n    'authenticated_execute',has_function_privilege('authenticated',p.oid,'EXECUTE'),\n    'service_execute',has_function_privilege('service_role',p.oid,'EXECUTE')\n  ) ORDER BY n.nspname,p.proname,p.oid),'[]'::jsonb) AS functions\nFROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace\nWHERE n.nspname IN ('public','codestep_private')\n  AND p.proname='delete_question_with_progress';\nCOMMIT;",
+      "sha256": "67147b621fb4b5a96129fd933ccca73eba5c9263aba53346bca49c78b70c85f3"
+    },
+    "R4": {
+      "sql": "BEGIN TRANSACTION READ ONLY;\nWITH roles AS (\n  SELECT oid,rolname,rolsuper,rolbypassrls FROM pg_roles\n  WHERE rolname IN ('anon','authenticated','service_role','postgres')\n)\nSELECT current_setting('transaction_read_only') AS read_only,\n  (SELECT jsonb_agg(to_jsonb(r) ORDER BY rolname) FROM roles r) AS roles,\n  (SELECT COALESCE(jsonb_agg(jsonb_build_object(\n    'member',pg_get_userbyid(m.member),'role',pg_get_userbyid(m.roleid),\n    'inherit',m.inherit_option,'set',m.set_option)),'[]'::jsonb)\n    FROM pg_auth_members m WHERE m.member IN\n      (SELECT oid FROM roles WHERE rolname IN ('anon','authenticated'))) AS memberships;\nCOMMIT;",
+      "sha256": "a5a4d32791c67c8874c1ab84ab03e81c7c71e73d0b14d55c9cb8e42dae6ff2be"
+    },
+    "R5": {
+      "sql": "BEGIN TRANSACTION READ ONLY;\nSELECT current_setting('transaction_read_only') AS read_only,\n  CURRENT_TIMESTAMP AS observed_at,\n  (SELECT jsonb_agg(jsonb_build_object('schema',schemaname,'table',relname,\n    'estimated_rows',n_live_tup,'last_analyze',last_analyze))\n    FROM pg_stat_all_tables\n    WHERE (schemaname='public' AND relname IN ('questions','profiles','user_progress'))\n       OR (schemaname='auth' AND relname='users')) AS estimates,\n  (SELECT count(*) FROM pg_stat_activity\n    WHERE datname=current_database() AND backend_type='client backend'\n      AND pid<>pg_backend_pid() AND state='active') AS other_active_connections,\n  (SELECT count(*) FROM pg_stat_activity\n    WHERE datname=current_database() AND backend_type='client backend'\n      AND pid<>pg_backend_pid() AND xact_start IS NOT NULL) AS other_transactions;\nCOMMIT;",
+      "sha256": "715064b32ede39458273db0ded17da67b24db294c41be7857214bfe78c7125b2"
+    },
+    "R6": {
+      "sql": "BEGIN TRANSACTION READ ONLY;\nWITH acl AS (\n  SELECT 'table' AS scope, c.relname::text AS object_name, ''::text AS column_name,\n    a.grantor, a.grantee, a.privilege_type, a.is_grantable\n  FROM pg_class c CROSS JOIN LATERAL\n    aclexplode(COALESCE(c.relacl, acldefault('r', c.relowner))) a\n  WHERE c.oid IN ('public.questions'::regclass,\n    'public.profiles'::regclass, 'public.user_progress'::regclass)\n  UNION ALL\n  SELECT 'column', c.relname::text, x.attname::text,\n    a.grantor, a.grantee, a.privilege_type, a.is_grantable\n  FROM pg_class c JOIN pg_attribute x ON x.attrelid=c.oid\n  CROSS JOIN LATERAL aclexplode(x.attacl) a\n  WHERE c.oid IN ('public.questions'::regclass,\n    'public.profiles'::regclass, 'public.user_progress'::regclass)\n    AND x.attnum>0 AND NOT x.attisdropped\n  UNION ALL\n  SELECT 'function', n.nspname||'.'||p.proname, '',\n    a.grantor, a.grantee, a.privilege_type, a.is_grantable\n  FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace\n  CROSS JOIN LATERAL\n    aclexplode(COALESCE(p.proacl,acldefault('f',p.proowner))) a\n  WHERE n.nspname IN ('public','codestep_private')\n    AND p.proname='delete_question_with_progress'\n)\n  SELECT md5(jsonb_agg(to_jsonb(acl)\n    ORDER BY scope COLLATE \"C\",object_name COLLATE \"C\",\n      column_name COLLATE \"C\",grantor,grantee,\n      privilege_type COLLATE \"C\",is_grantable)::text)\n  AS acl_fingerprint FROM acl;\nCOMMIT;",
+      "sha256": "2706dd49ba745e7789e6bb6c1f669466f88c4d517acd0506bd55feb2a86a7663"
+    }
+  },
+  "preview": {
+    "id": "dpl_2nBqeFzXfoceasoEfy3dYBW8hxXb",
+    "url": "codestep-bywtked27-touya1896-7818s-projects.vercel.app",
+    "readyState": "READY",
+    "target": null,
+    "currentDatabaseConnectionVerified": false,
+    "connectionEvidence": "Previously verified staging connection in existing project records; no environment values fetched this turn."
+  },
+  "previousProductionObservation": {
+    "timeJst": "2026-10-18 18:25",
+    "rpcAbsent": true,
+    "questionsBrowserSelectOnly": true,
+    "requeriedThisTurn": false
+  },
+  "previousRoutesObservation": {
+    "read_only": "on",
+    "observed_at": "2026-10-18T09:40:47.342235+00:00",
+    "foreign_keys": [
+      {
+        "name": "user_progress_question_id_fkey",
+        "to_table": "questions",
+        "on_delete": "a",
+        "on_update": "a",
+        "from_table": "user_progress"
+      }
+    ],
+    "app_functions": [
+      {
+        "kind": "f",
+        "name": "delete_question_with_progress",
+        "owner": "postgres",
+        "schema": "codestep_private",
+        "language": "plpgsql",
+        "body_sha256": "75388e66aaa9dcec71a2b8b39276608ff3631cba8e7016982ffaf9d592417758",
+        "identity_args": "p_question_id uuid, p_confirm boolean, p_delete_progress boolean",
+        "extension_owned": false,
+        "security_definer": true,
+        "effective_execute": [
+          {
+            "role": "authenticated",
+            "allowed": true
+          },
+          {
+            "role": "anon",
+            "allowed": false
+          }
+        ],
+        "mentions_questions": true,
+        "has_dynamic_execute": false,
+        "mentions_deletion_rpc": false
+      },
+      {
+        "kind": "f",
+        "name": "delete_question_with_progress",
+        "owner": "postgres",
+        "schema": "public",
+        "language": "sql",
+        "body_sha256": "9ed7d947ed84468e22784e1afb1bd0c96f53b0aa9294c5d5894d0e0677fd8214",
+        "identity_args": "p_question_id uuid, p_confirm boolean, p_delete_progress boolean",
+        "extension_owned": false,
+        "security_definer": false,
+        "effective_execute": [
+          {
+            "role": "authenticated",
+            "allowed": true
+          },
+          {
+            "role": "anon",
+            "allowed": false
+          }
+        ],
+        "mentions_questions": false,
+        "has_dynamic_execute": false,
+        "mentions_deletion_rpc": true
+      }
+    ],
+    "other_schemas": [
+      "auth",
+      "codestep_private",
+      "extensions",
+      "graphql",
+      "graphql_public",
+      "pgbouncer",
+      "public",
+      "realtime",
+      "storage",
+      "supabase_migrations",
+      "vault"
+    ],
+    "role_ancestry": [
+      {
+        "role": "authenticator",
+        "ancestor": "service_role",
+        "can_set_role": true,
+        "inherited_now": false
+      },
+      {
+        "role": "authenticator",
+        "ancestor": "authenticated",
+        "can_set_role": true,
+        "inherited_now": false
+      },
+      {
+        "role": "authenticator",
+        "ancestor": "anon",
+        "can_set_role": true,
+        "inherited_now": false
+      }
+    ],
+    "user_triggers": [],
+    "cron_installed": false,
+    "question_rules": [],
+    "function_summary": [
+      {
+        "count": 4,
+        "nspname": "auth",
+        "definer_count": 0,
+        "non_extension_count": 4
+      },
+      {
+        "count": 1,
+        "nspname": "codestep_private",
+        "definer_count": 1,
+        "non_extension_count": 1
+      },
+      {
+        "count": 55,
+        "nspname": "extensions",
+        "definer_count": 0,
+        "non_extension_count": 6
+      },
+      {
+        "count": 1,
+        "nspname": "graphql_public",
+        "definer_count": 0,
+        "non_extension_count": 1
+      },
+      {
+        "count": 1,
+        "nspname": "pgbouncer",
+        "definer_count": 1,
+        "non_extension_count": 1
+      },
+      {
+        "count": 1,
+        "nspname": "public",
+        "definer_count": 0,
+        "non_extension_count": 1
+      },
+      {
+        "count": 18,
+        "nspname": "realtime",
+        "definer_count": 0,
+        "non_extension_count": 18
+      },
+      {
+        "count": 19,
+        "nspname": "storage",
+        "definer_count": 0,
+        "non_extension_count": 19
+      },
+      {
+        "count": 5,
+        "nspname": "vault",
+        "definer_count": 2,
+        "non_extension_count": 0
+      }
+    ],
+    "membership_edges": [
+      {
+        "member": "authenticator",
+        "set_option": true,
+        "admin_option": false,
+        "granted_role": "anon",
+        "inherit_option": false
+      },
+      {
+        "member": "authenticator",
+        "set_option": true,
+        "admin_option": false,
+        "granted_role": "authenticated",
+        "inherit_option": false
+      },
+      {
+        "member": "authenticator",
+        "set_option": true,
+        "admin_option": false,
+        "granted_role": "service_role",
+        "inherit_option": false
+      }
+    ],
+    "api_configuration": [
+      {
+        "role": "anon",
+        "value": "3s",
+        "setting": "statement_timeout",
+        "database": "ALL"
+      },
+      {
+        "role": "authenticated",
+        "value": "8s",
+        "setting": "statement_timeout",
+        "database": "ALL"
+      },
+      {
+        "role": "authenticator",
+        "value": "8s",
+        "setting": "statement_timeout",
+        "database": "ALL"
+      }
+    ],
+    "dependent_relations": [],
+    "api_session_settings": {
+      "db_schemas": null,
+      "pre_request": null,
+      "extra_search_path": null
+    }
+  },
+  "status": "Preparation only; no write, stop or recovery SQL executed.",
+  "reviewed_state": {
+    "policy_fingerprint": "c65a21b9b4319768ec1cd689eaac0cc7",
+    "normal_acl_fingerprint": "34359cdf23e85be0c1309b1280d24020",
+    "stopped_acl_fingerprint": "f79cd8a1d16d34bcf047510223162d1a",
+    "normal_acl_rows": [
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "id",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "name",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "name",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "answer_code",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "answer_code",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "answer_code",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "category",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "category",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "category",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "explanation",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "explanation",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "explanation",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "question_text",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "question_text",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "question_text",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "title",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "title",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "title",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "is_completed",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "is_completed",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "question_id",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "submitted_code",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "submitted_code",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "updated_at",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "user_id",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "function",
+        "object_name": "codestep_private.delete_question_with_progress",
+        "column_name": "",
+        "grantee": "16388",
+        "grantor": "16388",
+        "is_grantable": false,
+        "privilege_type": "EXECUTE"
+      },
+      {
+        "scope": "function",
+        "object_name": "codestep_private.delete_question_with_progress",
+        "column_name": "",
+        "grantee": "16485",
+        "grantor": "16388",
+        "is_grantable": false,
+        "privilege_type": "EXECUTE"
+      },
+      {
+        "scope": "function",
+        "object_name": "public.delete_question_with_progress",
+        "column_name": "",
+        "grantee": "16388",
+        "grantor": "16388",
+        "is_grantable": false,
+        "privilege_type": "EXECUTE"
+      },
+      {
+        "scope": "function",
+        "object_name": "public.delete_question_with_progress",
+        "column_name": "",
+        "grantee": "16485",
+        "grantor": "16388",
+        "is_grantable": false,
+        "privilege_type": "EXECUTE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "DELETE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "MAINTAIN"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "DELETE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "MAINTAIN"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16484",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "DELETE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "DELETE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "MAINTAIN"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      }
+    ],
+    "predicted_stopped_acl_rows": [
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "id",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "name",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "name",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "answer_code",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "category",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "explanation",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "question_text",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "title",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "is_completed",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "is_completed",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "question_id",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "submitted_code",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "submitted_code",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "updated_at",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "column",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "user_id",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "function",
+        "object_name": "codestep_private.delete_question_with_progress",
+        "column_name": "",
+        "grantee": "16388",
+        "grantor": "16388",
+        "is_grantable": false,
+        "privilege_type": "EXECUTE"
+      },
+      {
+        "scope": "function",
+        "object_name": "public.delete_question_with_progress",
+        "column_name": "",
+        "grantee": "16388",
+        "grantor": "16388",
+        "is_grantable": false,
+        "privilege_type": "EXECUTE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "DELETE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "MAINTAIN"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "profiles",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "DELETE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "MAINTAIN"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "table",
+        "object_name": "questions",
+        "column_name": "",
+        "grantor": "16388",
+        "grantee": "16484",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "scope": "table",
+        "object_name": "questions",
+        "column_name": "",
+        "grantor": "16388",
+        "grantee": "16485",
+        "privilege_type": "SELECT",
+        "is_grantable": false
+      },
+      {
+        "scope": "table",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "questions",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "DELETE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "INSERT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "MAINTAIN"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "REFERENCES"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "TRIGGER"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "TRUNCATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16388",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "UPDATE"
+      },
+      {
+        "scope": "table",
+        "grantee": "16485",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      },
+      {
+        "scope": "table",
+        "grantee": "16486",
+        "grantor": "16388",
+        "column_name": "",
+        "object_name": "user_progress",
+        "is_grantable": false,
+        "privilege_type": "SELECT"
+      }
+    ],
+    "function_definition_hashes": {
+      "codestep_private": "87f2aab0c5ce1e704cb3f2b415ab32025407b2247c3e806012480a5747ef5b06",
+      "public": "d0351e1eddb7bbc60beb5cdc43999fba58c71475c0906f11acb66d9f15f733bd"
+    },
+    "status": "Predicted stopped state only; never applied. SQL execution and rollback untested."
+  }
+}

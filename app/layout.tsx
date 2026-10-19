@@ -1,8 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import Header from '@/components/Header'
-import { AuthProvider } from '@/components/AuthProvider'
+import AppShell from '@/components/AppShell'
 
 export const metadata: Metadata = {
   title: 'CodeStep | 楽しく学ぶコーディング',
@@ -43,10 +42,7 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <body className="antialiased">
-        <AuthProvider>
-          <Header />
-          {children}
-        </AuthProvider>
+        <AppShell>{children}</AppShell>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>

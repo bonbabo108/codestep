@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { Code2, ArrowRight } from 'lucide-react'
-import { authenticate, authErrorMessage } from '@/lib/auth-actions'
+import { authenticate, authErrorMessage, confirmationRedirect, confirmationError, resendConfirmation } from '@/lib/auth-actions'
 import Link from 'next/link'
 import { createOperationLock } from '@/lib/admin'
 import { useAuth } from '@/components/AuthProvider'
@@ -17,14 +17,56 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [notice, setNotice] = useState('')
+  const [canResend, setCanResend] = useState(false)
+  const [cooldown, setCooldown] = useState(false)
   const lock = useRef(createOperationLock())
   const router = useRouter()
   const { status, pending, session, isAdmin, error: sessionError, refresh, signOut } = useAuth()
   const unavailable = loading || status === 'loading' || pending
 
   useEffect(() => {
-    if (adminOnly && status === 'ready' && !pending && isAdmin) router.replace('/admin')
-  }, [adminOnly, status, pending, isAdmin, router])
+    if (status !== 'ready' || pending) return
+    if (adminOnly && isAdmin) router.replace('/admin')
+    if (!adminOnly && session) router.replace('/')
+  }, [adminOnly, status, pending, isAdmin, session, router])
+
+  useEffect(() => {
+    if (status === 'loading') return
+    const url = new URL(window.location.href)
+    const message = confirmationError(url)
+    if (!message) return
+    setError(message)
+    setCanResend(!adminOnly)
+    const callbackKeys = ['error', 'error_code', 'error_description', 'access_token', 'refresh_token', 'token_type', 'expires_in', 'expires_at', 'type', 'code', 'token_hash']
+    for (const key of callbackKeys) url.searchParams.delete(key)
+    const hash = new URLSearchParams(url.hash.slice(1))
+    for (const key of callbackKeys) hash.delete(key)
+    url.hash = hash.toString()
+    window.history.replaceState(window.history.state, '', url.pathname + url.search + url.hash)
+  }, [status, adminOnly])
+
+  useEffect(() => {
+    if (!cooldown) return
+    const timer = setTimeout(() => setCooldown(false), 60_000)
+    return () => clearTimeout(timer)
+  }, [cooldown])
+
+  async function handleResend() {
+    if (unavailable || cooldown || !email.trim() || !lock.current.acquire()) return
+    setLoading(true)
+    setError('')
+    setNotice('')
+    setCooldown(true)
+    try {
+      await resendConfirmation(supabase, email, window.location.origin)
+      setNotice('確認待ちのアカウントであれば確認メールが送信されます。迷惑メールフォルダも確認してください。')
+    } catch (cause) {
+      setError(authErrorMessage(cause))
+    } finally {
+      lock.current.release()
+      setLoading(false)
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -33,9 +75,13 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
     setError('')
     setNotice('')
     try {
-      const outcome = await authenticate(supabase, email, password, !adminOnly && isSignUp)
+      const outcome = await authenticate(supabase, email, password, !adminOnly && isSignUp, confirmationRedirect(window.location.origin))
       if (outcome === 'confirm-email') {
         setNotice('確認メールを確認してください。確認後にログインできます。')
+        setCanResend(true)
+        setCooldown(true)
+        setPassword('')
+        setIsSignUp(false)
         return
       }
       if (!adminOnly) {
@@ -44,6 +90,7 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
       }
     } catch (cause) {
       setError(authErrorMessage(cause))
+      if (!adminOnly && cause && typeof cause === 'object' && 'code' in cause && cause.code === 'email_not_confirmed') setCanResend(true)
     } finally {
       if (adminOnly) setPassword('')
       lock.current.release()
@@ -95,6 +142,7 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
               <input id="password" type="password" required minLength={6} disabled={unavailable} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="••••••••" />
             </div>
 
+            {sessionError && <p role="alert" className="text-sm text-rose-700">{sessionError}</p>}
             {notice && <p role="status" className="text-sm text-blue-700">{notice}</p>}
             {error && <p role="alert" className="text-sm font-bold text-rose-600 bg-rose-50 p-3 rounded-lg border border-rose-100 text-center">{error}</p>}
 
@@ -103,6 +151,14 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
               {!unavailable && <ArrowRight className="ml-2 size-4" />}
             </Button>
           </form>
+
+          {!adminOnly && canResend && <div className="mt-4 space-y-2">
+            <Button type="button" disabled={unavailable || cooldown} onClick={() => {
+              const input = document.getElementById('email') as HTMLInputElement | null
+              if (input?.reportValidity()) void handleResend()
+            }} className="w-full">{cooldown ? '再送は60秒ほど待ってください' : '確認メールを再送する'}</Button>
+            <p className="text-xs text-slate-500">確認後は自動で学習画面へ進みます。別のブラウザで確認した場合は、元の画面からログインしてください。</p>
+          </div>}
 
           {!adminOnly && <div className="mt-8 text-center">
             <button type="button" disabled={unavailable} onClick={() => { setIsSignUp(!isSignUp); setError(''); setNotice('') }} className="text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">

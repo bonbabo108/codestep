@@ -29,3 +29,15 @@ SQLの実適用・実DB結果、UI検証、承認ハッシュは判断履歴/テ
 DDL後のSecurity Advisorに新しい関数の指摘はなく、Authの[漏えいパスワード保護](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)にWARN1件。今回はAuth設定変更を行わない。
 
 設計根拠：[Supabaseの関数](https://supabase.com/docs/guides/database/functions)、[PostgreSQLの関数権限](https://www.postgresql.org/docs/17/sql-createfunction.html)、[行ロック](https://www.postgresql.org/docs/17/explicit-locking.html)。
+
+## 2026-10-17 削除修正のPreview最終確認（cb34946）
+
+ユーザーの追加承認で削除修正9ファイルだけを選択コミットし、codex/admin-rls-portfolio限定でpush。以前からのREADME/公開判断資料/画像と、判断/テスト記録の過去の未コミット部分は除外・保持。コミットはcb34946ecbad71c3b10446fdefb3a53fd0c7fb17、remote一致。
+
+新Preview：https://codestep-bywtked27-touya1896-7818s-projects.vercel.app 。dpl_2nBqeFzXfoceasoEfy3dYBW8hxXbは同repo/ref/SHA・READY・target=null。Preview限定のURLはstagingルート、公開キーは同stagingの有効キーと一致、ブランチ上書きなし。Production環境値は復号していない。
+
+実Chromeで専用管理者ログイン→/admin→アプリ内ダイアログを確認。履歴ありの不可逆警告と「いいえ」/「はい、削除する」が表示された。「いいえ」後は試験問題1/進捗2をDB読取で確認。「はい」後は成功表示/一覧から消滅し、問題0/関連進捗0をDB照合。履歴なし問題もUI削除成功。取得console error0。過去の単体16件/関連モックUI13項目/型/lint/ビルド/途中失敗の実DB原子性試験は再利用し、無関係な再試験は行わない。
+
+今回だけの新規0600スナップショットを使用し、試験問題2/試験進捗2は全て除去済み。既存3テーブル全行と管理者app_metadataは開始時と完全一致、デモ管理者trueを保持。Auth設定・SQL/RLS/FK・本番/TodoApp/main/Production/課金変更なし。認証情報を出力せず、本人向け0600ファイルのPreview URLだけ更新。画像はGit外/tmp/codestep-deletion-preview-warning.png / success.png。この結果追記はローカル記録のみで追加pushなし。
+
+削除修正のPreview公開を妨げる問題は今回の確認範囲で見つからない。本番にはRPCが未適用であり、main反映/本番SQL/Auth/Productionは引き続き未承認。旧ポリシー移行など過去の未検証事項は今回の成功で解消扱いにしない。

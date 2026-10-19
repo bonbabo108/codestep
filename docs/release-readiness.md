@@ -1,8 +1,64 @@
 # 公開判断とPreview準備（2026-10-16更新）
 
-ローカル機能は公開候補。本番はまだ公開承認前で、追加DB/Auth変更・push・デプロイはしていない。以下の順序で判断する。旧7ポリシー再現試験の再送は前提にしない。最新テスト結果はtest-plan.md末尾。
+## 2026-10-19 最終仕上げの公開判断（最新）
 
-## 最新：Preview限定pushの承認準備（2026-10-16）
+認証URLのコード修正、登録不要の安全な/demo、最終設計/評価証拠、README、CIダミービルドを追加。ローカル62テスト・lint・型・Webpackビルド成功。最新PR/Previewの結果は本節へ追記する。
+
+Supabaseの両環境でSite URLがlocalhost:3000、Redirect URLsは0件とダッシュボード読取で確認。コードだけでメール誤遷移は解決せず、[限定したURL設定変更案](./auth-release-checklist.md)の承認・反映と実メール確認が残る。設定/Authユーザー/本番データは変更していない。
+
+本番questionsは書込停止中で、管理者RLS・削除RPC・進捗制約等は未適用。本番移行の承認がないためmainマージとProduction反映は保留。CI成功だけで公開条件を満たしたとは扱わない。今回の依頼に基づく作業ブランチpush/PR/Previewまでを進める。緊急停止・復旧試験の追加実施は不要。
+
+以下の「評価表未提供」「追加試験が必須」「過去SHAが現HEAD」等は当時の履歴。今回提供された評価画像は[evaluation-evidence.md](./evaluation-evidence.md)で照合する。OAuth・独立外部APIは未実装で、最高点の全条件達成とは主張しない。
+
+## 2026-10-17 提出・公開に必要な残作業（最新判断）
+
+以下の過去の「削除未検証」「SQL3本」「Preview未反映」より本節を優先する。現ローカルHEADは作業ブランチのcb34946、mainは35c13e3。直前の記録で[最新Preview](https://codestep-bywtked27-touya1896-7818s-projects.vercel.app)はcb34946/READY/staging接続を確認済み。削除警告→取消→関連進捗と問題の削除も実Preview/DB照合成功。今回は外部再照会・再テスト・DB変更を行っていない。
+
+**提出を先に判断する：** curriculum.mdに正式な講座要項・採点表は未提供とあるため、Production必須ともPreview提出可とも断定できない。Week11テスト実施書・Week12改善案の原本/指定様式も未確認。GitHubの作業ブランチ、最新Preview、既存のテスト結果・画面画像・設計照合は提出候補として利用できる。Preview保護でメンターが閲覧できるかを含め確認し、許可されれば本番移行より提出を先にする。指定様式が必要な場合だけ既存結果/残課題を転記し、新規試験や機能開発を提出条件に追加しない。
+
+READMEの最新状態追記・本節・最新Preview結果の一部はローカル未コミット。GitHubのmain READMEを完成版の説明として案内しない。提出時は作業ブランチを指定し、採用するMarkdown差分と必要な画像だけをレビュー後、別承認のコミット/push対象とする。既存画像/資料の全件整理は不要。
+
+**本番へ進む場合の順序（全て別途承認後）：**
+
+1. 本番IDと最新の3表スキーマ/列名・FK/RLS/ACL/旧7ポリシー・既存関数/スキーマを読み取り照合。行数だけでなく重複ペア、参照整合性、必要列/既定値を確認する。2026-10-15の2問題/1profile/0進捗を現在値とみなさない。3表のデータとポリシー/権限/制約/関数定義、管理者の変更前メタデータを承認された非公開の保存先へバックアップし、復元手順を確認する。questions CSVだけでは不十分。重複/想定外差分は削除や自動補正せず停止。
+2. `progress-release-proposal.sql`でprofiles/user_progressのACLを必要列だけへ縮小し、本人6ポリシー・既存データ維持を確認。別TXの`progress-unique-proposal.sql`でUNIQUE(user_id,question_id)を追加し、定義/重複0/データ不変を確認。列名created_at・既存NO ACTION FK・NULL可否は変更しない。
+3. 本番の管理者本人とUUIDを人間が確認し、既存app_metadataを保ってcodestep_adminをboolean trueにする。新JWT取得を確認し、questionsの停止はここでは維持。
+4. `questions-admin-rls.sql`を現状と一致する場合だけ1TXで適用。旧書込6ポリシーを除き公開SELECT＋管理者I/U/D、最小列権限を確認。広い旧許可を残してGRANTだけ戻さない。
+5. `questions-delete-with-progress.sql`を**本番対象として別レビュー・承認**し、削除RPCを追加する（現在の原本はstaging承認用）。既存FK/RLS/テーブルACLは変えない。適用自体にデータ削除なし。内部DEFINERの管理者検査・空search_path・所有者・非公開スキーマ、公開INVOKER、EXECUTEの限定、Data API反映を確認。stagingでのRPC削除途中の巻き戻し成功と、本番旧7→4移行/進捗SQL原本の未検証は別扱い。
+6. 各段階でRLS/列を含む実効権限/制約/関数/データ不変・匿名HTTP閲覧を確認。ProductionのURL/有効公開キーが本番用であることは**現資料では値の照合未確認**なので、Preview用staging値と区別して直前確認する。Authの本番URL/リダイレクト設定も確認し、不足の変更は別承認。main反映前に全条件を満たす。本番への書込試験は別承認の対象限定試験がない限り実施せず、本番CRUD成功を断定しない。
+7. mainへのマージ/pushをProduction自動デプロイと一組で明示承認し、Production環境値でビルドする。staging値を焼き込んだPreview成果物をそのまま昇格しない。公開後はSHA/接続先/匿名表示を読み取り確認。旧mainへ先にpushしてから確認する順序は禁止。
+
+**停止・復旧の補正：** 各SQLは独立TXで、後段失敗でも成功済みの最小ACL/UNIQUEを保持する。結果不明なら再実行せず読取確認。旧7→4移行と進捗SQL2本の原本実行・複合ロールバック/ロック競合は未検証のままで、実行前にこの残存リスクの受容または追加隔離検証を判断する。今回は検証を追加しない。ロック中は閲覧待機もあり得る。
+
+**重要：削除RPC追加後は`questions-emergency-stop.sql`だけでは全書込を止められない。** 内部SECURITY DEFINERは所有者権限で動くため、緊急停止にはテーブル/列ACL停止に加え公開/内部削除関数双方のauthenticated EXECUTE撤回が必要。PUBLIC/anon等の呼出権限もないことを照合する。この停止・安全な再開の本番操作は別レビュー/承認対象で、今回SQL原本は変更しない。旧JWTが残るためフラグfalseだけに頼らない。危険な旧ACL/ポリシーへ戻さず、デプロイ失敗は安全なDB設定を保持してアプリだけを承認範囲で戻す。COMMIT後の削除データはROLLBACKできず、必要ならバックアップからの対象限定復元を別途判断する。Auth/Vercel変更もSQLのROLLBACKでは戻らない。
+
+## 2026-10-17 最新・公開判断は保留
+
+**最新追記：** 管理者入口はac4692bで承認された作業ブランチだけへpush済み。[本人確認用の管理者ログイン](https://codestep-jvkfz5ng1-touya1896-7818s-projects.vercel.app/admin/login)はREADYの新Preview。匿名導線、専用管理者ログイン、一般拒否、学習者保存/再ログイン復元、管理者作成/編集を実確認した。今回の試験データは全行開始値へ復元し、承認済みの専用デモ管理者trueだけを保持。新規ユーザー・パスワード変更なし。ログイン情報はMac内の専用0600ファイルのみで、Git/チャットに転記しない。本人確認前に解除しない。削除APIは成功、確認ダイアログ経由のUI削除は未検証。以下の「新入口ローカルのみ」「付与承認待ち」はこの承認・実施前の履歴。今後の追加push/本番SQL/Auth/main/Production反映は別承認。
+
+今回追加した管理者入口/admin/loginと/adminは**ローカルのみ**。単体56件・型/lint/ビルド・ブラウザ27項目（限定再試験を含む）成功、実staging/新Preview未検証。右上の管理リンクは最新指示で全員へ表示するが、管理操作は既存ガード/RLSのまま。Preview反映には差分レビュー・コミット・作業ブランチ限定pushの新しい承認が必要。本人がstagingで管理者を利用するには、対象アカウントを安全に確認し、そのUUIDへのapp_metadata.codestep_admin=true付与（既存メタデータ保持）を別途承認する。既存ユーザーへの付与/変更や継続用管理者作成を今回の許可から推定しない。権限変更後は再ログイン/JWT更新が必要。下記Preview54f3b66は今回の入口を含まない。
+
+UI復元54f3b66を指定作業ブランチだけへpushし、[新Preview](https://codestep-k229a99br-touya1896-7818s-projects.vercel.app)は同SHAのREADY。PC/スマホ/不要UI除去/管理導線/権限拒否/本人保存復元/管理作成編集は実確認。開発時の読み込み失敗はPreviewで再現しなかった。
+
+削除UIの成功は未確認。後片付け前のREAD ONLYで削除対象1件のDB残存を確認したため、削除はDB未反映であり、単なる一覧更新の問題ではない。内部原因は未特定。新しいユーザー指示と実行許可後にstagingの試験変更だけを復元し、3テーブル全行と管理者メタデータの開始時完全一致を確認した。独立したREAD ONLYでも問題3/プロフィール2/進捗3/使い捨て0/管理者true0。後片付けAPIの成功をUI削除の成功とは扱わない。本番SQL/Authとmain反映の承認は依然別途必要。下の16日の「ローカルのみ」等は当時の記録。
+
+実装は作業ブランチのPreviewへ反映済み。本番は公開承認前で、追加DB/Auth変更・main反映・本番デプロイはしていない。旧7ポリシー再現試験の再送は前提にしない。最新テスト結果はtest-plan.md末尾。
+
+## 最新：UI復元版はローカルのみ（2026-10-16）
+
+元の35c13e3のUIと現在のDB/Auth/保存/CRUDを統合した。詳細は[UI復元記録](./ui-restoration.md)。下記Previewは復元前の3110162であり、新UIを反映したとは扱わない。まずローカル差分と比較画像を確認し、新しいコミットの作業ブランチ限定push/Preview作成を改めて承認する。3110162限定の過去承認を追加pushへ拡張しない。そのPreview確認後に、従来の順序で本番SQL/Authとmain反映を別途判断する。
+
+## 最新：承認済みpushとPreview実画面確認（2026-10-16）
+
+- 対象`bonbabo108/codestep`、`refs/heads/codex/admin-rls-portfolio`にコミット`3110162b60028dbbd7479523de854d6cadc4dea9`だけをpush成功。upstreamは同じorigin作業ブランチに設定済み。force/main/全ブランチpushなし。
+- [Preview](https://codestep-inza0dwfi-touya1896-7818s-projects.vercel.app)は`dpl_E83MoaEsvrKoAhfnQaemsVuVCbTF`、READY、source=git。同じrepo/ref/SHAをget_deploymentで確認。APIのtargetはnull（productionではない）、Preview一覧と作業ブランチ用aliasに整合。本番ドメインの割当なし。targetが文字列previewだったと捏造しない。
+- URL/公開キーは下記の事前照合を再利用。Preview実画面から保存した正解がstagingの架空ユーザー進捗1件のupdated_at更新として反映され、追加重複0を読取照合した。設定値だけでなく実保存先の根拠にもなる。本番の資格情報でテストしていない。
+- 匿名のDB出題/正誤/未保存、匿名・一般の管理拒否、一般ログイン/正解保存/ログアウト時消去/再ログイン復元、管理者の作成/編集、フラグ解除後JWT更新で管理拒否を実ブラウザ確認。取得できたコンソールerrorは0件。削除UIは確認ダイアログ操作がタイムアウトし未完了。読み取りで未削除を確認し、固定名の使い捨て1件だけAPIで後片付けした。試験管理者false・Previewログアウト、問題3/進捗3/重複0を確認。
+- 通常HTTPは302でVercel認証へ転送。公式保護URL取得ツールはread_protection_bypass段階で403。設定変更・再送・迂回はせず、ユーザーの既存ログイン済みChromeから正規アクセスして上記を検証した。閲覧者にもVercel認証が必要。
+- 本番ドメインを再照合し`dpl_GoE7Mo9W49q2BEcYfJh1iQXujSuq`、target=production、main、`35c13e3a9d02cd96d65f6bd8aec0daae5657f36a`のままを確認。本番/TodoApp/課金/外部設計資料の変更なし。アプリ/SQLは修正していないため既存56テスト・型・クリーンビルドを再利用した。
+- 今回の記録と画像2枚はローカル更新のみ。3110162へ変更を混ぜず、追加コミット/push/別Preview作成はしていない。
+
+## push前の環境照合・承認記録（2026-10-16、以下は過去の準備）
 
 - ユーザーがPCで確認：Production Branchはmain、他の未割当ブランチはPreview対象。Preview専用のSupabase変数2件を登録済みでProduction設定は未変更との報告。この情報はユーザー確認を根拠とし、前日の403で未取得だった設定を取得済みと偽らない。
 - Vercel APIの読み取りで、対象codestepプロジェクトのNEXT_PUBLIC_SUPABASE_URLとNEXT_PUBLIC_SUPABASE_ANON_KEYがtarget=previewだけで登録され、今回の作業ブランチ固有の上書きがないことを確認。URLはstagingのルートと完全一致（末尾スラッシュのみ許容）、/rest/v1/・追加パス・クエリ等なし。キーはSupabaseが返す同じstagingの有効な公開キーとメモリ内で完全照合した。値/ハッシュ/ユーザー情報を出力・保存していない。
@@ -15,10 +71,10 @@ Preview作成により非本番のビルドが起動し、Preview URLが発行�
 ## PCで確認・承認すること（優先順）
 
 1. **画面と管理者本人の確認**：READMEのstaging画像とアプリの権限/保存動作を確認する。本番の最初の管理者をAuthユーザー詳細で本人確認し、対象IDを指定する。推測しない。ID・メール・鍵を公開資料へ書かない。
-2. **作業ブランチのpush/Preview承認**：Production Branch/未割当ブランチの扱いはユーザー確認済み、Preview接続先2件はAPI照合済み（2026-10-16）。必要ファイルのローカルコミット後、今回報告するSHAを作業ブランチだけへpushする承認を判断する。mainへのpush/マージ/本番昇格は含まない。
+2. **Previewの目視確認**：作業ブランチpush/Previewは承認・実施済み。上記URLをVercel認証済みPCで確認する。削除UI/FK/0件/通信遮断の実staging画面は未完了で、実API成功・モック画面成功と区別して判断する。既存のstaging試験承認は継続し、同じ承認を再要求しない。
 3. **DB/Auth反映と本番公開の判断**：Preview成功後、下記SQL3本と対象、管理者フラグ付与、未検証リスクを確認する。進捗ACL→一意制約→管理者指定/JWT更新→questions管理者RLSの順に、段階ごとに検証する。全て揃ってからmainへの反映/本番自動デプロイを明示承認する。結果不明なら次へ進めない。本番書込試験を暗黙で含めず、必要なら架空データの対象/操作/後片付けを別途明示する。
 
-現在の制約では上記を実行しない。安全な作業の承認を重ねて求めず、この単位で判断できるようにする。メンター提出には制作者本人がmentor-notes.mdの5問を説明できることも確認する。
+本番変更は承認まで実行しない。安全な作業の承認を重ねて求めず、この単位で判断できるようにする。メンター提出には制作者本人がmentor-notes.mdの5問を説明できることも確認する。
 
 ## GitHub/Vercel照合結果（2026-10-15、読み取りのみ）
 
@@ -84,8 +140,8 @@ Preview作成により非本番のビルドが起動し、Preview URLが発行�
 
 1. **設定確認**：16日のユーザー確認とAPI照合結果を使う。作業ブランチがproduction対象外でPreviewの共通2変数がstagingであることは確認済み。承認待ちの間に設定/ブランチ別上書きが変わったら再照合する。Previewに本番接続が混入した場合はそのままテストしない。設定の修正も承認後に行う。
 2. **レビュー対象を確定**：npmのpackage-lock.jsonを正としNode24/npm11。VercelのInstall Commandは`npm ci`、Build Commandは検証済みの`npm run build -- --webpack`を候補とする。差分の必要ファイルだけ選択してコミットしSHAを記録する。`.env*`・資格情報・codestep_key_files.txtは含めず、`git add .`は使わない。
-3. **作業ブランチだけをpush**：承認後も現在ブランチを確認し、push先refを`refs/heads/codex/admin-rls-portfolio`と明示する。省略したpush、main宛て、全ブランチ一括、force pushは行わない。upstream未設定なので、既存の追跡先があるという前提で操作しない。現時点ではpushコマンドを実行していない。
-4. **Preview確認**：必要なら未マージのPRでレビューし、Vercelのtarget=preview・対象repo/ref/SHA・公開先ドメイン・staging接続を照合。認証/DB出題/本人保存/復元/管理UIを検証する。失敗時は作業ブランチ内で修正し、更新したSHAのPreviewを確認する。管理者用サーバーキーをNEXT_PUBLIC変数へ入れない。Previewが作成されない場合も、mainをpushして代用しない。
+3. **作業ブランチだけをpush（実施済み）**：16日に承認済み3110162を`refs/heads/codex/admin-rls-portfolio`へ明示してpush成功。upstreamも同じ作業ブランチ。追加pushでもmain宛て・全ブランチ一括・forceを禁止する。今回の記録差分は追加pushしていない。
+4. **Preview確認（主要機能は実施済み）**：上記のrepo/ref/SHA・非production・ドメイン・staging実保存を照合済み。残る実画面異常系はtest-plan.md末尾。失敗時は作業ブランチ内で修正し、追加pushが承認された範囲なら新SHAのPreviewを確認する。管理者用サーバーキーをNEXT_PUBLIC変数へ入れない。Previewの代わりにmainをpushしない。
 5. **本番DB/Auth準備**：Preview成功後に上記SQL順序と管理者準備を承認範囲で実施・検証。1段階でも失敗/不明ならmainへの反映を止める。SQL/RLS/データの確認と、本番未検証リスクの判断が完了したことを記録する。
 6. **main反映＝本番公開として承認**：最後に、確認した変更だけをmainへマージする操作と本番自動デプロイをセットで明示承認する。mainへの更新後に改めて公開ボタンを押す必要があるとは仮定しない。マージ後のSHA・Productionビルド・本番用接続先と公開URLを確認する。main直pushでPreview工程を飛ばさない。
 7. **公開後の読取確認**：URL/匿名問題取得/表示を確認する。本番保存/管理CRUDの書込確認は別途明示された範囲だけ。Previewはstaging環境・Productionは本番環境なので、同じソースでも同じ成果物/動作が保証されたとは扱わない。stagingに接続したPreview成果物をそのまま本番へ昇格しない。

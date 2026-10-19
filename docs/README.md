@@ -1,5 +1,14 @@
 # 設計ドキュメント
 
+- [提出用ポートフォリオREADME](https://github.com/bonbabo108/codestep-portfolio)
+- [開発手順・機能ガイド](./implementation-guide.md)
+
+- [最終設計・機能一覧・全16列ER図](./final-design.md)
+- [評価基準と実装・画面・テストの対応](./evaluation-evidence.md)
+- [メール認証の確認と設定変更案](./auth-release-checklist.md)
+
+以下は過去の設計・試験記録を含みます。最新の仕様は最終設計を優先します。
+
 - [帰宅後の公開判断・承認と反映順序](./release-readiness.md)
 - [ワイヤーフレーム](./wireframe.png)
 - [ER図](./er-diagram.png)

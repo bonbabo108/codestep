@@ -304,6 +304,86 @@ README/docsのローカルリンク最終44件は欠落なし。既存の復元/
 
 release-readiness.mdを公開判断の入口とする。新しい本番SQLは最小ACLとUNIQUEを別TXに分離し、後者失敗時も前者の安全化を保持する。両原本の実DB実行/本番7→4移行/本番保存/登録メール到達/Previewと本番公開は未実施。RLS適用ツールの再送・課金・TodoApp変更・push・デプロイなし。PCでは管理者本人・未検証リスク/SQL・公開順序をまとめて判断する。
 
+## 2026-10-16 承認済み3110162のVercel Preview検証
+
+前節以前の「Preview未実施」は当時の記録。本節を最新とする。対象はbonbabo108/codestepのcodex/admin-rls-portfolioのみ。SHAは3110162b60028dbbd7479523de854d6cadc4dea9。Vercel dpl_E83MoaEsvrKoAhfnQaemsVuVCbTFのREADY/ref/SHA一致と非productionをAPI照合。本番ドメインは旧mainの35c13e3のまま。
+
+Preview URL：https://codestep-inza0dwfi-touya1896-7818s-projects.vercel.app
+
+| 確認項目 | 結果・根拠 |
+| --- | --- |
+| 接続設定 | 成功。事前にPreview限定のURL/有効なstaging公開キーを完全照合済み。URLはルート、/rest/v1/なし。今回Previewからの実保存もstaging側で更新1件・重複追加なしを照合 |
+| ビルド/対象 | 成功。指定コミットと作業ブランチの自動PreviewがREADY。API targetはnullでproductionではない。対象とaliasも整合 |
+| 匿名のDB出題 | 成功。架空問題3件が表示される |
+| 匿名の正誤判定/未保存 | 成功。不正解、正解、未ログインのため保存しない案内を確認 |
+| 匿名/一般の管理拒否 | 成功。/questionに専用案内、管理フォームなし |
+| 一般ログイン/保存 | 成功。保存成功の実画面とstaging進捗の更新1件を照合。既存2件の本人進捗が2件のまま |
+| ログアウト/再ログイン復元 | 成功。ログアウトで回答を消去し、再ログイン後に保存済み正解コードを復元 |
+| 管理者ログイン/作成/編集 | 成功。staging架空管理者と固定名の使い捨て問題だけを使用。作成・更新成功表示と一覧への反映を確認 |
+| 管理者解除/JWT更新 | 成功。stagingフラグfalse後に権限情報更新で管理フォーム消去・管理拒否。旧JWT即失効の証明ではない |
+| 管理者の削除UI | 未完了（操作エラー）。click後にconfirmを観測したがCDP入力タイムアウト、accept後の状態取得もタイムアウト。再クリックせずDBを読み取り、使い捨て問題が残っていると確認。その後ダイアログなし・再読込可能を確認。ブラウザ操作の原因は未特定、アプリ不具合とは断定しない |
+| FK/0件/通信失敗の実Preview画面 | 未実施。既存の実API試験とローカル実ブラウザ＋APIモック9件を代替根拠に維持し、Preview成功とはしない |
+| 最終表示/ログ | 成功。ログアウト済み匿名学習画面、取得できたconsole error 0件。ログ検出範囲外の不具合まで否定しない |
+| 後片付け | 成功。固定名の使い捨て1件だけAPI削除（削除UIの成功ではない）。問題3・進捗3・重複0・架空管理者falseをAPI確認 |
+
+通常HTTPはVercel認証へ302転送、公式保護URLツールは403/read_protection_bypassで利用不可。保護を変更/回避せず、既存Vercelログイン済みChromeで正規閲覧した。秘密はブラウザ変数にのみ読み込み、画面/ログへ出さず最後に破棄。試験後はPreviewのアプリセッションをログアウト済み。
+
+証跡：screenshots/preview-learning.png、screenshots/preview-admin-update.pngを保存・目視確認。後者は更新時の使い捨て問題を含む。製品コード/SQL変更なしのため既存56件・型・lint・クリーンビルドは再実施せず再利用。本番SQL3原本・旧7→4・複合ロールバック・本番保存・メール送達の未検証は変わらない。今回の記録/画像はローカル差分で未commit/未push。
+
+## 2026-10-16 UI復元・機能維持の回帰検証
+
+基準/意図的差分/比較画像は[ui-restoration.md](./ui-restoration.md)。HEADは3110162のまま。学習/管理/ヘッダー3ファイルの表示と専用reload処理を変更し、共通DB/Auth/CRUD/保存処理8ファイルとSQLがHEADと同一であることを確認した。以前の実DB41項目/実Auth9項目は繰り返さず根拠を再利用する。
+
+| 検証 | 結果 |
+| --- | --- |
+| npm test | 成功56件。既存のDB取得/保存/競合/認可判定/CRUD/SQLガードを維持 |
+| lint / typecheck | 最終版で両方成功 |
+| 本番ビルド | ダミー127.0.0.1接続のWebpackビルド成功。実キー/本番接続は使わない |
+| 既存ブラウザ異常系 | 成功9件。削除確認/FK/0件更新・削除/503/42501/進捗読込失敗/保存応答不明からの明示再試行。全APIモックであり実RLSの検証ではない |
+| 復元UIのブラウザ回帰 | 追加8件成功。元の文言/不要UI除去、匿名正誤/未保存、管理導線と作成編集キャンセル、本人保存/再読込/ログアウト/再ログイン復元、登録切替とメール確認待ち、専用拒否画面からのJWT更新、遅いログアウト中の管理非表示、PC/スマホの4画面 |
+| 全ブラウザ回帰 | 最終版はNext startによるローカル本番ビルド＋全APIモックで17成功/0失敗。各ケースで未処理pageerrorなし |
+| 旧UIとの配置比較 | 1440pxのheader/見出し/学習カード/入力欄の位置・幅・高さは差1px未満。390pxもカード/入力欄の幅・高さが差1px未満。復元版横溢れなし。全画素一致ではない |
+| PC/390px表示 | 学習/管理/ログイン/登録の8画像を取得。主要画像を目視確認し、各画面の横溢れなしを実ブラウザ検査 |
+| 実stagingの復元UI | 成功。架空問題3件の出題、匿名の不正解/正解、一般ログイン、本人保存、ログアウト時の復元表示破棄、再ログイン復元、一般の管理リンク非表示/直接URL拒否 |
+| 実DB照合 | 成功。上記UI保存の開始時刻以降に本人進捗1件だけupdated_at更新。本人2/全体3件を維持、重複0、問題3件。読み取りAPIで確認 |
+
+### 途中の失敗と判断
+
+- サンドボックス内ではローカルサーバーを起動できず、実行環境の許可を得て既存ランナーを実行した。本番や警告対象SQLの許可を迂回していない。
+- 追加の作成→編集試験で、テストモックのPATCHがIDで絞らず複数行を返し失敗。実装を戻さず、モックをIDで絞るよう修正。DELETEのモックも対象IDだけを除くようにした。
+- 開発サーバーの連続画面試験でログイン画面待ち失敗と、別回で初期表示のSyntaxError/空画面を観測。原因を特定できていない。表示2件だけの診断再実行は成功。本番ビルドによる全16件、その後のログアウト補強を含む全17件は成功した。開発配信の断続的失敗を黙って成功に変更したり、製品不具合と断定したりしない。
+- 実ブラウザ終了時、ログアウトAPI完了前に遷移/閉じると保存済みセッションを読み直し得ることを観測。従来のAuthProviderはそのまま、Headerがpending中にログインリンクを先に出さないよう既存Loading...表示を再利用した。新しい常設UIは追加していない。遅延logout応答の回帰1件を追加し、応答前の管理フォーム/ログインリンク非表示と完了後の復帰を確認。
+- 実stagingの画像は保存済みの復元画面であり、初めのguestという保存名は誤りだったためlearning-staging-restored.pngへ訂正した。画像を匿名表示の証拠にはしない。
+
+### 今回成功扱いにしないもの
+
+新UIの実staging管理者CRUD・実RLS/APIの全ケース再試験は行っていない。既存の実DB/API成功と今回のモックUI成功を区別する。実メール送達、本番移行SQL/旧7→4/複合ロールバック、本番書込み、復元UIのVercel Previewは未実施。開発サーバーの断続的な初期配信失敗の原因は未特定。Previewは3110162のままで、追加pushには新しい明示承認が必要。
+
+終了確認：修正後の実stagingセッションでログアウト完了を待ち、ページ再読み込み後もログインリンク表示・復元バナーなし・管理リンクなし・ログアウトエラーなしを確認。learning-staging-guest.pngを改めて取得した。今回作成した検証タブを閉じ、staging用検証サーバーを停止。既存ユーザータブやPreviewは変更していない。
+
+## 2026-10-17 UI復元Preview 54f3b66
+
+- 必要21ファイルだけを選択コミット。READMEは概要1段落だけを部分ステージし、既存Preview調査の未コミット文書/画像は除外・保持。ステージ内容の機密パターン0・リンク欠落0。プロダクト3ファイル/検証スクリプト/設計注記/自己完結したUI復元記録/新画像14枚を含む。
+- commit：54f3b66df40afd91596780cb7e46fe5835e5656b。bonbabo108/codestep、codex/admin-rls-portfolioだけをpush。Vercel dpl_HBNjPsN2UvTheNJpSgQtPkJzQ8Jzは同repo/ref/SHAのREADY・非production。
+- Preview：https://codestep-k229a99br-touya1896-7818s-projects.vercel.app 。Vercelログイン済みChromeの正規アクセスを使用。保護変更/同じ403ツールの再送なし。
+- 共通Preview限定2変数を再照合。URLは正規stagingルート、rest/v1等なし。キーは同じstagingの有効なキーとメモリ内で完全一致、ブランチ固有上書きなし。値は表示/記録しない。
+- 実Previewで成功：1440/390pxの学習/管理の横溢れなし・不要説明/再読込なし、匿名出題/正誤、匿名・一般の管理リンク非表示/直接URL拒否、本人保存/ログアウト/再ログイン復元、実管理者JWTで右上リンク表示/正常遷移/問題作成/編集。
+- 保存先をstagingの読取APIと照合し、本人進捗1件の更新、全3件維持を確認。使い捨て問題だけを対象に匿名・一般の直接API I/U/Dを試験し全拒否・データ不変も確認。
+- 削除UIはネイティブconfirmを観測。ブラウザ入力がEmulation.setFocusEmulationEnabledで停止する既知の制御問題が再現したため同じaccept操作を繰り返さず、通常のネイティブ入力を試した。OS操作権限は未完了という応答で利用不能。使い捨て問題のOKだけ人間の操作を依頼中で、現段階では削除UI成功とはしない。
+- 本番ドメインはdpl_GoE7Mo9W49q2BEcYfJh1iQXujSuq / main / 35c13e3のまま。コードの追加修正なし。既存56件・ブラウザモック17件・型/lint/ビルド成功を再利用し、無駄な全再実行なし。後片付け/最終結果はこの節の追記を優先する。
+
+最終追記：削除ダイアログは閉じたが、削除成功表示なし・使い捨て問題の一覧残存を確認。UI削除は未完了。手動OK依頼は不要になった旨を伝え、再送せず保留した。匿名へログアウト後、学習→ログインを3周すべて正常表示。390px登録表示も横溢れなし。取得console error0/SyntaxErrorなし。開発サーバーの断続的読み込み失敗はこのPreview試験では再現せず、開発環境側の既知課題として記録し追加調査はしない。
+
+後片付けはCODESTEP_STAGING_TESTS=1 node /tmp/codestep-preview-state.mjs restoreを1回要求したが、exec_commandのCreateProcessがRejected (rejected by user)で拒否され、コマンドは起動していない。拒否主体/理由は応答以上に推測しない。同じ変更の再試行・別ツール迂回なし。stagingへのBEGIN READ ONLY集計でquestions4（今回の固定名試験問題1）/progress3/admin true1を確認した。試験問題削除、本人進捗1件の開始値への復元、管理者メタデータ復元は**未完了**。開始スナップショットは0600の/tmp/codestep-ui-preview-state.jsonに保持。実行許可の解決後に終了処理し、全データ一致で確認するまで後片付け成功としない。
+
+今回の製品コード修正はなし。検証画像はscreenshots/preview-ui-54f3b66/、記録はローカルのみ。選択コミット21件の外にあった旧未コミット記録/画像を保持している。本番公開判断は削除UI確認・staging後片付けの未完了と、従来の本番SQL/Auth/公開承認が残るため保留。
+
+### 2026-10-17 復元前の読み取り判定
+
+codestep-stagingのプロジェクトIDを照合し、変更前にBEGIN READ ONLYで取得：questions4、削除対象1、user_progress3、管理者true1。削除対象がDBに残存しているため、管理画面の削除はDBに反映されていない。表示更新だけの問題とは判定しない。内部原因は未特定。今回は再クリックやUI変更・再テストをせず、確認結果の記録後に承認された試験変更だけを復元する。後片付けAPIでの削除と管理画面の削除試験結果を混同しない。
+
+復元結果：実行許可後の対象限定処理1回が終了コード0。使い捨て問題1件の削除、本人進捗1件の開始値（内容・更新日時）、管理者app_metadata全体の復元を実施。保存済み3テーブル全行と管理者メタデータが開始時と完全一致し、管理者フラグfalseも確認。別のBEGIN READ ONLY集計はquestions3/profiles2/user_progress3/対象問題0/管理者true0。**後片付け成功、管理画面の削除成功は未確認**。追加のUI操作・コード変更・既存機能の再テスト・本番アクセス/変更は行っていない。上の「後片付け未完了」は復元前の履歴として残す。
+
 ## 2026-10-17 管理者専用ログインの入口（ローカルのみ）
 
 最新仕様は匿名/一般にも右上の管理リンクを表示する。管理者→/admin、その他→/admin/login。以前の「管理リンク非表示」の期待だけを更新し、管理フォーム/APIの認可を弱めない。新しい実DB/RLS試験ではなく、ローカルNext本番ビルド＋実Chrome＋全APIモックである。外部ホストへのブラウザ要求は遮断し、実資格情報は使わない。
@@ -321,6 +401,23 @@ release-readiness.mdを公開判断の入口とする。新しい本番SQLは最
 ブラウザ初回は25成功/2失敗。誤資格情報はモックのAPIバージョンヘッダーがなくSDKにcodeが渡らず、安全な汎用エラーになった。ヘッダー追加後も別オリジンのCORS公開設定不足が残り、インストール済みSDKのparseResponseAPIVersion/handleErrorと照合してaccess-control-expose-headersを追加し、当該1件のみ再試験して成功。ログアウト失敗はSDKが403をログアウト済みとして扱うため、モックを500へ訂正して限定再試験成功。製品の認証/エラー変換処理は変更していない。最終結果は個別の再実行を含む27項目の成功であり、一括27件の最終再実行とは記載しない。全ケースで未処理pageerrorなし。
 
 実行は既存ランナーのCODESTEP_LOCAL_UI_TESTS=1とCODESTEP_UI_USE_BUILD=1、既存Playwrightモジュールを指定。CODESTEP_UI_TEST_FILTERは「|」区切りで再試験対象を限定できる。既存RLS/実API/実Authの過去結果を再利用し、今回のモックで新しい実DB成功や旧7→4移行成功を主張しない。
+
+## 2026-10-17 ac4692bの実Preview・専用管理者
+
+Preview：https://codestep-jvkfz5ng1-touya1896-7818s-projects.vercel.app 。同repo/ref/SHA・READY・target=nullをVercelのデプロイ取得、GitHub status successと照合。既存ChromeのVercel認証を使い、保護設定は変更しない。Preview限定URL/有効公開キーはstagingと完全一致、ブランチ上書きなし。環境値・認証情報は非表示。
+
+| 実環境確認 | 結果 |
+| --- | --- |
+| 匿名の管理リンク→専用入口 | 成功。/admin/login、管理者ログイン見出し、管理者の登録切替なし |
+| 専用adminログイン→/admin | 成功。承認された学習者とは別アカウントでログイン。学習画面の管理リンクも/adminを指す |
+| 管理者の作成・編集 | 成功。固定名の使い捨て1件だけを操作し、成功表示/一覧を確認 |
+| 学習者/login・DB出題・回答保存 | 成功。新しい試験問題は不正解でスキップし進捗を作らず、既存架空問題への正解を保存。別の読み取りで既存進捗の変更1件を照合 |
+| 学習者の再ログイン復元 | 成功。コードと復元表示を実画面で確認 |
+| 一般ユーザーの管理拒否 | 成功。/admin/loginで案内・フォーム0・セッション維持。/admin直接入力でもフォーム0 |
+| 削除・後片付け | APIによる削除成功、既存進捗の内容/更新日時を復元。3テーブル全行が試験開始時と完全一致。管理者メタデータもtrueを保ち完全一致。UI削除は既知の操作障害を再試行せず未検証 |
+| 終了時 | 取得console error0。試験セッションはログアウトし、本人確認用の専用ログイン画面を残した。デモ権限は保持 |
+
+同じローカル56件/27項目/型/lint/ビルドや無関係なRLS試験は再実行せず、直前成功と同じ製品コードをpushして検証。新規Auth/パスワード変更/本番/TodoApp/RLS/スキーマ/課金/Production/main変更なし。実管理者権限の付与だけは対象を読み取り確認し、ユーザーの新しい明示承認後に実施した。PCのログイン情報ファイルの内容は資料・ログ・Gitへ記録しない。
 
 ## 2026-10-17 履歴あり削除の仕様変更
 
@@ -342,6 +439,31 @@ release-readiness.mdを公開判断の入口とする。新しい本番SQLは最
 
 実DBハーネスはscripts/question-deletion-staging-check.mjs（明示opt-in、staging固定、0600設定、IDマニフェスト限定）。今回のマニフェストは/tmp/codestep-question-deletion-test-state.jsonで片付け済み。古いmanifest/setupやフラグ解除付き復元処理を再実行しない。新しい試験には新規スナップショットを用意する。実UI画像はGit外の/tmp/codestep-delete-real-warning-pc.png / mobile.png。認証情報を画像・資料・ログへ転記しない。
 
+## 2026-10-17 削除修正のPreview最終確認（cb34946）
+
+ユーザーの追加承認で削除修正9ファイルだけを選択コミットし、codex/admin-rls-portfolio限定でpush。以前からのREADME/公開判断資料/画像と、判断/テスト記録の過去の未コミット部分は除外・保持。コミットはcb34946ecbad71c3b10446fdefb3a53fd0c7fb17、remote一致。
+
+新Preview：https://codestep-bywtked27-touya1896-7818s-projects.vercel.app 。dpl_2nBqeFzXfoceasoEfy3dYBW8hxXbは同repo/ref/SHA・READY・target=null。Preview限定のURLはstagingルート、公開キーは同stagingの有効キーと一致、ブランチ上書きなし。Production環境値は復号していない。
+
+実Chromeで専用管理者ログイン→/admin→アプリ内ダイアログを確認。履歴ありの不可逆警告と「いいえ」/「はい、削除する」が表示された。「いいえ」後は試験問題1/進捗2をDB読取で確認。「はい」後は成功表示/一覧から消滅し、問題0/関連進捗0をDB照合。履歴なし問題もUI削除成功。取得console error0。過去の単体16件/関連モックUI13項目/型/lint/ビルド/途中失敗の実DB原子性試験は再利用し、無関係な再試験は行わない。
+
+今回だけの新規0600スナップショットを使用し、試験問題2/試験進捗2は全て除去済み。既存3テーブル全行と管理者app_metadataは開始時と完全一致、デモ管理者trueを保持。Auth設定・SQL/RLS/FK・本番/TodoApp/main/Production/課金変更なし。認証情報を出力せず、本人向け0600ファイルのPreview URLだけ更新。画像はGit外/tmp/codestep-deletion-preview-warning.png / success.png。この結果追記はローカル記録のみで追加pushなし。
+
+削除修正のPreview公開を妨げる問題は今回の確認範囲で見つからない。本番にはRPCが未適用であり、main反映/本番SQL/Auth/Productionは引き続き未承認。旧ポリシー移行など過去の未検証事項は今回の成功で解消扱いにしない。
+
+## 2026-10-17 Week12正式課題：GitHub ActionsでESLint（ローカル完了・push承認待ち）
+
+WorX AIの指定に合わせ、.github/workflows/lint.ymlと.eslintrc.jsonを追加。ESLint10.13.0/@typescript-eslint/parser8.71.2を固定開発依存へ追加し、eslint.config.mjsが指定JSONのno-debugger:errorを直接読み込む。ESLint10のflat config用の橋渡しであり、.eslintrc.jsonは飾りではない。npm run lintは実ESLint、旧lintのTypeScript/未使用検査はnpm run typecheckへ維持。アプリ/UI/SQL/DB/Auth/環境値を変更しない。
+
+成功：npm run lint（警告/エラー0）、npm run typecheck、既存npm test58件。インメモリのTSXでdebuggerだけを検出し、同じコードからdebuggerを除くと成功することを確認。YAMLはjs-yamlで構文とtrigger/Node24/最小contents:read/実npm lintステップを検査。既存lock424パッケージのversion/integrityは全て不変、新規72件は追加した開発依存のため。Nodeの既存MODULE_TYPELESS_PACKAGE_JSON警告は今回のアプリ変更で解消しない。ビルド/実画面/DB試験はアプリと既存依存の版が不変のため再実行せず、前回結果を再利用する。
+
+未実施：コミット/push、GitHub Actions実行/履歴、課題提出用スクリーンショット。push対象はbonbabo108/codestepのcodex/admin-rls-portfolioのみ、main/Productionは対象外。pushでこのESLintワークフローと既存Vercel Preview自動ビルドが起動する見込み。workflowはDBキー不要、DB試験/デプロイ/課金設定変更を含まない。承認後は課題用5ファイルと必要なら本節だけを部分ステージし、以前からのREADME等・画像を混ぜない。GitHub上で指定2ファイルの存在とActionsのESLint成功が確認できるまで課題完了としない。
+
+## 2026-10-17 Week12 Actions実行成功（承認後）
+
+課題用5ファイルだけをd950f3fbb613fd97901cda4b903124a5d834a950へコミットし、codex/admin-rls-portfolioだけへpush成功、remote一致。既存6文書/画像の未コミット作業は除外・保持。GitHubの指定2ファイルと、push起動のESLint #1（run39031564825・同SHA/ref・Success・28秒）を実画面で確認。APIでもlintジョブ117392884673のInstall dependencies/Run ESLintを含む全ステップsuccessを確認。https://github.com/bonbabo108/codestep/actions/runs/39031564825 。再実行・再pushなし。提出画像はlint.yml画面で左ファイルツリーの.github/workflows/lint.ymlとルート.eslintrc.jsonを同時表示した画面、Actions実行詳細のSuccess/コミット/ブランチが見える画面。両タブを撮影用に保持。今回は画像ファイルを新規作成していない。main/Production/DB/Auth/Vercel設定/READMEの追加変更なし。本追記はローカル記録のみで追加commit/pushなし。課題の実装・push・実ESLint実行履歴確認は完了、本人による画像撮影とWorX AIへの提出は未実施。
+
+
 ## 2026-10-18 既存の型チェック・58テストをActionsへ追加（ローカル検証済み）
 
 .github/workflows/lint.ymlの既存Run ESLintの後ろにCheck TypeScript types（npm run typecheck）、Run tests（npm test）の2ステップだけを追加。Node24、npm ci、発火条件、contents:read、10分上限、既存のESLintを維持。continue-on-error等で検査を緩めず、前段の失敗時は後段検査を実行しない既定の挙動を使う。アプリ/画面/依存/型設定/58テスト/DB/Auth/環境値は変更しない。
@@ -349,6 +471,14 @@ release-readiness.mdを公開判断の入口とする。新しい本番SQLは最
 2026-10-18ローカルでワークフローと同じ順のnpm run lint→npm run typecheck→npm testが終了コード0、58成功/0失敗/0省略。YAML構文と実行順/Node24/権限/失敗を無視しない設定の静的確認も成功。既存のNode MODULE_TYPELESS_PACKAGE_JSON警告は残るがテスト失敗ではなく、今回変更しない。ビルド/画面/実DB試験は変更対象外のため再実行しない。
 
 既存run39031564825のESLint単独成功を読取APIで確認したが、新しい3検査のActions成功とは扱わない。現HEADはd950f3f、変更は未コミット/未pushで、新設定のGitHub Actions実行は未実施。pushはAGENTS.mdにより別途明示承認が必要。対象はcodex/admin-rls-portfolioのみで、既存連携によるVercel Preview自動更新を伴う。本番/main/DB/設定変更や、Actions成功を待つデプロイ制御は今回追加しない。既存の未コミット資料/画像は保持する。
+
+
+## 2026-10-18 3検査のActions成功（承認後）
+
+想定外の差分0・秘密情報パターン0を確認し、lint.ymlの4行と今回の2検証記録の節だけを部分ステージ。3ファイルをe2a772feb40c81f308b29678fd55ec15f9006babへコミットし、codex/admin-rls-portfolio限定でpush成功、remote一致。既存6文書と画像の未コミット作業は除外・保持。
+
+https://github.com/bonbabo108/codestep/actions/runs/39106514680 （ESLint #2）は同SHA/ref・push起動でSuccess。GitHub実画面とジョブAPI117613416165でRun ESLint／Check TypeScript types／Run testsを含む全ステップsuccessを確認。取得ログの集計はtests58/pass58/fail0/cancelled0/skipped0/todo0。ローカル成功からの推測ではなく、GitHub上の実行結果。既存のNodeモジュール種別警告を理由に検査を緩めず、再push/再実行なし。本番/main/マージ/DB/Auth/Vercel設定変更なし。今回のワークフローにデプロイや実DB試験は追加していない。完了結果の本追記だけローカル記録で、追加commit/pushは行わない。
+
 
 ## 2026-10-18 ESLint第1段階：基本3ルール追加（未コミット）
 
@@ -359,6 +489,13 @@ release-readiness.mdを公開判断の入口とする。新しい本番SQLは最
 本番/検証用の.envを複製せず、既存依存を参照するGit外の隔離コピーで、ダミー127.0.0.1接続と架空公開キーによるnpm run build -- --webpackが終了コード0、全7静的ページ生成成功。元のnext-env.d.tsを含む追跡ファイル全て（意図した.eslintrc.jsonを除く）が開始時のSHA-256と一致した後、判断/テスト記録へ本節だけ追記。実ブラウザ/実DB試験と新ルールのGitHub Actions実行は未実施。既存未コミット資料/画像は保持。コミット/push/デプロイ/本番・staging変更なし。
 
 次のReact Hooks段階は未着手。プラグインのESLint10互換性確認が必要。依存配列やEffect修正は認証・再取得・保存復元へ影響するため、警告回避だけの機械的変更はせず関連回帰で確認する。現lintのmax-warnings0ではwarnもCI失敗になる。
+
+
+## 2026-10-18 ESLint第1段階のpush・Actions成功（承認後）
+
+AGENTS.md/指定ブランチ/remote/差分を直前確認し、想定外変更0・限定機密パターン0。設定と今回の判断/検証記録だけの3ファイルをfaed87bc9d0a1a325905428f87a7b0dc32f63cc7へ選択コミットし、codex/admin-rls-portfolio限定push成功・remote一致。過去の未コミット6文書/画像は除外・保持。
+
+https://github.com/bonbabo108/codestep/actions/runs/39109478783 （ESLint #3）は今回のSHA/ref・push起動でSuccess。実画面とジョブ117622300638のAPIでESLint/型チェック/Run testsの成功を確認し、ログでtests58/pass58/fail0/cancelled0/skipped0/todo0を照合。ルール緩和・テスト変更・再実行・追加pushなし。main/マージ/Production/本番・staging Supabase/Vercel設定変更なし。本追記はローカル記録だけで追加commit/pushしない。
 
 
 ## 2026-10-18 ESLint第2段階：React Hooks正式導入の検証
@@ -380,3 +517,56 @@ release-readiness.mdを公開判断の入口とする。新しい本番SQLは最
 既存のNodeモジュール種別警告、隔離ビルドでの複数lockfileによるNextルート推定警告は観測したが検査は成功。ルール緩和・自動修正・useEffect依存配列の変更なし。記録は既存2文書へ追記のみ。
 
 未実施：Turbopack経路、実ブラウザ/実DB試験、今回設定のGitHub Actions実行。静的検査と既存モック等の58テストは、実DB/Auth/RLSや通信競合の動作保証ではない。アプリ未変更のため無関係な実環境試験は繰り返さない。コミット/push/デプロイは依頼により実施しない。
+
+
+## 2026-10-18 ESLint第2段階のpush・Actions成功（承認後）
+
+AGENTS.md/指定ブランチ/remote/差分を直前確認。React Hooks導入の設定/依存4ファイルと今回の判断/検証記録2節だけを選択し、6ファイルをd82ad0e303fe6ca2d8f91f438ecb40179e14db91へコミット。codex/admin-rls-portfolio限定push成功、GitHubのrefも同SHAと一致。機密パターン一致0、既存lockのversion/integrity不変、作業ツリー105ファイルはcommit/push後も開始時ハッシュと一致し、以前からの未コミット資料/画像を保持した。
+
+https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）は同SHA/ref・push起動・attempt1でcompleted/success。ジョブ117634093113のInstall dependencies/Run ESLint/Check TypeScript types/Run testsを含む全ステップsuccessをAPIで確認。ログでも実eslint/tsc/node --testの起動、tests58/pass58/fail0/cancelled0/skipped0/todo0を照合した。コミット内の既存4＋Hooks2ルールは全てerror、検査対象/除外不変。今回はESLintが6ルールをまとめて検査し成功した結果で、ルールごとの別ジョブではない。
+
+アプリ/UI/認証/依存配列/Supabase/DB/Actions設定への追加変更・ルール緩和・再実行・追加pushなし。main/マージ/Production操作なし。既存Preview自動更新はユーザー了承済みだが、今回そのREADY/実画面/実DBを確認したとは扱わない。今回のActionsはビルドを実行せず、Turbopack/実画面/実DB/Auth/RLSの再検証は未実施。前回ローカルのダミー接続Webpackビルドと意図的なHooks違反検出は成功済み。本節はローカル記録だけで追加commit/pushしない。
+
+
+## 2026-10-18 staging緊急停止・復旧試験：直前照合成功・資格情報待ち
+
+今回の明示承認後、対象codestep-staging（ezjzgebehancbxqpgany）を照合し、まとめたREAD ONLYの1要求で19:36 JSTの通常ACL/ポリシー/削除関数定義/所有者/RLS/ロール状態が記録と一致。Supabaseツール計2回（プロジェクト識別1・SQL読取1）。旧0600一時資格情報ファイルが消失しており実JWTを準備できないため、停止前で保留した。Auth変更・service_roleでの代用・古い試験スクリプトの再実行なし。停止/復旧SQL原本は不変・両方未実行、試験問題/進捗の作成/削除/残存は各0。停止中/復旧後/旧JWT/実ロールバックは未検証。判定は一部成功・追加確認必要（直前照合のみ）。詳細はdocs/emergency-drill-20261018/review.md冒頭とexecution-results.json。アプリ変更・無関係な再テスト・commit/push/デプロイ・本番アクセスなし。既存staging試験アカウント情報の安全なファイルが利用可能になれば、今回の同じ承認範囲で続行する。
+
+
+## 2026-10-18 認証情報なしでの確認範囲と停止試験の保留
+
+ユーザーは旧資格情報の所在不明と回答。今回はSupabaseアクセス/追加承認要求0、停止/復旧/テストデータ/Auth変更なし。SQL原本2本のSHAとMarkdown全文一致のローカル4照合は成功。DBの最新根拠は前回19:36:25 JSTの読み取りであり再取得していない。実ログイン/実JWT/停止中の拒否・本人保存/復旧後の実動作は未実施。匿名APIはアカウント不要だがstaging公開キー等が必要で今回は未実行。所有者/service_role/手作りJWTで一般利用者の試験を代用せず、試験手段が揃うまで停止/復旧を開始しない。所在質問や探索も繰り返さない。新規架空Auth2件・新規管理者1件・必要なprofile最大1件と専用IDの片付けをまとめた別承認案をreview.md冒頭に記載（未承認/未作成）。認証情報はGit外0700/0600で扱う案とし、今回生成/保存なし。既存成功試験の再実行、commit/push/デプロイなし。
+
+
+## 2026-10-19 staging緊急停止・復旧の実施：一部成功・片付け未完了
+
+明示承認後、新規Auth2件の通常ログイン、専用2問題/1進捗/1profileの作成成功。原本stop/resumeを変更せず適用し、最終04:14 JSTのACLは開始前の安全な状態と完全一致、RLS/ポリシー/関数定義不変。停止観測時の他トランザクション0件。Auth/profile/progressに試験作成分を超える件数増加を検知して通常検査を中断し復旧を優先した。停止中の実API閲覧/拒否・旧JWT拒否・本人保存、復旧後CRUD/一般拒否、実ロールバックは未実施。新規分だけの片付け要求がMCPのInvalid or expired requestStateとなり再送/迂回なし。読み取りで今回分2問題/1進捗/1profile/Auth2が残存、権限は安全な復旧状態と確認。新規試験管理者も保持されており片付け未完了。根本原因未特定のツール許可状態エラーで、DB構文エラーと断定しない。Supabaseツール10回、試験API10要求＋接続確認1＋ネットワーク失敗1。詳細・今回ID・全観測はdocs/emergency-drill-20261018/live-run-results.jsonとreview.md冒頭。既存アプリ/依存/58テスト不変、無関係な再検査・本番アクセス・commit/push/デプロイなし。
+
+
+## 2026-10-19 04:21 JST 片付けSQLの再承認前安全確認（未実行）
+
+プロジェクト識別/権限確認を再利用し、不足していた3表の連鎖経路と対象件数だけREAD ONLYの1要求で確認。記録済み2問題/1進捗/1profileとラベル/紐付けが一致、対象外関連進捗0。FK2件はNO ACTION、独自トリガー/ルール/子表なし、内部8トリガーはFK検査のみ。元cleanup SQLは保持し、削除前全件数/メタデータ検査と処理中ロックを追加したlive-cleanup-data-reviewed.sql（SHA cb183dcda4a43c5ca113034560cf1d72d726418e989425486ba777c32ecf84f1）を別原本として準備。全DELETEは記録IDのWHERE限定、単一TX・削除後件数照合も維持。新原本のDB実行/実ロールバックは未実施。削除ツール再送、Auth/本番/設定変更なし。旧requestStateエラー解消は未確認で、新たな明示承認と正常なツール許可が揃うまで実行しない。詳しくはreview.md冒頭/cleanup-final-review.json。
+
+## 2026-10-19 10:56 JST 承認済み4行の片付け成功
+
+明示承認された改訂原本cb183dcda4a43c5ca113034560cf1d72d726418e989425486ba777c32ecf84f1だけをstagingに1回・単一TXで実行。問題2/進捗1/profile1を削除し、別READ ONLYで対象0、対象外3表の件数/全行照合値不変、Auth10件とメタデータ不変、安全なACL34359cdf23e85be0c1309b1280d24020・RLS/ポリシー/関数不変を確認。試験Auth2件・試験管理者trueは今回の承認条件で残す。想定外件数増加の原因は未特定のままで不明行は維持。停止/復旧の権限検査は成功、停止中実API/旧JWT/本人保存と復旧後CRUD/一般拒否・意図的ロールバックは未実施。試験全体は一部成功。Supabase4回（識別1/読取2/削除1）、追加業務承認0、再送0。許可画面回数は取得不能。詳細はreview.md冒頭/approved-cleanup-result.json。原本・アプリ・既存未コミット作業を保持し、本番/Auth/権限の変更・無関係な再テスト・commit/push/デプロイなし。
+
+
+## 2026-10-19 最終仕上げ：認証URL・安全なデモ・評価証拠
+
+- 作業場所 /Users/taimatsutouya/codestep、ブランチcodex/admin-rls-portfolio、worktree1件、開始HEAD d82ad0e。引継ぎ資料は実際には変更6ファイルと未追跡記録・画像で、30ファイルを/private/tmpの0600アーカイブへ保全。reset/clean/変更破棄なし。codestep_key_files.txtは未操作。
+- 提供されたスマートフォン画像のlocalhost誤遷移を受け、Supabaseダッシュボードを読み取り。staging ezjzgebehancbxqpganyと本番 xdnmlfoblqdygsnhkxxpの両方でSite URL=http://localhost:3000、Redirect URLsなしを確認。DBの行/権限やAuthユーザーの再調査はしていない。設定の保存なし。必要な変更案はauth-release-checklist.mdへ。
+- 登録/再送のemailRedirectToを現在originの/loginへ指定。確認後のセッション検出→学習画面、確認待ちとログイン成功の区別、期限切れ案内、固定エラー文、60秒再送間隔を実装。メール確認を無効化しない。実配信・公開URLへ戻る実メール確認は未実施。
+- /demoにメモリ内の架空3問・回答/解説/クリア・問題作成/編集/削除取消/確定・初期化を追加。実Authフラグ・共通パスワード・DB書込は使用しない。通常画面のAuth表示枠を動的に分離し、デモから通常画面への先読みを無効化。同じ判定/入力検証を再利用。共通フッターとデモ導線も追加。
+- 外部Week9資料をGoogle Driveで本文/メタデータ読取。更新日時は前回と同じ2026-10-15T01:34:41.267Z。外部編集なし。final-design.mdに課題/解決策/全16列ER/画面遷移/機能一覧、evaluation-evidence.mdに評価項目と証拠・限界を作成。READMEの重複・旧状態説明を整理しUTF-8で保存。旧PNG原本は不変。
+- CIにmain pushとダミー接続Webpackビルドを追加。既存push/PRのESLint・型検査・テストを維持。
+- 成功：npm test 62件（従来58+認証4）、npm run lint、npm run typecheck、ダミー接続npm run build -- --webpack。最終ソースに対する確認結果は後続の追記も参照。
+- 実Chrome＋ダミー接続ビルド：デモ正解/不正解/CRUD/削除取消/確定/初期化、390pxで横幅390=scrollWidth390。架空ローカルAuth APIで登録確認待ち/再送/期限切れURLエラー除去/ログイン遷移/ログイン済みloginから学習画面/一般管理拒否・セッション維持/ログアウトを確認。架空APIは実Auth/RLSの証明ではない。未認証ログインの専用エラー文は初期fixtureのAPIバージョン応答差で汎用文になり、SDKモック条件の修正が必要。
+- 既存staging実CRUD・本人保存・RLS拒否の成功は再利用。緊急停止・復旧/旧7→4/片付けを再実施していない。既存試験記録はそのまま保持。
+- 初回ローカル起動はsandboxのlisten EPERMで失敗。ツール実行許可後に127.0.0.1:3100で成功。Vercel MCPの指定scope読取は403。ローカルVercel CLIなし。正常にログイン済みのダッシュボードで公開先を読み取り確認する。権限設定は変更しない。
+- 本番DB・Auth設定/ユーザー・RLS・環境変数・Productionは変更なし。mainマージは本番前提が揃うまで保留。今回のPR作成要求を作業ブランチcommit/push/Previewの承認として扱い、他ブランチへはpushしない。
+
+
+2026-10-19追記：リモートmainは274eb79（PR #2で提出用READMEをcodestep-portfolioへ集約）へ進んでいた。fetchで差分がREADME削除のみと確認。ユーザーも提出用だけへの集約を選択。改訂したローカルREADMEはdocs/implementation-guide.mdへ移動して保全し、アプリ本体READMEはmainと同じ削除状態にする。提出用READMEはcodestep-portfolioの別ブランチ/PRで修正する。VercelダッシュボードではProduction=274eb79/Readyを確認。以前の35c13e3は現在のProduction SHAではないが、今回の新機能は依然未反映。
+
+認証SDKの旧形式error_codeとAPIバージョン付きcodeの両応答で、未確認メールの専用案内へ変換されることを追加検証し成功（同じテスト内、全62件の件数は不変）。初期ブラウザfixtureにはこの応答条件がなく、当該1画面の専用文言は実ブラウザ未検証のまま区別する。最終ソースでlint/typecheck/ダミーWebpackビルドを再実行し成功。画像原本は保持。今回の画像と新資料のUTF-8・ローカルリンク検査も成功。

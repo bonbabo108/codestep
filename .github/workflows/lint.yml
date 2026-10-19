@@ -1,8 +1,8 @@
-name: ESLint
+name: Quality checks
 
 on:
   push:
-    branches: [codex/admin-rls-portfolio]
+    branches: [main, codex/admin-rls-portfolio]
   pull_request:
 
 permissions:
@@ -28,3 +28,9 @@ jobs:
         run: npm run typecheck
       - name: Run tests
         run: npm test
+      - name: Build with dummy Supabase configuration
+        run: npm run build -- --webpack
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: local-test-placeholder
+          NEXT_TELEMETRY_DISABLED: '1'

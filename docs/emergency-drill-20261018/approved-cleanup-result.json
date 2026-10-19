@@ -1,0 +1,498 @@
+{
+  "project_id": "ezjzgebehancbxqpgany",
+  "project_name": "codestep-staging",
+  "verdict": "cleanup_success; emergency_drill_partial_success",
+  "sql_path": "docs/emergency-drill-20261018/live-cleanup-data-reviewed.sql",
+  "sql_sha256": "cb183dcda4a43c5ca113034560cf1d72d726418e989425486ba777c32ecf84f1",
+  "before": {
+    "questions": 2,
+    "exact_questions": 2,
+    "progress": 1,
+    "exact_progress": 1,
+    "profiles": 1,
+    "exact_profiles": 1,
+    "unrecorded_attached_progress": 0,
+    "other_progress_for_trial_profile": 0,
+    "trial_accounts": 2,
+    "trial_admin_flags": 1,
+    "observed_at": "2026-10-19 01:56:03.574497+00",
+    "current_user": "postgres",
+    "read_only": "on",
+    "acl_fingerprint": "34359cdf23e85be0c1309b1280d24020",
+    "policy_fingerprint": "c65a21b9b4319768ec1cd689eaac0cc7",
+    "functions": [
+      {
+        "args": "uuid, boolean, boolean",
+        "owner": "postgres",
+        "proname": "delete_question_with_progress",
+        "proconfig": [
+          "search_path=\"\"",
+          "lock_timeout=5s"
+        ],
+        "prosecdef": true,
+        "schema_name": "codestep_private",
+        "anon_execute": false,
+        "definition_sha256": "87f2aab0c5ce1e704cb3f2b415ab32025407b2247c3e806012480a5747ef5b06",
+        "authenticated_execute": true
+      },
+      {
+        "args": "uuid, boolean, boolean",
+        "owner": "postgres",
+        "proname": "delete_question_with_progress",
+        "proconfig": [
+          "search_path=\"\""
+        ],
+        "prosecdef": false,
+        "schema_name": "public",
+        "anon_execute": false,
+        "definition_sha256": "d0351e1eddb7bbc60beb5cdc43999fba58c71475c0906f11acb66d9f15f733bd",
+        "authenticated_execute": true
+      }
+    ],
+    "tables": [
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "profiles",
+        "force_rls": false
+      },
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "questions",
+        "force_rls": false
+      },
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "user_progress",
+        "force_rls": false
+      }
+    ],
+    "columns": [
+      {
+        "type": "uuid",
+        "table": "profiles",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "profiles",
+        "column": "name",
+        "not_null": true
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "profiles",
+        "column": "created_at",
+        "not_null": false
+      },
+      {
+        "type": "uuid",
+        "table": "questions",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "title",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "question_text",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "answer_code",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "explanation",
+        "not_null": false
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "category",
+        "not_null": false
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "questions",
+        "column": "created_at",
+        "not_null": false
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "user_id",
+        "not_null": true
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "question_id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "user_progress",
+        "column": "submitted_code",
+        "not_null": false
+      },
+      {
+        "type": "boolean",
+        "table": "user_progress",
+        "column": "is_completed",
+        "not_null": false
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "user_progress",
+        "column": "updated_at",
+        "not_null": false
+      }
+    ],
+    "browser_role_memberships": 0,
+    "browser_elevated_roles": 0,
+    "private_usage": true,
+    "questions_state": {
+      "count": 3,
+      "fingerprint": "00225b17a327225c833f2172c7bdf6e8"
+    },
+    "profiles_state": {
+      "count": 4,
+      "fingerprint": "f64dcd465ac6e69103f8c49f80d9a05f"
+    },
+    "progress_state": {
+      "count": 4,
+      "fingerprint": "89350a091eed4e308173d2d3bd12a6ca"
+    },
+    "auth_state": {
+      "count": 10,
+      "metadata_fingerprint": "a145a22d095266fcb93dd381c3ee29cc"
+    },
+    "other_active_connections": 0,
+    "other_transactions": 0
+  },
+  "after": {
+    "questions": 0,
+    "exact_questions": 0,
+    "progress": 0,
+    "exact_progress": 0,
+    "profiles": 0,
+    "exact_profiles": 0,
+    "unrecorded_attached_progress": 0,
+    "other_progress_for_trial_profile": 0,
+    "trial_accounts": 2,
+    "trial_admin_flags": 1,
+    "observed_at": "2026-10-19 01:56:57.608419+00",
+    "current_user": "postgres",
+    "read_only": "on",
+    "acl_fingerprint": "34359cdf23e85be0c1309b1280d24020",
+    "policy_fingerprint": "c65a21b9b4319768ec1cd689eaac0cc7",
+    "functions": [
+      {
+        "args": "uuid, boolean, boolean",
+        "owner": "postgres",
+        "proname": "delete_question_with_progress",
+        "proconfig": [
+          "search_path=\"\"",
+          "lock_timeout=5s"
+        ],
+        "prosecdef": true,
+        "schema_name": "codestep_private",
+        "anon_execute": false,
+        "definition_sha256": "87f2aab0c5ce1e704cb3f2b415ab32025407b2247c3e806012480a5747ef5b06",
+        "authenticated_execute": true
+      },
+      {
+        "args": "uuid, boolean, boolean",
+        "owner": "postgres",
+        "proname": "delete_question_with_progress",
+        "proconfig": [
+          "search_path=\"\""
+        ],
+        "prosecdef": false,
+        "schema_name": "public",
+        "anon_execute": false,
+        "definition_sha256": "d0351e1eddb7bbc60beb5cdc43999fba58c71475c0906f11acb66d9f15f733bd",
+        "authenticated_execute": true
+      }
+    ],
+    "tables": [
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "profiles",
+        "force_rls": false
+      },
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "questions",
+        "force_rls": false
+      },
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "user_progress",
+        "force_rls": false
+      }
+    ],
+    "columns": [
+      {
+        "type": "uuid",
+        "table": "profiles",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "profiles",
+        "column": "name",
+        "not_null": true
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "profiles",
+        "column": "created_at",
+        "not_null": false
+      },
+      {
+        "type": "uuid",
+        "table": "questions",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "title",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "question_text",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "answer_code",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "explanation",
+        "not_null": false
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "category",
+        "not_null": false
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "questions",
+        "column": "created_at",
+        "not_null": false
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "user_id",
+        "not_null": true
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "question_id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "user_progress",
+        "column": "submitted_code",
+        "not_null": false
+      },
+      {
+        "type": "boolean",
+        "table": "user_progress",
+        "column": "is_completed",
+        "not_null": false
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "user_progress",
+        "column": "updated_at",
+        "not_null": false
+      }
+    ],
+    "browser_role_memberships": 0,
+    "browser_elevated_roles": 0,
+    "private_usage": true,
+    "questions_state": {
+      "count": 3,
+      "fingerprint": "00225b17a327225c833f2172c7bdf6e8"
+    },
+    "profiles_state": {
+      "count": 4,
+      "fingerprint": "f64dcd465ac6e69103f8c49f80d9a05f"
+    },
+    "progress_state": {
+      "count": 4,
+      "fingerprint": "89350a091eed4e308173d2d3bd12a6ca"
+    },
+    "auth_state": {
+      "count": 10,
+      "metadata_fingerprint": "a145a22d095266fcb93dd381c3ee29cc"
+    },
+    "other_active_connections": 0,
+    "other_transactions": 0
+  },
+  "prechecks": {
+    "targetCounts": true,
+    "references": true,
+    "accounts": true,
+    "safeAcl": true,
+    "unchangedMetadata": true,
+    "authUnchanged": true,
+    "readOnly": true
+  },
+  "postchecks": {
+    "allFourRowsRemoved": true,
+    "outsideDataUnchanged": true,
+    "authUnchanged": true,
+    "safeAclUnchanged": true,
+    "rlsPoliciesFunctionsUnchanged": true,
+    "noRelatedRemainders": true
+  },
+  "execution": {
+    "requests": 1,
+    "transaction": "BEGIN / COMMIT, guarded 3 DELETE statements",
+    "toolReturnedNoError": true,
+    "rowsReturned": [],
+    "confirmedWithSeparateRead": true,
+    "retried": false
+  },
+  "deleted": {
+    "questions": 2,
+    "user_progress": 1,
+    "profiles": 1,
+    "auth_users": 0
+  },
+  "trial_remaining": {
+    "questions": 0,
+    "user_progress": 0,
+    "profiles": 0,
+    "auth_users": 2,
+    "admin_flag_true": 1
+  },
+  "testIds": {
+    "users": {
+      "admin": {
+        "id": "d2c1b05b-f104-48d3-b01c-0f348074d53a",
+        "created": true,
+        "tokenExpiresAt": 1792334670
+      },
+      "learner": {
+        "id": "a4bbe847-4a60-4574-b00e-dce8f4e10adc",
+        "created": true,
+        "tokenExpiresAt": 1792334671
+      }
+    },
+    "questionIds": [
+      "2f1569c5-8375-4c95-a431-761dff17bbdd",
+      "9757b1d9-47ae-4a15-9812-1484c248de6f"
+    ],
+    "progressIds": [
+      "4f62451b-8d24-43b2-8e89-92f55d3d4111"
+    ],
+    "profileId": "a4bbe847-4a60-4574-b00e-dce8f4e10adc"
+  },
+  "preservation": {
+    "outsideThreeTableDataCountAndFingerprintsEqual": true,
+    "authIdAndAppMetadataCountAndFingerprintEqual": true,
+    "aclPoliciesFunctionsOwnersRlsColumnsUnchanged": true,
+    "scope": "immediately before vs after this approved cleanup; does not resolve earlier unexpected additions"
+  },
+  "earlier_count_increase": {
+    "expected": {
+      "auth": 8,
+      "profiles": 4,
+      "progress": 4,
+      "questions": 5
+    },
+    "actual": {
+      "auth": 10,
+      "profiles": 5,
+      "progress": 5,
+      "questions": 5
+    },
+    "cause": "unconfirmed; no additional investigation this cleanup",
+    "unknownRowsKept": true
+  },
+  "drill": {
+    "stopAcl": "passed",
+    "publicAndInternalExecuteRevoked": "passed_by_catalog",
+    "safeResumeAcl": "passed",
+    "noOtherTransactionsAtStopObservation": "passed_point_in_time_only",
+    "realLoginAndPreStopAdminInsertAndOwnSave": "passed",
+    "stoppedApiReadWriteRpcAndOldJwtTests": "not_run",
+    "stoppedOwnProgressSaveAndRestore": "not_run",
+    "restoredAdminCrudAndGeneralRefusal": "not_run",
+    "deliberateFailureRollback": "not_run"
+  },
+  "calls": [
+    {
+      "op": "get_project",
+      "purpose": "immediate_staging_identity"
+    },
+    {
+      "op": "execute_sql",
+      "purpose": "before_approved_cleanup",
+      "readOnly": true
+    },
+    {
+      "op": "execute_sql",
+      "purpose": "approved_four_row_cleanup",
+      "readOnly": false,
+      "sql_sha256": "cb183dcda4a43c5ca113034560cf1d72d726418e989425486ba777c32ecf84f1"
+    },
+    {
+      "op": "execute_sql",
+      "purpose": "after_approved_cleanup",
+      "readOnly": true
+    }
+  ],
+  "additionalBusinessApprovalRequests": 0,
+  "platformPermissionPromptCount": "not exposed by tool results; not inferred",
+  "productionAccess": false,
+  "authModification": false,
+  "rlsOrPrivilegesOrFunctionsModified": false,
+  "commitPushDeploy": false
+}

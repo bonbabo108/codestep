@@ -1,0 +1,224 @@
+{
+  "project_id": "ezjzgebehancbxqpgany",
+  "phase": "preflight_only_credentials_unavailable",
+  "verdict": "一部成功・追加確認必要（直前照合のみ成功、停止・復旧試験は未着手）",
+  "observed": {
+    "observed_at": "2026-10-18 10:36:25.425606+00",
+    "current_user": "postgres",
+    "read_only": "on",
+    "acl_fingerprint": "34359cdf23e85be0c1309b1280d24020",
+    "policy_fingerprint": "c65a21b9b4319768ec1cd689eaac0cc7",
+    "functions": [
+      {
+        "args": "uuid, boolean, boolean",
+        "owner": "postgres",
+        "proname": "delete_question_with_progress",
+        "proconfig": [
+          "search_path=\"\"",
+          "lock_timeout=5s"
+        ],
+        "prosecdef": true,
+        "schema_name": "codestep_private",
+        "anon_execute": false,
+        "definition_sha256": "87f2aab0c5ce1e704cb3f2b415ab32025407b2247c3e806012480a5747ef5b06",
+        "authenticated_execute": true
+      },
+      {
+        "args": "uuid, boolean, boolean",
+        "owner": "postgres",
+        "proname": "delete_question_with_progress",
+        "proconfig": [
+          "search_path=\"\""
+        ],
+        "prosecdef": false,
+        "schema_name": "public",
+        "anon_execute": false,
+        "definition_sha256": "d0351e1eddb7bbc60beb5cdc43999fba58c71475c0906f11acb66d9f15f733bd",
+        "authenticated_execute": true
+      }
+    ],
+    "tables": [
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "profiles",
+        "force_rls": false
+      },
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "questions",
+        "force_rls": false
+      },
+      {
+        "rls": true,
+        "owner": "postgres",
+        "table": "user_progress",
+        "force_rls": false
+      }
+    ],
+    "columns": [
+      {
+        "type": "uuid",
+        "table": "profiles",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "profiles",
+        "column": "name",
+        "not_null": true
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "profiles",
+        "column": "created_at",
+        "not_null": false
+      },
+      {
+        "type": "uuid",
+        "table": "questions",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "title",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "question_text",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "answer_code",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "explanation",
+        "not_null": false
+      },
+      {
+        "type": "text",
+        "table": "questions",
+        "column": "category",
+        "not_null": false
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "questions",
+        "column": "created_at",
+        "not_null": false
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "id",
+        "not_null": true
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "user_id",
+        "not_null": true
+      },
+      {
+        "type": "uuid",
+        "table": "user_progress",
+        "column": "question_id",
+        "not_null": true
+      },
+      {
+        "type": "text",
+        "table": "user_progress",
+        "column": "submitted_code",
+        "not_null": false
+      },
+      {
+        "type": "boolean",
+        "table": "user_progress",
+        "column": "is_completed",
+        "not_null": false
+      },
+      {
+        "type": "timestamp with time zone",
+        "table": "user_progress",
+        "column": "updated_at",
+        "not_null": false
+      }
+    ],
+    "browser_role_memberships": 0,
+    "browser_elevated_roles": 0,
+    "private_usage": true,
+    "questions_state": {
+      "count": 3,
+      "fingerprint": "00225b17a327225c833f2172c7bdf6e8"
+    },
+    "profiles_state": {
+      "count": 3,
+      "fingerprint": "a2fece08ed73bb2d62f6a4f41bd81fc4"
+    },
+    "progress_state": {
+      "count": 3,
+      "fingerprint": "a684b8f11a384d49a1de5d4f368a1f58"
+    },
+    "auth_state": {
+      "count": 6,
+      "metadata_fingerprint": "cbb283756908e45ceb958073d22ad04b"
+    },
+    "other_active_connections": 0,
+    "other_transactions": 0
+  },
+  "checks": {
+    "acl": true,
+    "policy": true,
+    "functions": true,
+    "roles": true,
+    "rls": true,
+    "readOnly": true
+  },
+  "calls": [
+    {
+      "op": "get_project",
+      "id": "ezjzgebehancbxqpgany"
+    },
+    {
+      "op": "execute_sql",
+      "purpose": "preflight",
+      "project": "ezjzgebehancbxqpgany",
+      "readOnly": true
+    }
+  ],
+  "operations": {
+    "stop": "not_executed",
+    "resume": "not_executed",
+    "questionsCreated": 0,
+    "questionsDeleted": 0,
+    "progressCreated": 0,
+    "progressDeleted": 0,
+    "testDataRemaining": 0,
+    "authChanged": false,
+    "rlsChanged": false,
+    "functionsChanged": false,
+    "permissionsChanged": false
+  },
+  "blocker": "Previously documented 0600 temporary credentials are absent. No replacement environment credentials found; no Auth changes or high-privilege substitute attempted.",
+  "permissionAccounting": {
+    "additionalBusinessApprovalRequests": 0,
+    "credentialLocationQuestions": 1,
+    "platformPermissionDialogs": "not exposed in tool result"
+  },
+  "sql_sha256": {
+    "stop.sql": "d2a00c818211768268534104ff5ee250d1c83624f938a16a39923b64b84a7a83",
+    "resume.sql": "3f555329200cb3ea8778abe98b5587496bb7bdd40eb19c563641f9089947a9e4",
+    "execution-preflight.sql": "f39554e3090479a08c5adca39538bbbb132e26d7ef4ec52c689a499652c0f0ed"
+  }
+}
