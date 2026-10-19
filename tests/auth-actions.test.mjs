@@ -48,7 +48,7 @@ test('再送の拒否や送信上限を成功扱いにせず、生の内部エ�
         [modern ? 'code' : 'error_code']: 'email_not_confirmed', msg: 'private details',
       }), { status: 400, headers: { 'Content-Type': 'application/json', ...(modern ? { 'X-Supabase-Api-Version': '2024-01-01' } : {}) } }) },
     })
-    await assert.rejects(authenticate(client, 'learner@example.invalid', 'fictional-password', false), error => authErrorMessage(error) === '確認メールからメールアドレスを確認してください。')
+    await assert.rejects(authenticate(client, 'learner@example.invalid', 'fictional-password', false), error => /確認がまだ完了/.test(authErrorMessage(error)) && /再送/.test(authErrorMessage(error)))
   }
 })
 
@@ -57,4 +57,6 @@ test('期限切れ・使用済みの確認リンクを固定文言へ変換し�
   assert.match(confirmationError(new URL('https://preview.example/login?error_code=otp_expired')), /再送/)
   assert.doesNotMatch(confirmationError(new URL('https://preview.example/login#error_description=private-value')), /private-value/)
   assert.equal(confirmationError(new URL('https://preview.example/login')), '')
+  assert.match(confirmationError(new URL('https://preview.example/login#access_token=fictional&refresh_token=fictional'), true), /ログイン処理/)
+  assert.equal(confirmationError(new URL('https://preview.example/login#access_token=fictional'), false), '')
 })

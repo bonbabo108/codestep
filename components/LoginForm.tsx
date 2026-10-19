@@ -13,6 +13,7 @@ import { useAuth } from '@/components/AuthProvider'
 export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [isSignUp, setIsSignUp] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -20,6 +21,7 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
   const [canResend, setCanResend] = useState(false)
   const [cooldown, setCooldown] = useState(false)
   const lock = useRef(createOperationLock())
+  const emailInput = useRef<HTMLInputElement>(null)
   const router = useRouter()
   const { status, pending, session, isAdmin, error: sessionError, refresh, signOut } = useAuth()
   const unavailable = loading || status === 'loading' || pending
@@ -33,7 +35,7 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
   useEffect(() => {
     if (status === 'loading') return
     const url = new URL(window.location.href)
-    const message = confirmationError(url)
+    const message = confirmationError(url, status === 'error')
     if (!message) return
     setError(message)
     setCanResend(!adminOnly)
@@ -52,14 +54,16 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
   }, [cooldown])
 
   async function handleResend() {
-    if (unavailable || cooldown || !email.trim() || !lock.current.acquire()) return
+    const address = emailInput.current?.value.trim() ?? ''
+    if (unavailable || cooldown || !address || !emailInput.current?.reportValidity() || !lock.current.acquire()) return
+    setEmail(address)
     setLoading(true)
     setError('')
     setNotice('')
     setCooldown(true)
     try {
-      await resendConfirmation(supabase, email, window.location.origin)
-      setNotice('確認待ちのアカウントであれば確認メールが送信されます。迷惑メールフォルダも確認してください。')
+      await resendConfirmation(supabase, address, window.location.origin)
+      setNotice('確認待ちのアカウントであれば確認メールが送信されます。届いたメールのうち、いちばん新しい確認リンクを1回だけ開いてください。迷惑メールフォルダも確認してください。')
     } catch (cause) {
       setError(authErrorMessage(cause))
     } finally {
@@ -71,16 +75,22 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (unavailable || (adminOnly && session) || !lock.current.acquire()) return
+    // 自動入力でchangeイベントが発生しない端末でも、実際のフォーム値を送る。
+    const form = new FormData(e.currentTarget as HTMLFormElement)
+    const address = String(form.get('email') ?? '').trim()
+    const enteredPassword = String(form.get('password') ?? '')
+    setEmail(address)
     setLoading(true)
     setError('')
     setNotice('')
     try {
-      const outcome = await authenticate(supabase, email, password, !adminOnly && isSignUp, confirmationRedirect(window.location.origin))
+      const outcome = await authenticate(supabase, address, enteredPassword, !adminOnly && isSignUp, confirmationRedirect(window.location.origin))
       if (outcome === 'confirm-email') {
-        setNotice('確認メールを確認してください。確認後にログインできます。')
+        setNotice('登録を受け付けました。いちばん新しい確認メールを開いてください。メール確認前はログインできません。すでに登録済みの場合は、通常のログインまたは確認メールの再送をお試しください。')
         setCanResend(true)
         setCooldown(true)
         setPassword('')
+        setShowPassword(false)
         setIsSignUp(false)
         return
       }
@@ -115,7 +125,7 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f9fc] flex items-center justify-center p-5">
+    <main className="auth-surface min-h-screen bg-[#f7f9fc] text-slate-900 flex items-center justify-center p-5">
       <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
         <div className="bg-blue-600 px-8 py-10 text-center">
           <div className="flex justify-center mb-4">
@@ -135,11 +145,15 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label htmlFor="email" className="block text-sm font-bold text-slate-700 mb-2">メールアドレス</label>
-              <input id="email" type="email" required disabled={unavailable} value={email} onChange={(e) => setEmail(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="hello@example.com" />
+              <input ref={emailInput} id="email" name="email" type="email" autoComplete="email" autoCapitalize="none" autoCorrect="off" spellCheck={false} required disabled={unavailable} value={email} onChange={(e) => setEmail(e.target.value)} className="auth-input w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="hello@example.com" />
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-bold text-slate-700 mb-2">パスワード (6文字以上)</label>
-              <input id="password" type="password" required minLength={6} disabled={unavailable} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="••••••••" />
+              <input id="password" name="password" type={showPassword ? 'text' : 'password'} autoComplete={isSignUp ? 'new-password' : 'current-password'} required minLength={6} disabled={unavailable} value={password} onChange={(e) => setPassword(e.target.value)} className="auth-input w-full h-12 rounded-xl border border-slate-200 bg-slate-50 px-4 text-base focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition" placeholder="6文字以上" />
+              <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+                <input type="checkbox" checked={showPassword} disabled={unavailable} onChange={e => setShowPassword(e.target.checked)} />
+                パスワードを表示する
+              </label>
             </div>
 
             {sessionError && <p role="alert" className="text-sm text-rose-700">{sessionError}</p>}
@@ -153,15 +167,15 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
           </form>
 
           {!adminOnly && canResend && <div className="mt-4 space-y-2">
-            <Button type="button" disabled={unavailable || cooldown} onClick={() => {
-              const input = document.getElementById('email') as HTMLInputElement | null
-              if (input?.reportValidity()) void handleResend()
-            }} className="w-full">{cooldown ? '再送は60秒ほど待ってください' : '確認メールを再送する'}</Button>
-            <p className="text-xs text-slate-500">確認後は自動で学習画面へ進みます。別のブラウザで確認した場合は、元の画面からログインしてください。</p>
+            <Button type="button" disabled={unavailable || cooldown} onClick={() => void handleResend()} className="w-full">{cooldown ? '再送は60秒ほど待ってください' : '確認メールを再送する'}</Button>
+            <p className="text-xs text-slate-600">登録時のメールアドレスを上に入力してください。再送にパスワードは不要です。再送後は古いメールを使わず、最新のリンクをChromeなどの通常のブラウザで開いてください。</p>
+            <p className="text-xs text-slate-600">確認に成功すると学習画面へ進みます。別の端末・ブラウザで確認した場合は、この画面で通常のログインを行ってください。</p>
           </div>}
 
+          {!adminOnly && !canResend && <button type="button" disabled={unavailable} onClick={() => { setCanResend(true); setIsSignUp(false); setError(''); setNotice('登録済みのメールアドレスを入力し、確認メールを再送してください。') }} className="mt-5 w-full text-sm text-blue-700 underline">確認メールが届かない・リンクを開けない方</button>}
+
           {!adminOnly && <div className="mt-8 text-center">
-            <button type="button" disabled={unavailable} onClick={() => { setIsSignUp(!isSignUp); setError(''); setNotice('') }} className="text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
+            <button type="button" disabled={unavailable} onClick={() => { setIsSignUp(!isSignUp); setShowPassword(false); setError(''); setNotice('') }} className="text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
               {isSignUp ? 'すでにアカウントをお持ちの方はこちら' : '初めての方はこちら（新規登録）'}
             </button>
           </div>}

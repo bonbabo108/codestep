@@ -16,7 +16,7 @@
 | セッション維持 | components/AuthProvider.tsx、tests/admin.test.mjs、learning.test.mjs | 既存staging実画面の再ログイン復元成功を再利用。今回のログイン済み/login→/遷移と一般の管理拒否は架空APIで確認 |
 | テキスト以外の入出力 | app/page.tsx等のLucideアイコン、[画面](./screenshots/final-20261019/demo-desktop.jpg) | 視覚的な状態表示あり。画像アップロード/音声入力なし。評価上の画像出力要件を満たすかはメンター判断 |
 | CRUD4種 | app/question/page.tsx・lib/questions.ts・tests/questions.test.mjs、[削除仕様と実Preview結果](./question-deletion.md) | 2026-10-17のstaging実CRUD結果を再利用。今回DB/RLSコード変更なし。本番は書込停止中 |
-| メール認証・ログイン | components/LoginForm.tsx・lib/auth-actions.ts・tests/auth-actions.test.mjs、[設定確認と変更案](./auth-release-checklist.md) | localhost誤遷移を設定読取で確認。コード経路はモックで成功。URL設定・実メール確認は未完了 |
+| メール認証・ログイン | components/LoginForm.tsx・lib/auth-actions.ts・tests/auth-actions.test.mjs、[設定確認と変更案](./auth-release-checklist.md) | localhost誤遷移を設定読取で確認。コード経路はモックで成功。staging URL設定は承認・保存後再読込済み。実メール確認は本人確認待ち |
 | OAuth認証 | 未実装 | 画像の認証最高評価にはOAuthも含まれる。今回の必須完成範囲はメール認証。追加実装を実施済みと説明しない |
 | 外部API連携 | Supabase Auth/Data APIを利用 | 独立した外部サービス/生成AI APIなし。評価表の外部API項目に該当するかは要確認。得点目的だけの有料連携は追加しない |
 | DBの体験への活用 | questions→回答、profiles/user_progress→本人保存/復元 | [既存保存画像](./screenshots/learning-saved-staging.jpg)、[復元画像](./screenshots/learning-restored-staging.jpg)、learning.test.mjs |
@@ -39,7 +39,10 @@
 
 ## 未完了・評価上の限界
 
-- SupabaseのURL設定反映、新しいメールでの端末間確認、最新Previewへのメンターのアクセス可否。
+- staging URL設定は反映済み。本番のURL設定、新しいメールでのPC/実スマホ確認、メンターのPreview閲覧可否は未完了。
 - 本番の管理者指定/RLS・ACL・一意制約・削除RPC反映、公開前確認。その承認なしではmainマージ不可。
 - OAuth・独立した外部API/生成AI連携・画像/音声入力は未実装。最高得点の全条件達成とは断定しない。
 - 緊急停止・復旧試験は一部未検証のまま終了。今回追加しない。過去記録の「未実施」を成功へ書き換えない。
+
+
+2026-10-19追記：認証修正後のローカル自動テストは65件。Androidの新規登録・実メール確認は本人の失敗報告後に再修正しており、修正後の本人確認は未完了。[8項目の判定](./auth-release-checklist.md)を参照。

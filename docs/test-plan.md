@@ -570,3 +570,66 @@ https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）�
 2026-10-19追記：リモートmainは274eb79（PR #2で提出用READMEをcodestep-portfolioへ集約）へ進んでいた。fetchで差分がREADME削除のみと確認。ユーザーも提出用だけへの集約を選択。改訂したローカルREADMEはdocs/implementation-guide.mdへ移動して保全し、アプリ本体READMEはmainと同じ削除状態にする。提出用READMEはcodestep-portfolioの別ブランチ/PRで修正する。VercelダッシュボードではProduction=274eb79/Readyを確認。以前の35c13e3は現在のProduction SHAではないが、今回の新機能は依然未反映。
 
 認証SDKの旧形式error_codeとAPIバージョン付きcodeの両応答で、未確認メールの専用案内へ変換されることを追加検証し成功（同じテスト内、全62件の件数は不変）。初期ブラウザfixtureにはこの応答条件がなく、当該1画面の専用文言は実ブラウザ未検証のまま区別する。最終ソースでlint/typecheck/ダミーWebpackビルドを再実行し成功。画像原本は保持。今回の画像と新資料のUTF-8・ローカルリンク検査も成功。
+
+
+## 2026-10-19 最終公開・承認済みstaging URL設定の結果
+
+- アプリPR：https://github.com/bonbabo108/codestep/pull/3 （draft、main/本番移行待ち）。実装コミットf6154af、最新main274eb79を取り込んだ53a5d43を作業ブランチだけへpush。
+- 53a5d43のpush CI：https://github.com/bonbabo108/codestep/actions/runs/39192624505 、PR CI：https://github.com/bonbabo108/codestep/actions/runs/39193029033 。両方でnpm ci/lint/typecheck/62テスト/ダミーWebpackビルド成功。PRの合成merge refも検査されている。実行ログで各段階を確認。通常のNodeモジュール形式警告とビルドキャッシュ未設定の注記あり、失敗なし。
+- Vercel Preview：dpl_3jA9YzKeaPPwUY2jTp52QddSVTcQ、53a5d43/codex/admin-rls-portfolio/Preview/Readyをダッシュボードで照合。個別URL https://codestep-4e6rzv5s4-touya1896-7818s-projects.vercel.app 、固定URL https://codestep-git-codex-admin-rls-portfolio-touya1896-7818s-projects.vercel.app 。実Previewのデモ正解と通常画面の匿名DB出題3問を確認。認証・書込試験はしていない。
+- Vercel env-varsスキルでPreview用の公開URL変数だけを読み取り、https://ezjzgebehancbxqpgany.supabase.co と完全一致、Preview区分であることを確認。キー/秘密値は開かず、環境変数は未変更。
+- ユーザーの明示承認後、staging ezjzgebehancbxqpgany のSite URLだけを上記のブランチ固定HTTPS originへ変更し、Redirect URLsへ同じURLの/loginを完全一致で1件追加。成功通知後にページを再読込し、Site URLとTotal URLs=1、対象/loginを照合した。個別デプロイURLやワイルドカードは追加しない。変更後画面はGit外/private/tmpに保存。
+- stagingのConfirm sign upは既定テンプレートで、リンクが .ConfirmationURL を参照すると読み取り確認。アプリの登録/再送が指定する固定origin/login、許可URL、ブラウザSDKのURLセッション取得が整合。本番URL設定はlocalhostのまま、今回変更していない。
+- 実メール受信・PC/実スマートフォンの確認はユーザーが自分で行うと回答したため、未実施・本人確認待ち。メール送信・新規Auth作成/削除・パスワード/確認要否/SMTP変更なし。レスポンシブ確認を実スマホのログイン成功と扱わない。
+- 提出用README PR：https://github.com/bonbabo108/codestep-portfolio/pull/2 。本文の読み戻し全文一致/UTF-8置換文字なし、GitHubのReady to merge/競合なし/Checks 0/レビュー必須表示なしを確認し、d3c6f83を指定してマージ成功（94b38bbc）。mainのREADMEも全文一致を確認。新しいstaging設定の状況は後続の資料更新で反映する。アプリmain/Productionは未変更。
+- ローカル3100番のダミー接続アプリと54321番の架空APIは今回のPIDだけを指定して停止。起動・終了にはsandboxの制限がありツール許可を取得。前チャットのバックアップ・原本・画像は保持。静的git差分検査の末尾空行警告は既存approved-cleanup-verify.sqlの1件で、承認ハッシュ維持のため変更せずに記録した。
+
+
+## 2026-10-19 stagingのVercelアクセス制限調査（公開承認待ち）
+
+本人報告：Gmailの+エイリアス宛てにSupabaseの登録確認メールを受信できた。実メール送信/受信は本人報告による成功。スマホはVercelログインへ転送され、CodeStepのメール確認完了・ログイン・再読込維持は未確認。Pro登録やプラン変更は不要と判断し、実施しない。
+
+ダッシュボード読取でcodestep（Hobby）のRequire Log In=ON/Standard Protection、Deployment Protection Exceptionsに既存ドメインなしを確認。Vercelへ未ログインの別IABで固定staging/loginを開くとVercel Loginへ転送されることを再現。これはCodeStep/Supabaseの認証エラーとは区別する。
+
+提案はcodestep-git-codex-admin-rls-portfolio-touya1896-7818s-projects.vercel.appの1ドメインだけを公開例外に追加するもの。全パスと将来の同ブランチデプロイが公開され、問題閲覧・登録画面・デモ・管理者ログイン入口にVercelアカウントなしで到達できる。アプリ自身の認証・管理者判定・RLS・列権限は変更しない。公開により通信/メール送信枠の消費や登録試行が増える可能性あり。例外削除で保護へ戻せる。プロジェクト全体のRequire Log In解除、共有秘密トークンの配布、新規Vercelプロジェクト/課金、本番/他Preview変更は採用しない。
+
+公開例外のAdd Domain→Continueまでで対象を入力・確認画面を準備し、Remove Protectionは未実行。ユーザーに公開範囲とリスクを説明して承認待ち。確認画面は/private/tmp/codestep-staging-public-exception-review.jpgに保存。Supabase stagingのURL設定を再読取し、Site URLは上記HTTPS origin、Redirect URLsは同じorigin/loginの1件で既存アプリの登録/再送コールバックに一致。Supabase設定の追加変更は不要。
+
+[2026-09-09公式変更履歴](https://vercel.com/changelog/protect-production-deployments-for-free-on-every-plan)と最新ドキュメントで、ドメイン限定の例外は全プラン無料と確認。古い検索キャッシュのPro/有料add-on必須という記載は現在の判断に使わない。UIのAdd Domainも利用可能で、有料アップグレードを促す画面なし。共有リンクはアカウント不要の別案だが、URLパラメータ/Cookieとメールから別ブラウザに戻る経路の管理が増えるため、端末間認証テストは固定ドメイン1件の公開を推奨。
+
+今回の製品コード変更なし。npm test/lint/typecheck/buildは既存成功結果を再利用し再実行しない。公開後の未ログインPC/モバイル幅の画面到達は別途確認予定で、実スマホのメール確認成功とは区別する。新規PR/本番変更/mainマージ/DBデータ・RLS・管理者変更なし。既存の未コミット変更を保持し、この記録は同じ資料へまとめる。
+
+
+## 2026-10-19 固定stagingドメインのみ公開：承認条件照合・反映成功
+
+ユーザーは固定ドメイン1件の公開例外を明示承認し、検証DB接続・個人情報/本番データ非公開・管理者/RLS維持・対象限定・本番設定不変を条件とした。公開前に以下を確認し、Remove Protectionを1回だけ確定した。新たな同じ承認要求なし。
+
+- Vercel：Preview用NEXT_PUBLIC_SUPABASE_URLは検証DB ezjzgebehancbxqpgany のルートURLと完全一致。公開キー/秘密値は開かず、Production値も変更しない。固定ドメインはdpl_3jA9YzKeaPPwUY2jTp52QddSVTcQ/53a5d43/codex/admin-rls-portfolio/Preview/Readyへ割当。
+- Supabase：get_projectでcodestep-staging/ezjzgebehancbxqpgany/ACTIVE_HEALTHYを確認。公開前のREAD ONLYでpublicの通常表はquestions/profiles/user_progressの3表のみ、全てRLS有効。匿名のSELECTはquestionsのみ、profiles/progressの全列参照・書込は不可。本人6ポリシーと管理者I/U/D3ポリシー・公開SELECTが維持され、管理者条件はapp_metadataのboolean true。公開対象questionsは3行で、既知の架空データの全行照合値と一致。実ユーザーのプロフィール/進捗/メール本文は取得しない。Authに本人の新しい登録があっても匿名公開しない。
+- 削除RPC：公開/内部両関数のSHA-256が既存レビュー済み定義と一致し、匿名EXECUTEは両方不可。内部スキーマの匿名USAGEも不可。ACL/RLS/Auth/データの変更は実行せず、緊急停止・復旧試験も追加しない。
+- UI：app_metadata.codestep_admin === trueの有効セッションだけに管理フォームを表示するコードを確認。公開後、Vercel未ログイン/CodeStep未ログインの別IABから/adminを開くと「問題管理は管理者専用です」と表示され、管理フォームなし。これは匿名UIの確認で、一般/管理者の追加書込試験ではない。
+- 公開設定：codestep-git-codex-admin-rls-portfolio-touya1896-7818s-projects.vercel.appの1件だけをDeployment Protection Exceptionsへ追加。保存後の再読込でUnprotected Domainsは同じ1件、Require Log In=ON/Standard Protectionを維持。個別Preview codestep-4e6rzv5s4-touya1896-7818s-projects.vercel.app/loginは別IABでVercelログインへ転送され、他ドメインの保護維持を確認。本番設定は未操作。
+- 公開到達成功：Vercel未ログインの別IABで固定/loginがCodeStepのログイン画面へ直接到達。PC幅と390px（clientWidth=scrollWidth=390）を確認。画像はscreenshots/final-20261019/public-login-desktop.jpg・public-login-mobile.jpg。実スマートフォンの結果ではなく、実メールからの復帰/ログイン/再ログイン/セッション維持は本人確認待ち。Gmail+エイリアスへの確認メール受信は前回の本人報告による成功。
+- SupabaseのSite URL=固定HTTPS origin、Redirect URLs=同/loginの1件と再照合済み。アプリの登録/再送emailRedirectToも同じorigin/login。今回はSupabase URL設定の追加変更なし。
+- 次の本人操作：スマホで固定/loginを新しく開き、すでに登録した+エイリアスとパスワードで通常ログインを先に試す。以前のクリックでメール確認だけ済んでいればそのままログイン可能。未確認の案内なら確認メールを再送し、60秒以上間隔を空け、最新のメールだけを開く。スマホとPCで再読込/再ログインを確認。パスワード/リンク全文/トークンは報告しない。
+
+製品コード変更がないためnpm test/lint/typecheck/buildは今回再実行せず、既存62件・CIの成功を再利用。安全性の現状確認はSupabase計3要求（識別1、READ ONLY2）で、通常表の生データやAuthユーザー一覧を取得せず必要な照合に限定した。新規PR・新規リソース・課金・push・mainマージなし。既存の未コミット資料/画像は保持し、結果は同じ資料にまとめてローカル保存。
+
+
+## 2026-10-19 Android新規登録・メール確認の修正（実端末再確認待ち）
+
+本人の最新報告は「入力文字が見えない」「確認リンクが期限切れ/使用済み」「未確認メールのためログイン不可」。別の既存アカウントのログイン成功と、今回の新規登録成功は区別する。修正後の実端末成功はまだ確認されていない。
+
+原因・調査範囲：
+
+- 認証カードは明るい背景だが、入力文字色を指定しておらず、OSのdark配色でbodyの明るいforegroundを継承し得た。認証領域をlight配色、入力・caret・placeholder・自動入力の文字色を明示。16pxの入力、autocomplete/emailの補正抑制、パスワード表示切替を追加した。送信時はFormData、再送時はinputの実値を取得し、自動入力でchangeが出ないケースに備える。
+- `getSession()`だけではSDKのURL初期化エラーが返らないことを、実SDKとメモリ内ブラウザfixtureで確認した。`initialize()`→`getSession()`の順で確認し、INITIAL_SESSIONが失敗判定を上書きしないようにした。確認失敗は専用案内を表示し、URLの機密パラメータを消す。通常のSIGNED_IN/TOKEN_REFRESHED/ログアウトと管理者判定は維持する。
+- staging ezjzgebehancbxqpgany の直近24時間ログを読み取り、/verifyでtoken/not foundに該当する失敗5件、/tokenでemail_not_confirmed拒否3件を集計。/signupの200は7件（確認要求4・繰返し登録3）、/verifyでuser_signedupを伴う成功2件もあるが、個別アカウントへ紐付けていないため本人の今回の成功とは扱わない。メール・ID・IP・トークン・生のエラーは取得していない。失効、旧メール、リンク先読みのどれかは未特定。時刻超過や先読みを断定しない。
+- 確認URLは単回利用で、メール先読みでも消費され得ることは[公式仕様](https://supabase.com/docs/guides/auth/auth-email-templates#email-prefetching)。今回それが原因かは不明。最新リンクでも失敗が再現した場合は、本人の試行時刻を基に絞り込み、OTP/クリック確認方式のメールテンプレート変更を別途検討する。SMTP/テンプレート/確認要否/有効期限は変更していない。
+- 再読込で状態が消えても「確認メールが届かない・リンクを開けない方」から再送へ進める。再送は登録したアドレスだけで実行し、パスワード不要、60秒間隔、最新メールだけを1回開く案内を追加。未確認なら再登録は不要。既存アカウントの有無を開示する文言は使わない。
+
+成功した自動・ローカル検証：npm test 65件、lint、typecheck、ループバックのダミーURL/キーでWebpackビルド。新規3件は実SDKによる新しいブラウザのcallback/URLからのトークン除去/保存セッションの復元、期限切れ拒否、callbackユーザー検証拒否。既存の登録/再送先一致、送信制限、未確認メールの旧/新API応答形式も成功。
+
+実ブラウザ（架空APIのみ）：390pxで入力・パスワード表示、登録後の確認待ち、期限切れの専用案内とURL除去、パスワード未入力で再送、未確認ログインの専用案内、callback→学習画面のURLとログイン済みヘッダ、再読込、ログアウト→通常ログインを確認。入力色rgb(15,23,42)・明るい背景・caret rgb(29,78,216)をDOMで照合。検証ブラウザはlight設定で、Androidのdark/自動入力・実メール配信を検証したものではない。写真はauth-input-mobile-fixture.jpg/auth-expired-mobile-fixture.jpgで、全て架空データ。初回の架空APIはCORSでAPIバージョンを公開しておらず、未確認エラーが汎用文言になった。fixtureのヘッダを是正した再試行では専用文言を確認。これはstagingの失敗原因とは扱わない。
+
+本番・DB・RLS・管理者権限・既存ユーザーは未変更。緊急停止/復旧SQLの追加実行なし。自動テストに含むSQLの静的検査は実DB試験ではない。既存PR #3/同じブランチへ集約し、mainへマージしない。

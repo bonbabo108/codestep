@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import { isAdminSession, sameAuthSession } from '@/lib/admin'
+import { confirmationError, restoreAuthSession } from '@/lib/auth-actions'
 
 type AuthState = {
   session: Session | null
@@ -43,18 +44,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     alive.current = true
     let active = true
     // コールバック内では別のAuth APIをawaitしない。
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (active) applySession(session)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // 初期状態はinitializeのエラーも確認してから確定する。
+      if (active && event !== 'INITIAL_SESSION') applySession(session)
     })
     const version = eventVersion.current
-    void supabase.auth.getSession().then(({ data, error: sessionError }) => {
+    void restoreAuthSession(supabase).then(session => {
       if (!active || eventVersion.current !== version) return
-      applySession(sessionError ? null : data.session, sessionError ? 'error' : 'ready')
-      if (sessionError) setError('ログイン状態を確認できません。再読み込みしてください。')
+      applySession(session)
     }).catch(() => {
       if (!active || eventVersion.current !== version) return
       applySession(null, 'error')
-      setError('ログイン状態を確認できません。再読み込みしてください。')
+      // 確認リンクの失敗はログイン画面で再送と共に案内する。
+      if (!confirmationError(new URL(window.location.href), true)) {
+        setError('ログイン状態を確認できません。通常のログインをお試しください。')
+      }
     })
     return () => {
       active = false

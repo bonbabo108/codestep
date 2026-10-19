@@ -4,6 +4,35 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* 認証カードは明るい配色。端末のダークモードや自動入力でも文字を隠さない。 */
+.auth-surface {
+  color-scheme: light;
+}
+
+.auth-input {
+  color: #0f172a;
+  caret-color: #1d4ed8;
+  -webkit-text-fill-color: #0f172a;
+}
+
+.auth-input::placeholder {
+  color: #64748b;
+  -webkit-text-fill-color: #64748b;
+  opacity: 1;
+}
+
+.auth-input:autofill {
+  -webkit-text-fill-color: #0f172a;
+  caret-color: #1d4ed8;
+  box-shadow: 0 0 0 1000px #f8fafc inset;
+}
+
+.auth-input:-webkit-autofill {
+  -webkit-text-fill-color: #0f172a;
+  caret-color: #1d4ed8;
+  -webkit-box-shadow: 0 0 0 1000px #f8fafc inset;
+}
+
 @theme inline {
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);

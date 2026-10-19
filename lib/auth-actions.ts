@@ -1,4 +1,13 @@
-import type { SupabaseClient } from '@supabase/supabase-js'
+import type { Session, SupabaseClient } from '@supabase/supabase-js'
+
+export async function restoreAuthSession(client: Pick<SupabaseClient, 'auth'>): Promise<Session | null> {
+  // getSessionだけではURL callbackの初期化エラーを取得できない。
+  const { error: callbackError } = await client.auth.initialize()
+  if (callbackError) throw callbackError
+  const { data, error } = await client.auth.getSession()
+  if (error) throw error
+  return data.session
+}
 
 export function confirmationRedirect(origin: string): string {
   const url = new URL(origin)
@@ -29,12 +38,15 @@ export async function resendConfirmation(client: Pick<SupabaseClient, 'auth'>, e
 }
 
 // URL内の生のエラー文やトークンは表示・ログ出力しない。
-export function confirmationError(url: URL): string {
+export function confirmationError(url: URL, sessionFailed = false): string {
   const hash = new URLSearchParams(url.hash.slice(1))
   const code = hash.get('error_code') || url.searchParams.get('error_code')
-  if (code === 'otp_expired') return '確認リンクの有効期限が切れているか、使用済みです。メールアドレスを入力して確認メールを再送してください。'
+  if (code === 'otp_expired') return 'この確認リンクは有効期限切れ、使用済み、または古いリンクのため確認できません。すでに確認済みなら通常のログインをお試しください。未確認の場合は、登録したメールアドレスを入力して確認メールを再送し、最新のメールだけを開いてください。'
   if (code || hash.has('error') || hash.has('error_description') || url.searchParams.has('error') || url.searchParams.has('error_description')) {
     return 'メールの確認を完了できませんでした。メールアドレスを入力して確認メールを再送してください。'
+  }
+  if (sessionFailed && (hash.has('access_token') || url.searchParams.has('code'))) {
+    return 'メールから戻った後のログイン処理を完了できませんでした。確認が済んでいる場合は通常のログインをお試しください。未確認の案内が出る場合は、確認メールを再送してください。'
   }
   return ''
 }
@@ -42,7 +54,7 @@ export function confirmationError(url: URL): string {
 export function authErrorMessage(error: unknown): string {
   const code = error && typeof error === 'object' && 'code' in error ? error.code : null
   if (code === 'invalid_credentials') return 'メールアドレスとパスワードを確認してください。'
-  if (code === 'email_not_confirmed') return '確認メールからメールアドレスを確認してください。'
+  if (code === 'email_not_confirmed') return 'メールアドレスの確認がまだ完了していません。最新の確認メールを開くか、下の「確認メールを再送する」をお使いください。再登録は不要です。'
   if (code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit') return '送信回数の上限に達しました。しばらく待ってから再試行してください。'
   if (code === 'email_address_not_authorized') return 'この宛先への確認メール送信は現在許可されていません。運営者にメール送信設定の確認を依頼してください。'
   if (code === 'email_address_invalid') return '有効なメールアドレスを入力してください。'

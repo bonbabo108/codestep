@@ -1,5 +1,11 @@
 # CodeStep 共通コンテキスト
 
+**2026-10-19 認証の最新状態：** 本人の新規登録→確認は失敗報告あり。入力の配色・自動入力値の送信・callback初期化エラー・再送案内を修正中。自動65件/ローカル架空APIは成功。修正後Android/PCの実メール認証と再読込維持は本人確認待ち。最新の手順と8項目の判定は[認証チェックリスト](./auth-release-checklist.md)を参照。過去の公開到達成功を認証成功とは扱わない。
+
+**2026-10-19 公開アクセス最新結果：** 承認条件を読み取り照合し、固定stagingドメイン1件だけをVercel公開例外へ追加済み。検証DB接続、架空の公開問題3行一致、本人データの匿名拒否、全3表RLS/管理者条件/削除RPC定義維持を確認。Require Log In/Standard Protectionは維持、個別Previewは引き続き保護。本番・DB・権限・mainは未変更。Vercel未ログインのPC/390pxで固定/loginへ到達成功。確認メール受信は本人報告で成功、実PC/実スマホの認証完了・再ログインは本人確認待ち。
+
+**2026-10-19 最新結果：stagingのみURL設定を承認・反映済み。** Site URLは有効なブランチ固定Preview、Redirect URLsは同じoriginの/loginを完全一致で1件。保存後の再読込と既定メールテンプレート .ConfirmationURL の整合を確認。本番は変更なし。実メール受信・PC/実スマートフォンでの確認はユーザー本人が行うため未実施。アプリPR #3はdraft、本番移行待ち。53a5d43のpush/PR CIは62テスト・lint・型・ダミービルド成功、Previewは同SHA/Ready。提出用README PR #2はマージ済み。以下の未適用記載は当時の履歴。
+
 **2026-10-19 最終完成フェーズ：** 緊急停止・復旧の追加試験は行わない。認証・デモ・設計・README・CIを仕上げる。最新の[評価証拠](./evaluation-evidence.md)、[最終設計](./final-design.md)、[認証の設定確認/変更案](./auth-release-checklist.md)を参照。開始HEAD d82ad0e、同一worktree、既存未コミット30ファイルを0600アーカイブへ保全済み。両SupabaseのURL設定を読み取り、Site URL=localhost:3000/許可URLなしと確認した（変更なし）。本番DB移行・URL設定・実メール確認が揃うまでmain/Production反映は保留。以下は過去の観測を含み、最新状態とは断定しない。
 
 更新日：2026-10-17。ブランチcodex/admin-rls-portfolio。現在地だけをまとめ、過去の経緯はdecisions.mdを参照する。

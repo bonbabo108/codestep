@@ -1,5 +1,9 @@
 # 公開判断とPreview準備（2026-10-16更新）
 
+**2026-10-19 公開アクセス最新結果：** 承認条件を読み取り照合し、固定stagingドメイン1件だけをVercel公開例外へ追加済み。検証DB接続、架空の公開問題3行一致、本人データの匿名拒否、全3表RLS/管理者条件/削除RPC定義維持を確認。Require Log In/Standard Protectionは維持、個別Previewは引き続き保護。本番・DB・権限・mainは未変更。Vercel未ログインのPC/390pxで固定/loginへ到達成功。確認メール受信は本人報告で成功、実PC/実スマホの認証完了・再ログインは本人確認待ち。
+
+**2026-10-19 最新結果：stagingのみURL設定を承認・反映済み。** Site URLは有効なブランチ固定Preview、Redirect URLsは同じoriginの/loginを完全一致で1件。保存後の再読込と既定メールテンプレート .ConfirmationURL の整合を確認。本番は変更なし。実メール受信・PC/実スマートフォンでの確認はユーザー本人が行うため未実施。アプリPR #3はdraft、本番移行待ち。53a5d43のpush/PR CIは62テスト・lint・型・ダミービルド成功、Previewは同SHA/Ready。提出用README PR #2はマージ済み。以下の未適用記載は当時の履歴。
+
 ## 2026-10-19 最終仕上げの公開判断（最新）
 
 認証URLのコード修正、登録不要の安全な/demo、最終設計/評価証拠、README、CIダミービルドを追加。ローカル62テスト・lint・型・Webpackビルド成功。最新PR/Previewの結果は本節へ追記する。
@@ -162,3 +166,6 @@ Preview作成により非本番のビルドが起動し、Preview URLが発行�
 管理者解除は通常app_metadata:false＋新JWTで拒否確認。緊急時は旧JWTの有効期限を待つ代わりに、上記の書込停止を先に行う。失敗・拒否の後はAGENTS.mdの共通ルールに従い、同じ要求の再送や確認回避をしない。
 
 参照：PostgreSQL 17の[行セキュリティ](https://www.postgresql.org/docs/17/ddl-rowsecurity.html)、[トランザクション](https://www.postgresql.org/docs/17/tutorial-transactions.html)、[ALTER TABLE](https://www.postgresql.org/docs/17/sql-altertable.html)。TRUNCATE等はRLSの対象外なので、本人RLSだけを根拠に不要なテーブル権限を残さない。Data APIにTRUNCATE用エンドポイントが存在すると確認したわけではない。
+
+
+2026-10-19認証修正：入力配色/フォーム実値/SDK初期化/再送案内を改善。実端末での新規アカウント認証は再確認待ち。65件のローカル試験成功を実メール成功としない。main/本番の変更は禁止継続。
