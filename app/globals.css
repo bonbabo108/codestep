@@ -5,11 +5,13 @@
 @custom-variant dark (&:is(.dark *));
 
 /* 認証カードは明るい配色。端末のダークモードや自動入力でも文字を隠さない。 */
-.auth-surface {
+.auth-surface,
+.demo-surface {
   color-scheme: light;
 }
 
-.auth-input {
+.auth-input,
+.demo-input {
   color: #0f172a;
   caret-color: #1d4ed8;
   -webkit-text-fill-color: #0f172a;

@@ -10,7 +10,7 @@
 | フロント詳細・ワイヤーフレーム | [画面とHTML/CSS/状態表](./final-design.md)、[原本](./wireframe.png)、app/page.tsx・components/LoginForm.tsx | 旧画像との差分はMarkdownで補足 |
 | バックエンド機能一覧 | lib/auth-actions.ts・questions.ts・learning.ts、[機能と成功/異常条件](./final-design.md) | Auth/CRUD/進捗の対象・権限・返却条件を記載 |
 | DB・ER図・型・リレーション | [全16列のER図](./final-design.md)、docs/sql/staging-bootstrap.sql、[旧ER原本](./er-diagram.png) | NULL/DEFAULT/FK NO ACTION/一意制約の環境差を明記。今回DB構造の再照会なし |
-| アプリの操作性 | [PCデモ](./screenshots/final-20261019/demo-desktop.jpg)、[390pxデモ](./screenshots/final-20261019/demo-mobile.jpg)、README使い方 | 架空デモの回答・CRUD・取消・初期化を実Chromeで成功。公開Previewの閲覧権は別途確認 |
+| アプリの操作性 | [PCデモ](./screenshots/final-20261019/demo-desktop.jpg)、[390pxデモ](./screenshots/final-20261019/demo-mobile.jpg)、README使い方 | 架空デモの回答・CRUD・取消・初期化を実Chromeで成功。固定stagingはアカウント不要で公開済み。実スマホ操作とは区別 |
 | ヘッダー・フッター・メニュー | components/Header.tsx・AppShell.tsx | 共通導線とスマートフォンでの折返し |
 | 共通コンポーネント | components/ui/button.tsx・LoginForm.tsx・AuthProvider.tsx・ApplicationShell.tsx | 通常画面とデモの表示枠を分離。フォーム検証・判定ロジックを再利用 |
 | セッション維持 | components/AuthProvider.tsx、tests/admin.test.mjs、learning.test.mjs | 既存staging実画面の再ログイン復元成功を再利用。今回のログイン済み/login→/遷移と一般の管理拒否は架空APIで確認 |
@@ -21,7 +21,7 @@
 | 外部API連携 | Supabase Auth/Data APIを利用 | 独立した外部サービス/生成AI APIなし。評価表の外部API項目に該当するかは要確認。得点目的だけの有料連携は追加しない |
 | DBの体験への活用 | questions→回答、profiles/user_progress→本人保存/復元 | [既存保存画像](./screenshots/learning-saved-staging.jpg)、[復元画像](./screenshots/learning-restored-staging.jpg)、learning.test.mjs |
 | RLSによる保護 | docs/sql/staging-bootstrap.sql・lib/admin.ts・[RLS説明](./rls-runbook.md) | staging実APIの管理者CRUD/匿名・一般拒否/本人制限の既存成功を再利用。本番移行は未適用 |
-| テストと改善の妥当性 | [テスト記録](./test-plan.md)・[判断履歴](./decisions.md)、tests/*.test.mjs | 今回62件成功。localhost原因→戻り先指定/再送追加。0件成功防止・競合・削除取消の既存改善も説明 |
+| テストと改善の妥当性 | [テスト記録](./test-plan.md)・[判断履歴](./decisions.md)、tests/*.test.mjs | 今回70件成功（認証65+デモ5）。localhost原因→戻り先指定/再送追加。0件成功防止・競合・削除取消の既存改善も説明 |
 | ブランチ・PR・マージ | codex/admin-rls-portfolio、Git履歴、今回のPR（公開状況参照） | PR作成まで進める。mainへの反映は本番条件を満たすまで保留。回数を増やす目的の空PRは作らない |
 | 構造整理・リファクタリング | 共通LoginForm/認証ロジック、AppShell/ApplicationShell分離、eslint.config.mjs | 判定と入力検証をデモでも再利用。Hooks・未使用・危険構文の検査 |
 | CI | .github/workflows/lint.yml | push/PRでlint→型→テスト→ダミービルド。最新CIの結果は公開状況へ追記 |
@@ -39,10 +39,18 @@
 
 ## 未完了・評価上の限界
 
-- staging URL設定は反映済み。本番のURL設定、新しいメールでのPC/実スマホ確認、メンターのPreview閲覧可否は未完了。
+- staging URL設定は反映済み。本番のURL設定、新しいメールでのPC/実スマホ確認、メンター本人の操作確認は未完了。
 - 本番の管理者指定/RLS・ACL・一意制約・削除RPC反映、公開前確認。その承認なしではmainマージ不可。
 - OAuth・独立した外部API/生成AI連携・画像/音声入力は未実装。最高得点の全条件達成とは断定しない。
 - 緊急停止・復旧試験は一部未検証のまま終了。今回追加しない。過去記録の「未実施」を成功へ書き換えない。
 
 
 2026-10-19追記：認証修正後のローカル自動テストは65件。Androidの新規登録・実メール確認は本人の失敗報告後に再修正しており、修正後の本人確認は未完了。[8項目の判定](./auth-release-checklist.md)を参照。
+
+
+## 管理画面デモと中断対策（2026-10-19）
+
+- `/demo/admin`へヘッダー/フッターから1クリック。登録・管理者権限不要。[共通デモ](../components/DemoExperience.tsx)、[サンプルCRUD](../lib/demo.ts)、[5件の試験](../tests/demo.test.mjs)。
+- PC/390pxで入力保持・追加連打1件・一覧・編集・削除取消/確定・空状態・初期化・再読込を確認。[PC](./screenshots/final-20261019/admin-demo-desktop.jpg)、[390px](./screenshots/final-20261019/admin-demo-mobile.jpg)。直接訪問からCRUD終了までダミーAuth/DB向け要求0件。実DB/RLSの検証とは別。
+- 本物の管理画面/SQL/認証認可のコード差分なし。管理者フラグや公開範囲を変更していない。
+- [AGENTS](../AGENTS.md)：恒久ルール、[AI_WORKFLOW](../AI_WORKFLOW.md)：改善基準、[HANDOFF](../HANDOFF.md)：再開点。実Git/PRを確認し途中成果を保全した。

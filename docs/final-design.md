@@ -34,6 +34,8 @@ flowchart TD
   Q --> H
   H --> D[登録不要 /demo]
   D --> S[架空問題の回答・解説・問題管理]
+  H --> AD[管理画面デモ /demo/admin]
+  AD --> S
 ```
 
 | 画面・HTML | 動作・状態・CSS |
@@ -43,7 +45,7 @@ flowchart TD
 | ログインform/label/input | 確認中・処理中は送信を無効化。登録/ログイン/メール確認待ちを区別。登録・再送のemailRedirectToは現在originの/login。確認後のセッションを検出して/へ移動 |
 | メール確認エラー/再送button | 期限切れ・使用済みを固定文言で表示。メールアドレス形式を確認し、60秒の再送間隔とSDKの送信制限エラーを扱う。メールアドレスの登録有無を断定しない |
 | 管理画面form/一覧/確認 | app_metadata.codestep_adminがboolean trueの有効セッションのみ。入力必須、変更なし送信なし、二重操作防止、0件は失敗。削除は関連進捗警告→取消/明示確定→限定RPC |
-| デモmain/nav/form/details | 同じ回答判定・フォーム検証を使う。架空3問の回答/解説/一時クリア、問題の作成/編集/削除確認/初期化。メモリ内のみで離脱・再読込時に初期化。Auth/実DB試験の代用ではない |
+| デモmain/nav/form/details | 管理デモへ1クリックで直達。同じDemoExperience・回答判定・フォーム検証を使う。架空3問の回答/解説/一時クリア、問題の作成/編集/削除確認/初期化。メモリ内のみで離脱・再読込時に初期化。Auth/実DB試験の代用ではない |
 
 ## 機能一覧と認可
 
@@ -55,7 +57,7 @@ flowchart TD
 | 問題Create/Update | questions INSERT/UPDATE | 管理者のみ。5列限定。返却1行・対象ID一致 |
 | 問題Delete | delete_question_with_progress RPC | 管理者検査、対象ID限定、関連進捗の明示承認、単一TX。FKはNO ACTIONのまま |
 | 本人進捗Read/Create/Update | user_progress、profiles | auth.uid()=本人、正解のみ保存。初回profile不足時だけ作成。0件/別所有者/通信不明は未成功 |
-| 架空デモ | /demoのReact state | 認証情報・管理者フラグを作らず、DB書込を行わない |
+| 架空デモ | /demo・/demo/adminのReact state | 認証情報・管理者フラグを作らず、DB書込を行わない |
 
 管理者UIの表示条件はDB認可の代わりにならない。最終保証はRLSとSQL権限。user_metadataで認可しない。JWT内の権限には更新遅延がある。
 

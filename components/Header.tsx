@@ -13,6 +13,7 @@ export default function Header() {
       <Link href="/" className="flex items-center gap-2 text-xl font-bold text-slate-900">CodeStep</Link>
       <nav aria-label="メインナビゲーション" className="flex flex-wrap items-center gap-4">
         <Link href="/demo" className="text-sm font-bold text-blue-600 hover:underline">体験デモ</Link>
+        <Link href="/demo/admin" className="inline-flex min-h-11 items-center text-sm font-bold text-blue-600 hover:underline">管理画面デモ（登録不要）</Link>
         {pathname.startsWith('/question') || pathname === '/admin' || pathname.startsWith('/admin/') ? (
           <Link href="/" className="text-sm font-bold text-slate-500 transition-colors hover:text-blue-600">学習画面へ戻る</Link>
         ) : (
