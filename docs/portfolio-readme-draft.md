@@ -1,5 +1,7 @@
 # CodeStep ポートフォリオ
 
+> これは以前の改訂案の保全用です。提出用の最新版はcodestep-portfolioの既存README/PR #3に集約し、この草案は更新しません。
+
 **最終仕上げの状態（2026-10-19）：** [アプリのPR #3](https://github.com/bonbabo108/codestep/pull/3)に認証修正・安全な体験デモ・管理CRUDと本人進捗・最終設計・CIをまとめています。Productionには未反映です。
 
 [登録不要の体験デモ（非本番Preview）](https://codestep-git-codex-admin-rls-portfolio-touya1896-7818s-projects.vercel.app/demo) · [評価項目と証拠](https://github.com/bonbabo108/codestep/blob/codex/admin-rls-portfolio/docs/evaluation-evidence.md) · [最終設計・ER図](https://github.com/bonbabo108/codestep/blob/codex/admin-rls-portfolio/docs/final-design.md)

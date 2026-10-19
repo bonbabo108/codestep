@@ -1,45 +1,47 @@
 # CodeStep 再開用の現在地
 
-更新：2026-10-19。恒久ルールは[AGENTS.md](./AGENTS.md)、共同作業の判断・改善は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。このファイルは最新の再開点を上書き更新し、長い履歴は[判断記録](./docs/decisions.md)へ残す。
+更新：2026-10-19。恒久ルールは[AGENTS.md](./AGENTS.md)、共同作業の改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新の再開点を本書に集約し、詳細履歴は[判断記録](./docs/decisions.md)へ残す。
 
-## 目標と現在の優先順
+## 目標と優先順
 
-講座評価基準に沿ってポートフォリオを完成し、本人が技術を説明できるようにする。現在は登録不要の管理画面デモを先に完成。認証の本人未確認項目は最終確認へ保持する。main/本番は最終承認まで反映しない。
+講座評価基準に沿ってポートフォリオを完成し、本人が技術を説明できる状態にする。登録不要の管理画面デモは実装・公開確認まで完了。残る本人認証テストと最終説明を確認し、本番変更/mainマージは最終承認を待つ。
 
-## 再開時に実確認したGit/PR（2026-10-19）
+## 実確認したGitとPR
 
-- cwd/worktree：実際のpwdでcodestepリポジトリのルートと確認、worktreeはこの1件。個人のホームパスは公開資料に保存しない。branch：`codex/admin-rls-portfolio`。
-- 資料整備開始時HEAD：`126a1524062f94d933206644b0142657dac84a31`。認証修正のコミット。現在のHEADは `git log -1` で確認する（この資料自身のSHAは固定しない）。
-- [アプリPR #3](https://github.com/bonbabo108/codestep/pull/3)：API読取でopen/draft・未マージ、headは上記branch/126a152と照合した。再開時も最新headを読む。
-- 未コミットの途中デモ8パスを保持：`app/demo/page.tsx`、`app/globals.css`、`components/AppShell.tsx`、`components/Header.tsx`、新規`app/demo/admin/page.tsx`、`components/DemoExperience.tsx`、`lib/demo.ts`、`tests/demo.test.mjs`。本資料3ファイルは8399cdfで先にcommit/push済み。以後のデモ/資料の差分は次のまとめコミットへ保存する。
-- [提出用READMEの既存PR #3](https://github.com/bonbabo108/codestep-portfolio/pull/3)：open、branch `codex/staging-auth-status-20261019`、観測head `db26cd16e56f8c07aa5fe7e89552d580c354a66e`。READMEの場所はそのまま。新PRやアプリREADMEは作らない。
-- `codestep_key_files.txt`はGit対象外のまま保持。秘密ファイルを開いて引き継ぎにコピーしない。
+- cwdは実pwdでcodestepリポジトリのルート、worktreeはこの1件。個人ホームのパスは公開資料に保存しない。
+- branch：`codex/admin-rls-portfolio`。[アプリPR #3](https://github.com/bonbabo108/codestep/pull/3)はopen/draft・未マージ。新PRなし。
+- 恒久ルール保存：`8399cdf`。管理デモ/証拠/設計更新：`be683af62366d862cd98caa0018164b69b761dd3`。この最終引き継ぎ記録の後続コミットも同PRへ保存するため、最新HEADは `git log -1` で取得する。
+- コード反映後の実 `git status --short` は空。中断前のデモ8パスは破棄せずbe683afへ保存済み。未コミットの引き継ぎ対象はなし。再開時に現地差分があれば保持する。
+- [提出用READMEの既存PR #3](https://github.com/bonbabo108/codestep-portfolio/pull/3)：branch `codex/staging-auth-status-20261019`、更新commit `3fc35442d37ddfc04729833b8c5f5cd11e2b2ba9`。READMEのUTF-8/読み戻し全文一致を確認。mainへマージしていない。
+- `codestep_key_files.txt`はGit対象外のまま保持。提出用READMEの保存場所はcodestep-portfolioに維持。アプリ側にREADMEを再作成・移動しない。
 
-## 実装・検証の現在地
+## 完了した実装と証拠
 
-- 認証：公開origin/loginへの確認・再送、入力のlight配色/自動入力対策、SDK initialize→getSession、専用エラー、URL認証パラメータ除去、再送入口を126a152でstaging反映済み。
-- 管理者CRUD・本人進捗保存/復元・RLSは既存実装を維持。既存stagingの実CRUD/RLS/本人制限試験、削除警告→取消/確定の証拠を再利用する。現在の実DB状態と過去の試験日を混同しない。
-- 既存 `/demo` はメモリの架空データで学習と問題管理を体験可能。途中変更は `/demo/admin` の管理開始・公開ページのワンクリックリンク、共通DemoExperience、サンプルCRUDモデル、入力配色/タップ領域、5件のモデル試験。
-- 中断前の途中ソースで70テスト・lint・typecheck・ダミーWebpackビルド成功。新資料だけの変更でアプリ試験を重複実行しない。再開後のPC/390px操作・入力保持/連打/CRUD/空/初期化/再読込・公開ページから1クリックは成功。直接デモ訪問からCRUD終了までAPI要求0件。新ソースのCI/Previewはpush後に照合する。
-- 126a152の[認証修正PR CI成功](https://github.com/bonbabo108/codestep/actions/runs/39199480395)。Vercel Preview Readyを前回確認済み。今回の資料/デモのCI成功とは読み替えない。
-- 本人報告：スマホから固定stagingへ到達可能。確認メール受信は以前成功。今回の新規アカウント確認は修正前に失敗。修正後Android/PCのメール認証・ログイン維持・期限切れ再送後の確認、実dark/autofillは[8項目](./docs/auth-release-checklist.md)で未確認のまま。
+- `/demo/admin`：公開ページの「管理画面デモ（登録不要）」から1クリック。アカウント/管理者権限不要。独立したサンプルで追加・一覧・編集・削除・取消・初期化・学習切替が可能。再読込で初期化される。
+- `/demo`と共通DemoExperience、共有の入力検証/回答判定、メモリだけのCRUDモデル。実管理画面/AuthProvider/管理者判定/SQL/RLSの変更なし。
+- ローカル70テスト、lint、typecheck、ダミーWebpackビルド成功。[be683afのPR CI成功](https://github.com/bonbabo108/codestep/actions/runs/39214651348)。後続が資料のみなら同じアプリ試験を最初から反復せず、最新PRのCIを確認する。
+- PC/390px：空白エラー時の入力保持、追加連打で1件、一覧/編集/削除取消・確定、学習でその問題の正解、全件削除/空/初期化/再読込。390=scrollWidth390。直接デモ訪問から操作終了までダミーAuth/DBへの要求0件。
+- 固定stagingの公開 `/demo/admin` で390pxの追加/編集/削除/初期化と横溢れなしを実ブラウザ確認。Vercelアカウント不要。これは実Android操作とは区別する。[PC画像](./docs/screenshots/final-20261019/admin-demo-desktop.jpg)、[390px画像](./docs/screenshots/final-20261019/admin-demo-mobile.jpg)。
+- 設計/ER/画面遷移・評価証拠・技術説明・READMEへデモを反映。[最終設計](./docs/final-design.md)、[評価](./docs/evaluation-evidence.md)、[説明](./docs/mentor-notes.md)。Auth UUIDの論理対応と実DBにないauth.users FKを区別する。
+- 認証は126a152で入力表示/実フォーム値/SDK初期化/再送をstaging反映済み。管理者CRUD・本人進捗/RLSの既存staging実試験は再利用し、現在のDB状態と断定しない。
 
-## 環境・残存プロセス
+## 環境と残存プロセス
 
-- 固定staging：<https://codestep-git-codex-admin-rls-portfolio-touya1896-7818s-projects.vercel.app>。この1ドメインだけ公開例外化が承認・反映済み。他PreviewのVercel保護は維持。新たな公開解除は行わない。
-- staging Supabase：`ezjzgebehancbxqpgany`。本番：`xdnmlfoblqdygsnhkxxp`。本番URL <https://codestep-two.vercel.app> は旧main。本番DBは書込停止中で、完成版の適用済みと説明しない。
-- `.env.local`は本番。ダミービルドはNEXT_PUBLIC_SUPABASE_URLを `http://127.0.0.1:54321`、公開キーを `local-test-placeholder` へプロセス上書きした。
-- 中断前に起動した `/private/tmp/codestep-demo-verify-20261019.mjs` は3100のダミー接続Nextと54321の通信記録APIを管理。再開時に残存を確認してから再起動/停止する。記録 `/private/tmp/codestep-demo-api-requests.json` はパス/メソッドだけ。直接デモの検証終了時は `[]`、通常の/へ移動後は過去の架空セッション更新1件。デモの0件と通常ページのAuth通信を区別する。
+- 固定staging：<https://codestep-git-codex-admin-rls-portfolio-touya1896-7818s-projects.vercel.app/demo/admin>。公開例外はこのhostname1件のみ、他Previewの保護を維持。追加の解除・公開設定変更なし。
+- staging Supabase：`ezjzgebehancbxqpgany`。本番：`xdnmlfoblqdygsnhkxxp`。本番URL <https://codestep-two.vercel.app> は旧main。今回、本番/DB/Authユーザー/RLS/管理者権限/課金は変更していない。
+- `.env.local`は本番接続。ローカルbuildは公開URLを `http://127.0.0.1:54321`、公開キーを `local-test-placeholder` へプロセス上書きした。
+- 検証用Next3100/ダミーAPI54321は今回のランチャーだけを停止し、lsofで両ポートのLISTENなしを確認。不要な起動し直し不要。一時ファイルは再開の必須依存にしない。実データや秘密ファイルは削除していない。
 
-## 次の一手と完了条件
+## 残る本人確認と承認
 
-1. ローカルの管理デモ検証は完了済み。同じ試験を再開時に最初から繰り返さない。残るデモ/資料/証跡を同じアプリPRへcommit/pushし、CI/Previewと公開URLの管理デモを確認する。
-2. 提出用READMEは既存codestep-portfolioの保存場所/既存PRで管理デモURLと検証範囲を更新する。新PR/README移動は不要。
-3. 本人に必要なのは最終の実メール/Android・PC認証、操作性、面接説明の確認。手順は既存チェックリスト。メール日本語化・差出人ブランド化は低優先で記録済み。
-4. 区切りで本ファイルの残存プロセス/未commit/最新CI・公開結果を更新する。main/Productionは承認待ち。
+1. [認証チェックリスト](./docs/auth-release-checklist.md)の8項目：今回の新規アカウントによる修正後Android/PCの実メール確認・ログイン・再読込維持・再送後確認、実dark/autofill。本人報告ではスマホのstaging到達と以前のメール受信は成功、今回の確認フローは修正前に失敗。修正後の本人結果は未確認。
+2. 最新メールでも失敗するかは未確認。token検索失敗から先読み/旧リンク/時間切れを断定しない。本人の試行時刻/ブラウザ/表示文言を受け取った場合だけ必要最小限で調査する。パスワード/確認リンク/コードは求めない。
+3. 本人による操作感と技術説明の確認。OAuth・独立外部API・画像/音声入力は未実装で最高点の全達成とは説明しない。
+4. main/Productionと本番RLS/ACL/RPC/制約/Authへの反映は未承認。[公開前提](./docs/release-readiness.md)を確認し、最終承認前に実行しない。
+5. メールの日本語化・差出人ブランド化は低優先で記録済み。SMTP/契約を勝手に変更しない。
 
-## 承認と未解決
+通常の安全な編集・検証・作業ブランチcommit/push・既存PR更新・stagingコード更新は包括承認済み。同じ業務承認を再質問しない。ツール権限は正規に扱う。緊急停止/復旧・旧7→4試験は一部未検証のまま再開禁止。
 
-通常編集・仮API・ローカル試験・作業ブランチcommit/push・既存PR更新・stagingコード更新は包括承認済み。同じ業務承認を再質問しない。ツール固有の実行許可は正規に扱う。本番/DB/Auth変更、セキュリティ低下、新たな公開、機密公開、重要な差分消失、課金、主要仕様変更、main/Productionは事前承認が必要。
+## 新しいチャットの最初の一手
 
-未解決：最新メールでも失効するかは本人再テスト待ち。ログのtoken検索失敗から先読み/旧リンク/時間切れのどれかを断定できない。緊急停止・復旧/旧7→4試験は一部未検証のまま再開禁止。本番反映には未適用のRLS/ACL/RPC/制約等の別承認が必要。詳細は[公開判断](./docs/release-readiness.md)と[評価証拠](./docs/evaluation-evidence.md)。
+AGENTS→AI_WORKFLOWと本書、既存資料の最新節を確認する。実cwd/worktree/branch/status/diff/PR headを照合し、記録以降の差分だけを調べる。管理デモの実装・70テスト・公開CRUDは完了済み。本人の新しい結果がなければ同じ認証質問やDB調査を繰り返さず、残る最終確認・説明準備を進める。安全な通常作業は自律実行し、高リスクの具体的な最終承認だけを人間へ依頼する。
