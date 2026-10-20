@@ -2,6 +2,15 @@
 
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
+## 2026-10-21 本番管理者移行：実行直前Read-only事前条件の追加照合
+
+- 最新本人指示「次」を受け、本番管理者指定および管理RLS/RPC移行の独立事前調査を継続。**本番Auth/DB変更の承認とは解釈せず、データ書込は未実施**。
+- 本番プロジェクト `xdnmlfoblqdygsnhkxxp` へREAD ONLYの事前条件照合を実行。以下の10条件が**すべてtrue**：既存questions 7ポリシー全文セットが`docs/sql/questions-admin-rls.sql`の前提と一致、questions RLS ON、private schema未作成、削除RPC未作成、anon INSERT/UPDATE/DELETE停止、authenticated INSERT/UPDATE/DELETE停止、Authユーザー1件、管理者0件、既存questions 2件維持、user_progress 0件。移行SQL原本2本のSHA-256は前段でレビューmanifestと一致確認済み。
+- GitHub [PR #3](https://github.com/bonbabo108/codestep/pull/3) は引き続きDraft/mergeable、ベースmainは従前commit。最新確認した既存コミット`7d647fec`の`Quality checks`は`success`。以降の資料コミット分CI成功はコミットごとに再確認する。
+- Supabase公式[Auth Admin API](https://supabase.com/docs/reference/javascript/auth-admin-updateuserbyid)に従い、権限付与は既存ユーザーの`app_metadata.codestep_admin=true`を**サーバー側Auth Admin API**でセット、ログイン済みJWTを更新する方式。接続MCPにはAuth Admin API動作がなく、現在のチャットブラウザは読取専用。**本番auth.usersを直接UPDATEして代替する案は採用しない**。個人のサービスキーをChatGPT/公開GitHub/ブラウザJSへ貼り付けることも不可。公式docsで認証情報を用いるサーバー側操作が必要であることを再確認。
+- Vercelブラウザの既存ログイン済みOverviewは読み取り可能、MCP直接Vercelは以前から403。権限迂回しない。正常に管理APIを実行できる経路の確認が本人操作側の最初のゲート。管理者指定後に本人セッション更新を行い、レビュー済みRLS/RPCの適用・本番公開へ段階移行する。
+- 認証確認メールは現行本番ではConfirm email OFF、Custom SMTP OFF。Brevo登録を再開しない。メール確認の本人要件を無断で撤回しない。
+
 ## 2026-10-21 AI先行一括実行：公開直前の一括ゲート（最新）
 
 **本人の最新進め方**：「AIにできる仕事をすべて先行し、本人の手作業・確認だけを優先順位順に最後にまとめる」。停止している一つの操作を理由に独立作業を止めない。恒久判断はAGENTS.mdとAI_WORKFLOW.mdに反映済み。
