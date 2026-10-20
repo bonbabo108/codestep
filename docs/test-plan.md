@@ -674,3 +674,12 @@ https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）�
 
 
 2026-10-21 承認回答後：DB/Authは本人所有の対象照合と非公開バックアップの取得/整合性/復元可能性検証が条件。既存1アカウントの本人所有回答は受領、ID照合は未実施。main/Productionはマージ直前の再承認が必要。SMTPなし/不明、契約・課金禁止。ローカルpg_dump/psql/GnuPG/PG/Dockerがなく、正規Homebrewでのgnupg/postgresql@17導入はmacOS27未対応でexit1。互換性チェックの回避なし。backup取得・復元検証前のため、本番SQL/Auth/権限/URL変更なし。条件未達を記録し、安全な未適用状態を保持。
+
+
+## 2026-10-21 条件成立後の本番段階適用
+
+本人は既存唯一のAuthアカウントの所有を確認。非公開OpenPGP backupを本番READ ONLYで取得し、ローカルPG17.5（本番17.6）の隔離復元で3表全行/列/制約/RLS/ACL/所有者と対象Authメタデータ一致、適用前の本番再比較一致を確認した。Hosted Supabase/Auth資格情報/PITR復元の試験ではない。HomebrewのmacOS27未対応は回避せず、公式固定版の一時npm依存を利用。復元補助スクリプトと結果の範囲をrelease-readiness/HANDOFFへ保存した。
+
+本番は承認ハッシュ一致のACL縮小→進捗UNIQUEを別TXで適用成功。6本人ポリシー/RLS維持、匿名権限なし、authenticatedの必要SELECT/列I/Uのみ、UNIQUE定義・重複0・全行不変を読取確認。Auth URLは公開originと/login完全一致1件へ保存し再読込確認。Authユーザー/メタデータ未変更。security advisorは漏洩パスワード保護OFFのWARN1件（https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection）。補助スクリプトの構文/ESLint/既存backup再検証も成功。アプリ77テスト/CIの既存結果は再利用。
+
+未実施：管理者指定（接続ツールにAuth Admin操作なし・GUIメタデータは閲覧のみ）、新JWT、questions RLS/削除RPC。直接auth.users UPDATEや資格情報探索で代用せず、questionsの書込停止を保持。SMTPなし/Confirm email OFFのため一般メール認証未完成。標準SMTPは事前承認宛先のみ/2通毎時で一般配信の代替にしない。本番CRUD/新規Auth/メール/本人実端末、mainマージ/Production更新も未実施。新規契約/課金なし、緊急停止/復旧試験なし。main/Productionは条件が揃う直前に別承認を求める。

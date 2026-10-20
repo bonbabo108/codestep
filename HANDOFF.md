@@ -2,13 +2,18 @@
 
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
-## 2026-10-21 条件付き承認後の現在地（最優先）
+## 2026-10-21 本番準備の最新結果（以下の過去状態より優先）
 
-- 本人回答：既存本番1アカウントは本人所有。DB/AuthのSQL4本/管理者指定/URL変更/SMTP準備後のメール確認は、対象ID照合＋非公開backupの取得/整合性/復元可能性検証が完了した場合だけ承認。対象IDはまだ取得/照合していない。同じ本人所有質問を再度求めない。
-- **main/Productionは未承認。** 必要DB/Auth/SMTPと検証・最新CIが揃ったマージ直前に再確認する。条件付きの事前マージ承認へ読み替えない。SMTPはない/不明、新規契約/課金は禁止。
-- 保存済み計画コミット`8d52e524367d45003707400d5841b7a87345ae9a`を既存PR #3へpush済み。今回の承認/制約と未完了を後続資料コミットへ保存する。最新HEAD/statusは実Gitで解決する。
-- **条件未達で本番変更なし**：Free/no backups、非公開ローカルbackup未取得、整合性/復元検証未完了。pg_dump/psql/GnuPG/PostgreSQL/Dockerなし。正規Homebrewでgnupg/postgresql@17を導入しようとしたがmacOS27未対応でexit1。OS判定偽装・別資格情報・保護解除等は行わない。バックアップのための実行データ取得/秘密鍵生成も未実施。
-- 次は対応した正規backup/復元検証環境と読取接続、または本人取得の同等の検証可能な非公開backupを用意する。パスワード/鍵をチャットで求めない。条件が満たせなければDB/Auth変更・mainへ進まない。SMTP一般配信の条件も未解決。追加機能や緊急停止/復旧試験は再開不要。
+- 本人の条件付きDB/Auth承認を受領。唯一の既存Authアカウントは本人所有との回答済み。暗号化backup内のIDと現在の唯一のIDの一致を非公開で確認し、同じ所有確認を質問し直さない。
+- 非公開backupはGit外の `~/.codestep-private-backups/2026-10-21/`（0700、各ファイル0600）。本番内READ ONLYで3表全行/列/制約/RLS/ACL/所有者・対象Auth app_metadata/IDを公開鍵暗号化し保存。復号→隔離PostgreSQL17.5で全行/カタログ/Authメタデータ一致、本番17.6との適用前再照合も全true。Auth資格情報/セッションやHosted Supabase/PITR全体の復元試験ではない。
+- HomebrewはmacOS27未対応で停止し、OS判定を回避していない。公式OpenPGP.js6.3.2/PGlite0.4.6をアプリ外 `/private/tmp/codestep-backup-tools` へ固定導入。`scripts/production-backup.mjs verify` は既存ファイルを上書きせず同じbackupの検証を再開可能。init/query/receiveは再実行しない。schema-restore.sqlは旧危険ACLも含む検証用で、本番へ一括復元禁止。
+- **本番適用済みSQLは2本だけ**：`progress-release-proposal.sql`（migration `codestep_production_progress_acl_20261021`）→ `progress-unique-proposal.sql`（`codestep_production_progress_unique_20261021`）。各原本の承認ハッシュを新規要求前に照合。profiles/progressの本人6ポリシー・RLSを維持、anonの表/列権限なし、authenticatedはSELECTと必要列I/Uのみ、DELETE/TRUNCATE等なし。UNIQUE(user_id,question_id)確認、重複0。
+- 適用後も全3表の全行はbackupと一致（profiles1/questions2/progress0）、対象Authも変更なし。catalog比較falseは上の意図したACL/UNIQUE差分。security advisorは漏洩パスワード保護OFFの既存警告1件、DB/RLSの追加警告なし。これは実利用者APIの書込試験ではない。
+- **Auth URL反映済み**：Site URL `https://codestep-two.vercel.app`、Redirect URLsは同 `/login` 完全一致1件。GUI保存→再読込で一致。私的証跡 `/private/tmp/codestep-production-auth-after-20261021.jpg`。Confirm email OFF/独自SMTPなしを維持、新規メール/ユーザー作成なし。
+- **管理者指定・questions RLS/RPCは未適用**：正規Auth Admin APIを実行する接続手段がなく、既存GUIのUsers詳細/Raw JSONも閲覧のみ。Authテーブル直接UPDATEや資格情報探索へ切り替えない。唯一の本人アカウントを既存app_metadata保持で管理者指定し、新JWTを本人が取得/検証できる正規手段を準備するまで、計画のquestions書込停止と残り2 SQLを保留。秘密をチャットへ送らせない。
+- **main/Productionは未承認・未実行**。必要DB/Auth/SMTP・検証・最新CI/レビューが揃ったマージ直前に再確認する。SMTPはない/不明、新規契約/課金禁止。標準SMTPの事前承認宛先のみ・2通/時では一般公開の認証メールを完成扱いしない。
+- 保存対象は本書/AI_WORKFLOW/公開計画/review manifest/判断・テスト記録/backup補助スクリプトだけ。同じ作業ブランチ・PR #3へまとめる。最終HEAD/未commitは実Gitで解決。鍵/backup/実データ/私的画像はcommitしない。
+- **次の一手**：正規Auth Admin APIの利用手段とSMTPサービス/送信元の本人判断を解決する。既存2 SQLの再適用・backup作り直し・緊急停止/復旧試験・追加機能へ進まない。
 
 ## 2026-10-21 本番準備の読取観測（上の承認・条件を優先）
 
