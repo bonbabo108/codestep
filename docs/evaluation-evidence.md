@@ -10,7 +10,7 @@
 | フロント詳細・ワイヤーフレーム | [画面とHTML/CSS/状態表](./final-design.md)、[原本](./wireframe.png)、app/page.tsx・components/LoginForm.tsx | 旧画像との差分はMarkdownで補足 |
 | バックエンド機能一覧 | lib/auth-actions.ts・questions.ts・learning.ts、[機能と成功/異常条件](./final-design.md) | Auth/CRUD/進捗の対象・権限・返却条件を記載 |
 | DB・ER図・型・リレーション | [全16列のER図](./final-design.md)、docs/sql/staging-bootstrap.sql、[旧ER原本](./er-diagram.png) | NULL/DEFAULT/FK NO ACTION/一意制約の環境差を明記。今回DB構造の再照会なし |
-| アプリの操作性 | [PCデモ](./screenshots/final-20261019/demo-desktop.jpg)、[390pxデモ](./screenshots/final-20261019/demo-mobile.jpg)、README使い方 | 架空デモの回答・CRUD・取消・初期化を実Chromeで成功。固定stagingはアカウント不要で公開済み。実スマホ操作とは区別 |
+| アプリの操作性 | [PCデモ](./screenshots/final-20261019/demo-desktop.jpg)、[390pxデモ](./screenshots/final-20261019/demo-mobile.jpg)、README使い方 | 架空デモの回答・CRUD・取消・初期化をCodexの公開ブラウザ検証で確認。2026-10-21、本人がAndroidで修正版管理デモの操作感に問題ないと報告。実管理者・実DB CRUD・メール認証とは区別 |
 | ヘッダー・フッター・メニュー | components/Header.tsx・AppShell.tsx | 共通導線とスマートフォンでの折返し |
 | 共通コンポーネント | components/ui/button.tsx・LoginForm.tsx・AuthProvider.tsx・ApplicationShell.tsx | 通常/デモ管理は同じQuestionManager/SiteHeader。データ処理を分離し、フォーム・通知・削除確認まで共用 |
 | セッション維持 | components/AuthProvider.tsx、tests/admin.test.mjs、learning.test.mjs | 既存staging実画面の再ログイン復元成功を再利用。今回のログイン済み/login→/遷移と一般の管理拒否は架空APIで確認 |
@@ -58,3 +58,11 @@
 ## 管理UI一致への訂正（2026-10-20）
 
 旧デモのCRUD成功だけでは本物の操作感を表せなかった。現在は実管理画面から抽出した[QuestionManager](../components/QuestionManager.tsx)と[SiteHeader](../components/SiteHeader.tsx)を共用する。[比較表・PC/390px画像・検証と限界](./admin-demo-parity.md)、[追加7テスト](../tests/question-repository.test.mjs)。旧画像は履歴として保持し、最新版の管理UI証拠は比較表を参照。実Auth/DBの最新再試験とは区別する。
+
+
+## 提出前の本人確認と最新CI（2026-10-21）
+
+- 本人はAndroidで修正版の管理画面デモを確認し、以前より改善され「これで問題ない」と報告。本人による評価は**デモの操作感**に限定し、実staging管理者の操作、DB永続化や新規登録・メール確認の成功へ拡大しない。
+- [共通管理UIのPC/390px比較画像・既知の差](./admin-demo-parity.md)を最新のUI証拠とする。
+- [GitHub Actions 39364914276](https://github.com/bonbabo108/codestep/actions/runs/39364914276)はコミット `6d7eaf1` に対し成功。77件のテスト、lint・型検査・ダミー接続ビルドはCodexの実行報告とCI証拠に基づく。今回のドキュメント更新ではコードを変更していない。
+- 本番・mainマージ・実staging管理者の最新確認は未実施。提出時は固定stagingデモ、作業ブランチ、提出用ポートフォリオのREADMEを使用し、本番公開完了とは記載しない。
