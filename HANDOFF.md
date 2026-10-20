@@ -2,6 +2,16 @@
 
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
+## 2026-10-21 本人の最新決定：本番公開が完成条件
+
+本人は最終評価（PR・マージ・CI/CD・公開URL・実演）を踏まえ、Preview提出を終点にせず、既存アプリPR #3を安全にmainへマージし、Productionでアプリを動作確認できる状態を最優先とした。ローカルAI構築・追加のトークン節約設計は本番完成後に延期する。追加機能や評価点目的の実験を増やさない。
+
+読取専用の2026-10-21現在地：staging DBはquestions=3/profiles=4/user_progress=4、Productionは2/1/0、3表ともRLS有効。stagingのquestionsは公開SELECT＋管理者I/U/Dの4ポリシー、本番は旧7ポリシー（authenticated write3・Demo public write3・公開read1）。Productionにはuser_progress(user_id,question_id)のUNIQUEがなく、delete_question_with_progress RPCもない。実効ACL・ロール権限・Auth URL・Production Vercel接続先・バックアップと復旧計画は本番変更前に照合する。実データのコピー・全件上書き禁止。
+
+Vercelコネクタは対象チームに403で現在読み取り不可。既存の接続済みGUIまたはCodexの正規認証済みローカル手段で読み取りを優先し、アクセス制限の回避は禁止。今回DB書込・マージ・Production操作は未実施。
+
+次はAGENTS/AI_WORKFLOW・docs/release-readiness.md既存案の再利用で本番向け限定差分とバックアップ・段階適用・停止/復旧手順を一括レビューし、対象とリスクと復元方法が明確になった時点で本人に**本番変更・mainマージ/Production公開の個別実行承認**をまとめて求める。未承認の高リスク操作だけ止め、独立した安全な事前検証は自律実行する。最終説明は短く、未確認を成功へ昇格させない。
+
 ## 現在の目的と今回の訂正
 
 講座最終課題を完成し、本人が説明できる状態にする。本人のスマホ評価により「旧デモはCRUDできるが、本物と操作感が違う」と判明。旧デモの完成判断を訂正し、本物UI再利用へ変更した。[比較と証拠](./docs/admin-demo-parity.md)。今後も簡易版を別制作せず共通UI＋データ処理分離を優先する。
