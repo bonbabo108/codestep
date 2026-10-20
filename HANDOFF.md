@@ -2,6 +2,11 @@
 
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
+## 2026-10-21 本番Auth管理画面の実確認（現行設定）
+
+- 本人が本番Supabaseの[Sign In / Providers](https://supabase.com/dashboard/project/xdnmlfoblqdygsnhkxxp/auth/providers)を開き、接続済みブラウザの読み取り専用情報から実際の設定を確認。**Allow new users to sign up=ON／Confirm email=OFF／Email provider=Enabled／Allow anonymous sign-ins=OFF／manual linking=OFF**。前回のConfirm email OFF記録と一致した。**本番の新規登録画面は使えるが確認メールが必須ではない**ため、本人のメンター評価完成条件（任意の実メールアドレス→確認メール→確認完了→ログイン）には達していない。設定は一切変更していない。
+- [Supabase公式SMTP仕様](https://supabase.com/docs/guides/auth/auth-smtp)で標準送信先は組織承認済みアドレスのみ、SMTP設定画面は[Authentication SMTP](https://supabase.com/dashboard/project/xdnmlfoblqdygsnhkxxp/auth/smtp)。**SMTP設定はまだ画面実読取できていない**。次に本人がこのページを開いたあと接続ブラウザの読取で有無を確定し、必要時だけ選択肢を説明する。外部SMTP Brevoアカウント登録は保留。本番でのConfirm ON/メール送信/新規登録/PR mergeは未実施。
+
 ## 2026-10-21 標準メール送信の実績確認・外部SMTPの判断保留（最新調査）
 
 - 本人は以前Supabaseだけでメールを受信した実績から、Brevo等の外部アカウント追加の必要性を疑問視。**Brevo登録は保留**。外部SMTPサービスのブランド/契約を決める前に、既存環境での検証結果・送信先制限・本人の必要条件を区別して説明する。
