@@ -2,6 +2,13 @@
 
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
+## 2026-10-21 本番SMTP設定の読取結果（確定）
+
+- 本人が[本番Authentication → Emails → SMTP Settings](https://supabase.com/dashboard/project/xdnmlfoblqdygsnhkxxp/auth/smtp)を開き、接続ブラウザで読み取り確認。**Enable custom SMTP = OFF（チェックなし）**。既存の外部SMTP送信サービスは有効化されていない。本番Sign In / ProvidersではSignup ON、Email Enabled、Confirm email OFF（既読取）。
+- 現状維持なら、メール所有確認を要求せず任意のメールアドレスとパスワードでの新規登録・ログインが可能な構成。ただし実際のメンター環境でのE2Eテストは未実施。**メール確認完了は未達**。確認メールが届いた過去の証拠はstaging Supabaseのものであり、本番/一般宛先の成功ではない。
+- 本人の「楽したい」を追加アカウント・外部SMTPの手間削減希望として尊重する。Brevo登録は停止、無断で確認メール要件を正式撤回したと決めつけない。任意の受信可能なメールアドレスへの確認メール配送が完成条件として維持されるなら、Supabase標準SMTPの承認宛先制限により外部SMTP等が必要。評価条件との相違点を明示し、未検証を成功扱いしない。
+- **本番SMTP/認証設定は読み取りのみで変更なし**。送信・新規ユーザー作成・課金・PR mainマージ・Production公開も未実施。
+
 ## 2026-10-21 訂正：Brevo保留でも既存SMTP設定は確認する
 
 - 本人は、以前「Supabase SMTP設定を読取確認する」と案内されたのに「Brevoを使わないなら確認不要」と覆された矛盾を指摘。**後の『確認不要』はAIの誤案内で撤回**。Brevo登録の見送りと、既存Supabaseメール送信設定の読取確認は別物。
