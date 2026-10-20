@@ -1,6 +1,6 @@
 # メンター評価基準と提出証拠
 
-2026-10-19。提供された評価表の画像5枚を根拠に項目を整理した。得点は採点者が判断するもので、未実装・未確認を満点扱いしない。画面原本は保持し、機密・個人情報を含む評価表原本はリポジトリへ複製しない。
+2026-10-20。提供された評価表の画像5枚を根拠に項目を整理した。得点は採点者が判断するもので、未実装・未確認を満点扱いしない。画面原本は保持し、機密・個人情報を含む評価表原本はリポジトリへ複製しない。
 
 | 評価項目 | 実装・資料の証拠 | 検証・残る条件 |
 | --- | --- | --- |
@@ -12,7 +12,7 @@
 | DB・ER図・型・リレーション | [全16列のER図](./final-design.md)、docs/sql/staging-bootstrap.sql、[旧ER原本](./er-diagram.png) | NULL/DEFAULT/FK NO ACTION/一意制約の環境差を明記。今回DB構造の再照会なし |
 | アプリの操作性 | [PCデモ](./screenshots/final-20261019/demo-desktop.jpg)、[390pxデモ](./screenshots/final-20261019/demo-mobile.jpg)、README使い方 | 架空デモの回答・CRUD・取消・初期化を実Chromeで成功。固定stagingはアカウント不要で公開済み。実スマホ操作とは区別 |
 | ヘッダー・フッター・メニュー | components/Header.tsx・AppShell.tsx | 共通導線とスマートフォンでの折返し |
-| 共通コンポーネント | components/ui/button.tsx・LoginForm.tsx・AuthProvider.tsx・ApplicationShell.tsx | 通常画面とデモの表示枠を分離。フォーム検証・判定ロジックを再利用 |
+| 共通コンポーネント | components/ui/button.tsx・LoginForm.tsx・AuthProvider.tsx・ApplicationShell.tsx | 通常/デモ管理は同じQuestionManager/SiteHeader。データ処理を分離し、フォーム・通知・削除確認まで共用 |
 | セッション維持 | components/AuthProvider.tsx、tests/admin.test.mjs、learning.test.mjs | 既存staging実画面の再ログイン復元成功を再利用。今回のログイン済み/login→/遷移と一般の管理拒否は架空APIで確認 |
 | テキスト以外の入出力 | app/page.tsx等のLucideアイコン、[画面](./screenshots/final-20261019/demo-desktop.jpg) | 視覚的な状態表示あり。画像アップロード/音声入力なし。評価上の画像出力要件を満たすかはメンター判断 |
 | CRUD4種 | app/question/page.tsx・lib/questions.ts・tests/questions.test.mjs、[削除仕様と実Preview結果](./question-deletion.md) | 2026-10-17のstaging実CRUD結果を再利用。今回DB/RLSコード変更なし。本番は書込停止中 |
@@ -21,7 +21,7 @@
 | 外部API連携 | Supabase Auth/Data APIを利用 | 独立した外部サービス/生成AI APIなし。評価表の外部API項目に該当するかは要確認。得点目的だけの有料連携は追加しない |
 | DBの体験への活用 | questions→回答、profiles/user_progress→本人保存/復元 | [既存保存画像](./screenshots/learning-saved-staging.jpg)、[復元画像](./screenshots/learning-restored-staging.jpg)、learning.test.mjs |
 | RLSによる保護 | docs/sql/staging-bootstrap.sql・lib/admin.ts・[RLS説明](./rls-runbook.md) | staging実APIの管理者CRUD/匿名・一般拒否/本人制限の既存成功を再利用。本番移行は未適用 |
-| テストと改善の妥当性 | [テスト記録](./test-plan.md)・[判断履歴](./decisions.md)、tests/*.test.mjs | 今回70件成功（認証65+デモ5）。localhost原因→戻り先指定/再送追加。0件成功防止・競合・削除取消の既存改善も説明 |
+| テストと改善の妥当性 | [テスト記録](./test-plan.md)・[判断履歴](./decisions.md)、tests/*.test.mjs | 最新77件成功（既存70+repository境界7）。localhost原因→戻り先指定/再送追加。0件成功防止・競合・削除取消の既存改善も説明 |
 | ブランチ・PR・マージ | codex/admin-rls-portfolio、Git履歴、今回のPR（公開状況参照） | PR作成まで進める。mainへの反映は本番条件を満たすまで保留。回数を増やす目的の空PRは作らない |
 | 構造整理・リファクタリング | 共通LoginForm/認証ロジック、AppShell/ApplicationShell分離、eslint.config.mjs | 判定と入力検証をデモでも再利用。Hooks・未使用・危険構文の検査 |
 | CI | .github/workflows/lint.yml | push/PRでlint→型→テスト→ダミービルド。最新CIの結果は公開状況へ追記 |
@@ -54,3 +54,7 @@
 - PC/390pxで入力保持・追加連打1件・一覧・編集・削除取消/確定・空状態・初期化・再読込を確認。[PC](./screenshots/final-20261019/admin-demo-desktop.jpg)、[390px](./screenshots/final-20261019/admin-demo-mobile.jpg)。直接訪問からCRUD終了までダミーAuth/DB向け要求0件。実DB/RLSの検証とは別。
 - 本物の管理画面/SQL/認証認可のコード差分なし。管理者フラグや公開範囲を変更していない。
 - [AGENTS](../AGENTS.md)：恒久ルール、[AI_WORKFLOW](../AI_WORKFLOW.md)：改善基準、[HANDOFF](../HANDOFF.md)：再開点。実Git/PRを確認し途中成果を保全した。
+
+## 管理UI一致への訂正（2026-10-20）
+
+旧デモのCRUD成功だけでは本物の操作感を表せなかった。現在は実管理画面から抽出した[QuestionManager](../components/QuestionManager.tsx)と[SiteHeader](../components/SiteHeader.tsx)を共用する。[比較表・PC/390px画像・検証と限界](./admin-demo-parity.md)、[追加7テスト](../tests/question-repository.test.mjs)。旧画像は履歴として保持し、最新版の管理UI証拠は比較表を参照。実Auth/DBの最新再試験とは区別する。

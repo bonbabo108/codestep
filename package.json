@@ -11,6 +11,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "verify:admin-ui": "node scripts/admin-ui-fixture.mjs",
     "lint": "eslint . --max-warnings 0",
     "typecheck": "tsc --noEmit --incremental false --noUnusedLocals --noUnusedParameters",
     "test": "node --test tests/*.test.mjs"

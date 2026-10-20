@@ -649,3 +649,12 @@ https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）�
 
 
 2026-10-19最終保存：恒久資料8399cdf、管理デモbe683afを同じアプリPR #3へpush。be683afのPR CI（39214651348）は成功。固定staging/demo/adminの390pxでサンプル追加/編集/削除/初期化を実ブラウザ確認、横幅390=scrollWidth390。提出用READMEは元の場所・既存PR #3で3fc3544へ更新し読み戻し全文一致。mainは未マージ。検証用3100/54321は今回のプロセスだけ停止しLISTENなしを確認。HANDOFFを未commit途中状態から完了時の再開点へ更新。本人の実メール/Android・PC認証は未確認のまま保持する。
+
+
+## 2026-10-20 管理デモUIの共通化
+
+旧デモのCRUD成功だけでは本物のUI完成度を示せず、本人のスマホ評価に基づき完了判断を訂正。本物のQuestionManagerとSiteHeaderを抽出し、データ取得/保存だけを通常Supabaseとデモメモリへ差し替えた。既存の通知・入力保持・進捗確認付きAlertDialog・操作lockを共用し、認証ガード/RPC/RLSは維持。変更点とPC/390px画像は[管理UI比較](./admin-demo-parity.md)。
+
+成功：77テスト（追加repository7）、lint、typecheck、ダミーWebpackビルド。通常UI＋架空APIとデモのPC/390px CRUD、編集表示、取消、変更なし、入力保持、進捗警告、保存拒否/遅延/削除確認失敗、匿名/一般の管理UI拒否。デモCRUD前後のAuth/Data要求12→12。即時デモでダブルクリック後に空入力エラーが出る点は共通送信ボタンで抑制し、最終ビルドで通知と1件追加を確認した。
+
+未実施：実staging管理者セッションがないため最新の実DB/管理画面比較。認証迂回・資格情報変更はしない。本人のAndroid/PCメール確認も未確認のまま。既存staging実API/RLS証拠は再利用し、新たなDB操作/本番変更/公開解除/mainマージ/緊急停止試験なし。ローカルfixtureは停止し3100/54321のLISTENなし。最新CI/公開反映はHANDOFFへ保存する。

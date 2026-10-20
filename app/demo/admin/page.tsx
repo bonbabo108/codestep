@@ -1,5 +1,5 @@
-import DemoExperience from '@/components/DemoExperience'
+import DemoQuestionManager from '@/components/DemoQuestionManager'
 
 export default function AdminDemoPage() {
-  return <DemoExperience key="admin-demo" initialAdmin />
+  return <DemoQuestionManager />
 }

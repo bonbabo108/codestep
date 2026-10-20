@@ -1,4 +1,4 @@
-# CodeStep 最終設計（2026-10-19）
+# CodeStep 最終設計（2026-10-20）
 
 最新版の外部設計資料は[Week9設計シート](https://docs.google.com/spreadsheets/d/1l6_wH24I4Cq1jhvHi1VtDjarj5fr8KK6jS0g7HTAtds/edit)。2026-10-19に本文とメタデータを読み取り、更新日時2026-10-15T01:34:41.267Zを確認した。外部シートは未編集。本書は実装との差分を解消するローカル改訂版。旧PNG原本は保持する。
 
@@ -45,7 +45,7 @@ flowchart TD
 | ログインform/label/input | 確認中・処理中は送信を無効化。登録/ログイン/メール確認待ちを区別。登録・再送のemailRedirectToは現在originの/login。確認後のセッションを検出して/へ移動 |
 | メール確認エラー/再送button | 期限切れ・使用済みを固定文言で表示。メールアドレス形式を確認し、60秒の再送間隔とSDKの送信制限エラーを扱う。メールアドレスの登録有無を断定しない |
 | 管理画面form/一覧/確認 | app_metadata.codestep_adminがboolean trueの有効セッションのみ。入力必須、変更なし送信なし、二重操作防止、0件は失敗。削除は関連進捗警告→取消/明示確定→限定RPC |
-| デモmain/nav/form/details | 管理デモへ1クリックで直達。同じDemoExperience・回答判定・フォーム検証を使う。架空3問の回答/解説/一時クリア、問題の作成/編集/削除確認/初期化。メモリ内のみで離脱・再読込時に初期化。Auth/実DB試験の代用ではない |
+| デモmain/nav/form/details | 管理デモへ1クリックで直達。本物と共通のQuestionManager/SiteHeaderを使い、データ処理だけメモリrepositoryへ切替。架空3問の回答/解説/一時クリア、問題の作成/編集/削除確認/初期化。デモ内の学習/管理遷移でメモリを共有し、デモ外離脱・再読込時に初期化。Auth/実DB試験の代用ではない |
 
 ## 機能一覧と認可
 
@@ -100,3 +100,5 @@ erDiagram
 - 本番はquestions書込停止中。stagingの管理者RLS/RPC成功を本番適用済みと説明しない。
 
 旧画像：[ER原本](./er-diagram.png)、[ワイヤーフレーム原本](./wireframe.png)。本書が現実装との差分を補足する。
+
+管理UIの境界：通常の`/admin`は既存Authガード→共通QuestionManager→SupabaseQuestionRepository→既存CRUD/RPC。`/demo/admin`はDemoProvider→同じQuestionManager→DemoQuestionRepositoryのメモリだけを操作する。通常ルートの認可を維持し、デモから通常repositoryへのフォールバックはない。[比較画像・検証範囲](./admin-demo-parity.md)。

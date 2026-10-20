@@ -1,0 +1,176 @@
+{
+  "demoPc": {
+    "buttons": [
+      "問題を作成する",
+      "見出しをつくろうを編集",
+      "見出しをつくろうを削除",
+      "文字に色をつけようを編集",
+      "文字に色をつけようを削除",
+      "定数のキーワードを編集",
+      "定数のキーワードを削除"
+    ],
+    "fields": [
+      {
+        "label": "カテゴリ",
+        "tag": "SELECT"
+      },
+      {
+        "label": "問題タイトル",
+        "tag": "INPUT",
+        "type": "text"
+      },
+      {
+        "label": "問題文",
+        "tag": "TEXTAREA"
+      },
+      {
+        "label": "正解コード",
+        "tag": "INPUT",
+        "type": "text"
+      },
+      {
+        "label": "初心者向けワンストップ解説",
+        "tag": "TEXTAREA"
+      }
+    ],
+    "grid": "486.391px 697.609px",
+    "sections": [
+      {
+        "className": "h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_16px_45px_-25px_rgba(30,64,175,0.22)] sm:p-8",
+        "width": 486.390625
+      },
+      {
+        "className": "min-w-0",
+        "width": 697.609375
+      }
+    ]
+  },
+  "normalPc": {
+    "buttons": [
+      "問題を作成する",
+      "見出しをつくろうを編集",
+      "見出しをつくろうを削除",
+      "文字に色をつけようを編集",
+      "文字に色をつけようを削除",
+      "定数のキーワードを編集",
+      "定数のキーワードを削除"
+    ],
+    "fields": [
+      {
+        "label": "カテゴリ",
+        "tag": "SELECT"
+      },
+      {
+        "label": "問題タイトル",
+        "tag": "INPUT",
+        "type": "text"
+      },
+      {
+        "label": "問題文",
+        "tag": "TEXTAREA"
+      },
+      {
+        "label": "正解コード",
+        "tag": "INPUT",
+        "type": "text"
+      },
+      {
+        "label": "初心者向けワンストップ解説",
+        "tag": "TEXTAREA"
+      }
+    ],
+    "grid": "486.391px 697.609px",
+    "sections": [
+      {
+        "className": "h-fit rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_16px_45px_-25px_rgba(30,64,175,0.22)] sm:p-8",
+        "width": 486.390625
+      },
+      {
+        "className": "min-w-0",
+        "width": 697.609375
+      }
+    ]
+  },
+  "demoMobile": {
+    "fields": [
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "カテゴリ選択してくださいHTMLCSSJavaScript",
+        "type": "SELECT"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "問題タイトル",
+        "type": "INPUT"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "問題文",
+        "type": "TEXTAREA"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "正解コード",
+        "type": "INPUT"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "初心者向けワンストップ解説",
+        "type": "TEXTAREA"
+      }
+    ],
+    "grid": "none",
+    "scroll": 390,
+    "sections": [
+      350,
+      350
+    ],
+    "width": 390
+  },
+  "normalMobile": {
+    "fields": [
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "カテゴリ選択してくださいHTMLCSSJavaScript",
+        "type": "SELECT"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "問題タイトル",
+        "type": "INPUT"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "問題文",
+        "type": "TEXTAREA"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "正解コード",
+        "type": "INPUT"
+      },
+      {
+        "color": "rgb(15, 23, 42)",
+        "font": "16px",
+        "label": "初心者向けワンストップ解説",
+        "type": "TEXTAREA"
+      }
+    ],
+    "grid": "none",
+    "scroll": 390,
+    "sections": [
+      350,
+      350
+    ],
+    "width": 390
+  }
+}
