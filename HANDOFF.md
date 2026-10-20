@@ -2,6 +2,16 @@
 
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
+## 2026-10-21 管理者機能・本番リリース再開時の読取確認（最新）
+
+- 本人が「はい」と回答したため、**既存管理者CRUDと本番公開準備の読取監査**を実施。今回の返信は「準備を進める」同意であって、本番権限・DB変更やmainマージの個別承認ではない。
+- [PR #3](https://github.com/bonbabo108/codestep/pull/3) は open/draft/mergeable、今回の調査開始時HEAD `ad622198acc0221216ab6e8e45534eddfb68e5b2`。同コミットのGitHub Actions `Quality checks`=success、Vercel status=success。本番のmainマージは未実施。
+- 本番SQL READ ONLY：Auth総数1、`raw_app_meta_data->>'codestep_admin'='true'` の人数は**0**。questions RLS有効、既存7ポリシー、APIロール anon/authenticatedのINSERT/UPDATE/DELETE実効テーブル権限は**すべてfalse**。つまり現時点では管理者でも書込不可だが、一般利用者にも書込不可。既存問題データ変更なし。profiles/progressの本人限定RLSと2026-10-21済み2 migrationは保持。
+- 既存画面 `app/admin/page.tsx` は `app/question/page.tsx` と同じ管理UIを使用。ログイン済み `app_metadata.codestep_admin===true` で管理画面を表示、実書込は `lib/questions.ts` と `public.questions` RLS・削除RPCで保護。機能の新規作り直し不要。staging questions RLSは4ポリシー、本番提案SQL原本 `docs/sql/questions-admin-rls.sql` と `questions-delete-production-proposal.sql` を確認。本番は両方未適用。
+- [Supabase公式のAuth Admin API](https://supabase.com/docs/reference/javascript/auth-admin-updateuserbyid)はサーバー側の `auth.admin.updateUserById` から `app_metadata` を変更可能。service_role keyはブラウザ/フロント/チャット/GitHubに載せない。**現接続のSupabase操作ツールにAuth Admin API専用操作は存在しない**ため、正規の信頼できる実行手段がないままAuth表へ直接UPDATEする代替策は採らない。
+- 安全な今後の順序：①本人所有の既存1アカウントを**正規Auth Admin API**で管理者指定（実行手段・本番Auth変更の承認が揃ってから）→②本人JWT更新と管理画面ガードを検証→③レビュー済みquestions RLSと削除RPCの本番移行（適用前差分と既存backupの照合、本人の変更承認）→④本人限定の**架空問題**で実DB CRUDを確認→⑤GitHub PRマージ/Productionリリースは直前の個別承認。Brevoの登録は中止し、実メール確認は未完了のまま完成済みと表記しない。
+- 最新security advisorはパスワード漏洩保護OFFの既存WARN1件のみ。新規修正/適用なし。既存資料の古い「進捗ACL/UNIQUE未反映」「本番URL localhost」は履歴として扱う。
+
 ## 2026-10-21 本番SMTP設定の読取結果（確定）
 
 - 本人が[本番Authentication → Emails → SMTP Settings](https://supabase.com/dashboard/project/xdnmlfoblqdygsnhkxxp/auth/smtp)を開き、接続ブラウザで読み取り確認。**Enable custom SMTP = OFF（チェックなし）**。既存の外部SMTP送信サービスは有効化されていない。本番Sign In / ProvidersではSignup ON、Email Enabled、Confirm email OFF（既読取）。
