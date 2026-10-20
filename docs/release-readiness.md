@@ -1,5 +1,66 @@
 # 公開判断とPreview準備（2026-10-16更新）
 
+
+## 2026-10-21 本番公開計画（最新・未承認／未適用）
+
+最新依頼を優先し、Productionで動く状態を完成条件とする。以下は今回の読取結果と実行前レビュー。[本番レビュー一覧と全文ハッシュ](./production-release.review.json)は新規の提案で、過去のstaging承認・ツール要求は流用しない。以下より古い節の現在地は履歴として扱う。
+
+### 実際との差分
+
+| 対象 | 2026-10-21の読取結果 | 最小変更 |
+| --- | --- | --- |
+| Git/PR | ローカル6d7eaf1から資料のみ3コミットをfast-forwardし6836a44。PR #3=open/draft、base/main=274eb79。コード差分なし、未レビュー、競合なし、4 checks成功 | 同じPRを利用。条件成立と明示承認後だけready化・mainマージ |
+| Production配信 | Vercel codestep、team_ElBqxblU9glF6Lgu1Ekw0jzo、prj_5yGFbE2rPl1XdsEje93egTHl01do。公開codestep-two.vercel.appはReady、main/274eb79、dpl_7y4n5KfqLz8jHYn9KRh2SmTyDpjF | mainのGit連携でProduction設定を使って再ビルド。Preview成果物の直接昇格なし |
+| Production変数 | URLは本番xdnmlfoblqdygsnhkxxpのルート。公開キーは同ref/anon/有効期限内、service_roleではない。Previewと登録範囲が分離 | 変更不要。値・JWT・ハッシュは保存しない。キーの署名そのものを検証したという意味ではない |
+| 本番データ/構造 | Healthy、PG17.6。questions=2/profiles=1/progress=0/Auth=1（メール確認済み1、管理者0）、重複/孤児0。3表RLS/16列、FK2本NO ACTION。Storage objects=0、public view等なし | 既存行・型・NULL/default・FK・Auth資格情報を維持。データコピー先は非公開バックアップのみ |
+| questions | 旧7ポリシーだがanon/authenticatedともSELECTのみ。テーブル/列書込停止中 | 旧書込6ポリシーだけを管理者I/U/Dへ置換し限定ACLを戻す。公開SELECT維持 |
+| profiles/progress | 本人限定6ポリシー。ただしanon/authenticatedにテーブル/列の過大ACLとTRUNCATEが残る | 必要SELECT/列INSERT/列UPDATEだけへ縮小。RLSでは防げないTRUNCATE等を除去 |
+| UNIQUE/削除RPC | progressペアUNIQUEなし。codestep_private/削除RPCなし | UNIQUE追加、検証済みと同じ限定削除RPCを本番用に別レビュー。適用時の行削除なし |
+| Auth URL | Site URL=http://localhost:3000、Redirect URLs=0件 | Site URL=https://codestep-two.vercel.app、許可先は同/loginの完全一致1件 |
+| メールAuth | Email/新規登録ON、匿名登録OFF、Confirm email OFF、独自SMTP未設定 | SMTP準備・配信確認の後にConfirm email ON。既存の確認済みアカウントを維持。他provider/パスワード/トークン寿命は変更しない |
+| 保護/レビュー | GitHubのclassic保護ルール一覧とrulesets一覧は空。PRはdraftがマージを妨げ、レビュー0件。Vercelコネクタは実チームでも403、CLIなし | 保護ルールを緩和しない。実行直前に最新checks/レビュー条件を再確認。コネクタの復旧・権限拡大を自動実行しない |
+| バックアップ | Supabase Free、No backups（自動バックアップ対象外）、ローカルdump/復元検証も未取得 | 取得・整合確認を本番変更の絶対条件とする。課金で代用しない |
+
+Vercel照会の最初のteam指定は実チームと異なったため、既存の正規ログイン画面で実IDを確認して訂正した。訂正後も403。再試行/保護解除/トークン探索は中止し、既存ログイン済み画面で閲覧可能な項目だけを確認した。環境変数は照合後再マスク、値の記録なし。GUIで見えることをMCP権限復旧と説明しない。
+
+本番Authの独自SMTP未設定は公開時の新しい必須残件。Supabaseの[標準メール仕様](https://supabase.com/docs/guides/auth/auth-smtp)では宛先が組織の事前承認済みアドレスへ制限され、一般利用者向けに独自SMTPが必要。従来の「メール日本語化・ブランド化は低優先」とは区別する。サービス/送信元・費用・認証情報は未指定なので勝手に契約/設定しない。確認OFFのままでメール認証完成とはしない。
+
+### データ保全・バックアップ（取得前）
+
+- 本人承認後、Git/クラウド同期外の`~/.codestep-private-backups/2026-10-21/`へ保存。ディレクトリ0700、ファイル0600。公開資料には内容・個人情報・資格情報を置かず、保存成否/件数だけ記録。保存先へのツール権限は別途正規に取得する。
+- 正規のPostgres読取接続で`pg_dump`のpublicスキーマcustom archiveを1つ作り、3表の全行とDDL/列/制約/ポリシー/ACL/関数を同一スナップショットで保存する。必要なら公式libpq17をローカル導入。DBパスワードは本人が端末の非表示入力へ入力し、チャット/コマンド引数/履歴へ渡さない。接続先は本番refで固定検査する。
+- 管理者候補1件の変更前app_metadataと対象ID、Auth URL/Confirm email/SMTP有無、Vercelの変更前デプロイ/設定メタデータも同じ非公開領域へ保存。Authユーザー全dump・パスワードハッシュ・セッション・鍵の収集は不要。認証情報は変更しない。
+- `pg_restore --list`でarchive内の3表/データ/設定対象が揃うこと、ファイルが読めること、チェックサム・観測件数・接続先・時刻を確認する。復元SQLは非公開ファイルへ生成してレビューし、保存だけで復元試験成功とはしない。本番データをstaging/新クラウドへ複製しない。
+- **バックアップ取得/検証に失敗、接続資格情報が未準備、観測後にデータ/定義差が発生した場合は本番書込へ進まない。** 自動バックアップがあるはずと仮定しない。[公式バックアップ案内](https://supabase.com/docs/guides/platform/backups)。
+
+### 明示承認後の段階適用
+
+1. バックアップ/対象/全SQLハッシュと最新メタデータを照合。過去のrequestState/保存済みSQL要求は使わず、今回の原本から新しい本番要求を作る。
+2. `progress-release-proposal.sql`を1TX適用、本人6ポリシー保持・不要ACL除去・データ不変を確認。
+3. `progress-unique-proposal.sql`を別TX適用。重複があれば修復/削除せず停止。FK/データ不変を確認。
+4. 本人がAuth Usersの既存1件を自分の管理者アカウントと確認した場合だけ、Admin API/既存の正規管理UIで他app_metadataを保持しcodestep_adminをboolean trueにする。対象IDは非公開保存。本人が再ログインして新JWTを得る。既存資格情報やuser_metadataは変更しない。
+5. `questions-admin-rls.sql`を1TX適用（旧6ポリシー削除だけ）。停止中のACLと置換を同TXで安全に更新。SELECT/厳密な管理者条件/禁止列/TRUNCATEなしを確認。
+6. `questions-delete-production-proposal.sql`を1TX適用。staging原本と実行SQLは一致し、対象のコメントだけ本番向けにした新提案。private DEFINER＋public INVOKER、空search_path、postgres所有、匿名EXECUTEなし、管理者の厳密検査を確認。適用で問題/進捗を削除しない。元のstaging用原本・承認ハッシュを変更しない。
+7. Auth Site URL/Redirect URLsを上表の2値へ変更。独自SMTPは送信元/サービス/費用の本人確認と正規の設定準備後のみ。SMTP配信が準備できてからメール確認を有効化。手動メール確認済み化や認証確認の省略で代用しない。
+8. 権限/定義/制約/既存全行の不変と匿名Readを確認。本番CRUD書込や新規Auth作成・メール送信は、実データへ触れない対象と復旧/後片付けを別途限定承認した場合だけ実施する。本人の実メール/PC・スマホ確認は未実施のまま扱う。
+9. 独自SMTP/新規メール確認・管理者本人JWTを含む公開条件、最新CI・レビュー条件、main/Productionの明示承認が揃った時点でPR #3をready化・mainへマージ。Production変数で自動ビルドし、source SHA/本番接続/公開到達/管理ガード/デモと本人ログイン・進捗保存を確認。未承認の試験データ作成や既存行の削除は含まない。
+
+### リスクと復旧方法
+
+- SQLは各段階で排他ロック最大待ち5秒/各文30秒。短い閲覧待機や権限不足が起こり得る。3本とRPCは別TXなので後段失敗でも先に安全化したACL/制約は保持する。結果不明時は再送せず読取確認。
+- 既存の旧7→4移行SQL原本/進捗の本番DOガードは静的検証だけ。stagingの最終状態/API成功を本番一括適用・途中失敗の実証と扱わない。追加の緊急停止/復旧試験はしない。この限界は本番承認に含める。
+- 失敗時は安全なDB設定を保持し、mainマージ前なら停止して現Productionを維持する。公開後のアプリ不具合は旧Production（dpl_7y4n5KfqLz8jHYn9KRh2SmTyDpjF/274eb79）への戻しを別途承認範囲で判断。DB・Authの変更はアプリrollbackだけでは戻らない。
+- 変更前の危険なACL/全員書込ポリシーへは戻さない。必要な停止は公開/内部削除関数のauthenticated EXECUTE撤回とテーブル・列書込停止をセットでレビューする。既存questions-emergency-stop.sqlだけでRPC停止済みと扱わない。停止操作自体も今回未承認・未実施で、試験を再開しない。
+- 管理者解除は保存した変更前app_metadataの対象キーへ戻す。旧JWTは残り得るため、それだけで即時停止を保証しない。Auth URLは保存値へ復元可能だがlocalhostへ戻すとメール復帰は壊れるため、自動的に差し戻さない。メール確認を再びOFFにして成功させない。
+- 適用SQLは行を削除しない。将来の管理者削除はCOMMIT後ROLLBACKできない。実データ破損時はバックアップと新規更新を比較して対象行だけの復元を別レビュー/明示承認する。全DB/全表の上書き復元・全削除・CASCADEは禁止。
+
+### 今回求める本人の判断
+
+- **DB/Auth準備の承認**：非公開バックアップ取得・検証後に上の4 SQLとAuth URL/メール確認を段階適用してよいか。既存Auth1件が本人の管理者用かは本人が画面で確認する。SMTPが未準備ならメール確認ON/一般登録完成判定を保留する。
+- **main/Productionの承認**：上の全公開条件を満たした場合だけ既存PR #3をマージしProductionを更新してよいか。新たな保護解除・課金は含まない。
+- **メール配信の準備**：使用できるSMTPサービスと送信元ドメイン/アドレスがあるか。なければ未契約のまま、最小のサービス案を提示して契約/費用/設定範囲の承認を別途得る。秘密値はチャットへ送らない。
+
+
 **2026-10-19の現在地：** 管理画面デモbe683afのローカルPC/390px操作、70テスト/CI、固定stagingの390px CRUDと初期化が成功。新規メール認証の本人Android/PC確認は保留のまま、stagingコード反映を先に進める。最新状態/再開順は[HANDOFF](../HANDOFF.md)。本番変更/mainマージは最終承認待ち。過去の「承認未取得」「必須の緊急停止再試験」等を現方針へ読み替えない。
 
 

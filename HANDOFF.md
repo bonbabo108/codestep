@@ -2,6 +2,18 @@
 
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
+## 2026-10-21 本番準備の最新観測（実行承認待ち）
+
+- 開始HEAD6d7eaf1/単一worktree/未commitなし。PR head6836a44の差分はHANDOFF/評価資料だけ3コミットと照合し、fast-forward済み。本人Androidのデモ評価は引き継ぎ記録で確認済み。コードは既存77テスト/CIを再利用、最新headの[CI成功](https://github.com/bonbabo108/codestep/actions/runs/39454790710)。PR #3=draft/open、競合なし・4 checks成功・レビュー0。GitHubの保護一覧/rulesetsは空で、設定は変更していない。
+- 本番xdnmlfoblqdygsnhkxxp：2問題/1profile/進捗0/Auth1（確認済み1/admin0）、重複/孤児0、3表RLS/16列/NO ACTION FK。questionsは旧7ポリシー＋SELECTのみ。profiles/progressの匿名・一般に過大ACL/TRUNCATEが残る。UNIQUE/RPC/privateスキーマなし。
+- Vercel Productionは現在main274eb79、Ready/dpl_7y4n5KfqLz8jHYn9KRh2SmTyDpjF、公開codestep-two.vercel.app。Production URL/公開キーは本番ref/anon/期限内、secretではないと値非記録で照合済み。変数変更不要。実チームはteam_ElBqxblU9glF6Lgu1Ekw0jzo、project prj_5yGFbE2rPl1XdsEje93egTHl01do。
+- コネクタは正しい実scopeでも403、CLIなし。保護解除/資格情報探索/迂回はしない。既存の正規ログイン済みGUIで閲覧できる設定だけ読んだ。最初の照会はscope指定違いで訂正済み、権限復旧とは説明しない。
+- **新しい公開前提**：本番Site URLはlocalhost、許可戻り先0、Confirm email OFF、独自SMTPなし。標準SMTPは一般宛先へ制限があるため、SMTP本体はブランド化と異なりメール認証公開の必須項目。認証OFFのまま完成扱いしない。
+- **バックアップ未取得**：Free/no backups。非公開ローカルbackup取得/検証と復元手順を本番書込の前提へ設定。既存DBパスワードの本人による非表示入力等が必要になり得る。チャットへ資格情報を求めない。
+- [最新の最小変更・保全・復旧・承認計画](./docs/release-readiness.md)と[本番レビューmanifest](./docs/production-release.review.json)を準備。RPCの本番用提案はコメント2行以外staging原本と同一。原本と既存承認は保持し、新しい本番承認だけを求める。
+- 本番DB/Auth/権限・メール送信・ユーザー作成/削除・Vercel設定・mainマージは未実施。今回の読取でmigration履歴表がなく1照会が失敗したが、変更なし。後続は存在確認へ修正し、成功と混同しない。
+- 次の一手：DB/Auth（バックアップ検証条件付き）とmain/Production（全公開条件付き）の明示承認、既存本番1アカウントの本人確認、使用可能SMTP/送信元の回答を受け取る。backup未準備なら本番DB適用を止める。SMTP未準備ならメール確認ON/マージを保留し、承認範囲内の独立したDB安全化だけ進められる。追加機能・緊急停止試験は不要。
+
 ## 2026-10-21 本人の最新決定：本番公開が完成条件
 
 本人は最終評価（PR・マージ・CI/CD・公開URL・実演）を踏まえ、Preview提出を終点にせず、既存アプリPR #3を安全にmainへマージし、Productionでアプリを動作確認できる状態を最優先とした。ローカルAI構築・追加のトークン節約設計は本番完成後に延期する。追加機能や評価点目的の実験を増やさない。
@@ -56,6 +68,6 @@ Vercelコネクタは対象チームに403で現在読み取り不可。既存�
 2. 本人が既存管理者でログイン済みになれば、実画面比較を追加する。資格情報はチャット/公開資料へ保存しない。
 3. [認証の8項目](./docs/auth-release-checklist.md)：修正後の新しいアカウントによるAndroid/PC実メール確認・ログイン・再読込維持・再送後確認・dark/autofillは本人結果が未確認。以前のメール受信/別アカウント成功と混同しない。
 4. 本人の技術説明確認（Androidでの管理デモ操作感は本人確認済み）。OAuth・独立外部API・画像/音声入力は未実装、満点達成と説明しない。メール日本語化/差出人ブランド化は低優先。
-5. 本番DB/Auth/RLS/ACL/RPC/制約への反映・mainマージ/Productionは最終承認待ち。[公開前提](./docs/release-readiness.md)。緊急停止/復旧・旧7→4試験は再開禁止。
+5. 本番DB/Auth/RLS/ACL/RPC/制約への反映・mainマージ/Productionは上の最新計画の明示承認待ち。[公開前提](./docs/release-readiness.md)。緊急停止/復旧・旧7→4試験は再開禁止。
 
 安全な通常編集・仮API/テスト・作業ブランチcommit/push・既存PR更新・通常stagingデプロイは包括承認済み。高リスクとツール自体の許可は正規に扱う。再開時はAGENTS→AI_WORKFLOW→本書と実Git/PR/プロセスを照合し、差分と未完了から継続する。

@@ -660,3 +660,14 @@ https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）�
 未実施：実staging管理者セッションがないため最新の実DB/管理画面比較。認証迂回・資格情報変更はしない。本人のAndroid/PCメール確認も未確認のまま。既存staging実API/RLS証拠は再利用し、新たなDB操作/本番変更/公開解除/mainマージ/緊急停止試験なし。ローカルfixtureは停止し3100/54321のLISTENなし。最新CI/公開反映はHANDOFFへ保存する。
 
 公開反映：b07a65fを既存PR #3へpush、Quality checks成功（39364164572）。Vercel Preview 3KQPoc6DfR1NHA1Ks4HhRVFdsaqC/Ready/同commit/固定domainを照合。公開デモのPC作成連打1件→390px編集/削除/リセット、横溢れなしを確認。画像と限界はadmin-demo-parity.md。実管理者ログイン・Android本人結果は未確認、main未マージ。
+
+
+## 2026-10-21 本番公開の読取監査・限定計画
+
+開始6d7eaf1/clean/単一worktree。PR #3の追加3コミットは資料のみと確認し6836a44へfast-forward。コード変更なし、既存77テスト/lint/type/buildと最新head CI39454790710を再利用。追加の緊急停止/復旧試験なし。
+
+本番2問題/1profile/進捗0/Auth1（確認済み1/admin0）・重複/孤児0。3表RLS/16列/NO ACTION FK、questions SELECTのみ、profiles/progressは過大ACL/TRUNCATE残存、UNIQUE/削除RPCなし。本番URL localhost/redirect0、Confirm email OFF/独自SMTPなし、Freeでbackupなし。Production envのURL/公開anonキーは本番と照合し再マスク、値は記録しない。Productionはmain274eb79/Ready。
+
+成功：必要な集計/定義/実効権限のREAD ONLYと既存GUI設定閲覧、既存CI再利用、SQLハッシュ照合/RPC本番案の実行SQL同一性。失敗：migration履歴表が存在しない照会1件（読取のみ）。Vercelは正しい実scopeでも403、CLIなし、再送/保護解除なし。既存の正規GUIで見える項目だけを確認。
+
+[最小計画](./release-readiness.md)と本番レビューmanifestへ保全/非公開バックアップ/復旧と停止境界を保存。原本SQL/既存承認を保持。未実施：バックアップ取得/復元試験、本番SQL/Auth変更、管理者指定、新規メール送信、mainマージ/Production更新。SMTPサービス/送信元・管理者本人と実行承認が必要。未実施を成功としない。

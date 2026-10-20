@@ -1,0 +1,50 @@
+{
+  "reviewed_on": "2026-10-21",
+  "state": "proposed_not_approved_not_applied",
+  "project_id": "xdnmlfoblqdygsnhkxxp",
+  "base_app_head": "6836a44050216fed528706be9bb6eb5e2c236354",
+  "files": [
+    {
+      "path": "docs/sql/progress-release-proposal.sql",
+      "sha256": "dadb38ecbcb5e7183a82e8436724fbbbb2587acd0aba2478023f1b51a19818ad"
+    },
+    {
+      "path": "docs/sql/progress-unique-proposal.sql",
+      "sha256": "2cb9f8cc60ee870e5f153f638f4ee614244e048583156bbc4c85f81f15113bed"
+    },
+    {
+      "path": "docs/sql/questions-admin-rls.sql",
+      "sha256": "8cb9b9303631fbaa0b3b7ff69eb2be01562da9b81dcf254a4fac0d733defeec4"
+    },
+    {
+      "path": "docs/sql/questions-delete-production-proposal.sql",
+      "sha256": "9ac28607e11e6f1da4bdf81ff0647ace473a1a79fccc56c4e9c5a6e27476772a"
+    }
+  ],
+  "preconditions": [
+    "private_backup_created_and_verified",
+    "latest_read_only_metadata_matches_review",
+    "existing_admin_identity_confirmed_by_owner",
+    "fresh_explicit_production_approval"
+  ],
+  "unchanged": [
+    "existing_rows",
+    "FK_NO_ACTION",
+    "column_types_nullability_defaults",
+    "service_role",
+    "staging"
+  ],
+  "release_gates": [
+    "production_custom_smtp_ready_before_confirm_email_enable",
+    "production_auth_urls_verified",
+    "admin_new_jwt_verified",
+    "latest_pr_checks_pass",
+    "existing_branch_review_rules_satisfied",
+    "explicit_main_and_production_approval"
+  ],
+  "notes": [
+    "No staging approval or saved tool request is reused. Generate tool request from current file after approval and recheck hash.",
+    "RPC source differs from staging original in two comments only. Applying function does not delete rows; later explicit admin calls can.",
+    "Abort on unexpected metadata, duplicates, backup failure or unknown commit result. No automatic data repair."
+  ]
+}
