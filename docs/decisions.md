@@ -452,3 +452,6 @@ https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）�
 成功：必要な集計/定義/実効権限のREAD ONLYと既存GUI設定閲覧、既存CI再利用、SQLハッシュ照合/RPC本番案の実行SQL同一性。失敗：migration履歴表が存在しない照会1件（読取のみ）。Vercelは正しい実scopeでも403、CLIなし、再送/保護解除なし。既存の正規GUIで見える項目だけを確認。
 
 [最小計画](./release-readiness.md)と本番レビューmanifestへ保全/非公開バックアップ/復旧と停止境界を保存。原本SQL/既存承認を保持。未実施：バックアップ取得/復元試験、本番SQL/Auth変更、管理者指定、新規メール送信、mainマージ/Production更新。SMTPサービス/送信元・管理者本人と実行承認が必要。未実施を成功としない。
+
+
+2026-10-21 承認回答後：DB/Authは本人所有の対象照合と非公開バックアップの取得/整合性/復元可能性検証が条件。既存1アカウントの本人所有回答は受領、ID照合は未実施。main/Productionはマージ直前の再承認が必要。SMTPなし/不明、契約・課金禁止。ローカルpg_dump/psql/GnuPG/PG/Dockerがなく、正規Homebrewでのgnupg/postgresql@17導入はmacOS27未対応でexit1。互換性チェックの回避なし。backup取得・復元検証前のため、本番SQL/Auth/権限/URL変更なし。条件未達を記録し、安全な未適用状態を保持。

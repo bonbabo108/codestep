@@ -2,7 +2,15 @@
 
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
-## 2026-10-21 本番準備の最新観測（実行承認待ち）
+## 2026-10-21 条件付き承認後の現在地（最優先）
+
+- 本人回答：既存本番1アカウントは本人所有。DB/AuthのSQL4本/管理者指定/URL変更/SMTP準備後のメール確認は、対象ID照合＋非公開backupの取得/整合性/復元可能性検証が完了した場合だけ承認。対象IDはまだ取得/照合していない。同じ本人所有質問を再度求めない。
+- **main/Productionは未承認。** 必要DB/Auth/SMTPと検証・最新CIが揃ったマージ直前に再確認する。条件付きの事前マージ承認へ読み替えない。SMTPはない/不明、新規契約/課金は禁止。
+- 保存済み計画コミット`8d52e524367d45003707400d5841b7a87345ae9a`を既存PR #3へpush済み。今回の承認/制約と未完了を後続資料コミットへ保存する。最新HEAD/statusは実Gitで解決する。
+- **条件未達で本番変更なし**：Free/no backups、非公開ローカルbackup未取得、整合性/復元検証未完了。pg_dump/psql/GnuPG/PostgreSQL/Dockerなし。正規Homebrewでgnupg/postgresql@17を導入しようとしたがmacOS27未対応でexit1。OS判定偽装・別資格情報・保護解除等は行わない。バックアップのための実行データ取得/秘密鍵生成も未実施。
+- 次は対応した正規backup/復元検証環境と読取接続、または本人取得の同等の検証可能な非公開backupを用意する。パスワード/鍵をチャットで求めない。条件が満たせなければDB/Auth変更・mainへ進まない。SMTP一般配信の条件も未解決。追加機能や緊急停止/復旧試験は再開不要。
+
+## 2026-10-21 本番準備の読取観測（上の承認・条件を優先）
 
 - 開始HEAD6d7eaf1/単一worktree/未commitなし。PR head6836a44の差分はHANDOFF/評価資料だけ3コミットと照合し、fast-forward済み。本人Androidのデモ評価は引き継ぎ記録で確認済み。コードは既存77テスト/CIを再利用、最新headの[CI成功](https://github.com/bonbabo108/codestep/actions/runs/39454790710)。PR #3=draft/open、競合なし・4 checks成功・レビュー0。GitHubの保護一覧/rulesetsは空で、設定は変更していない。
 - 本番xdnmlfoblqdygsnhkxxp：2問題/1profile/進捗0/Auth1（確認済み1/admin0）、重複/孤児0、3表RLS/16列/NO ACTION FK。questionsは旧7ポリシー＋SELECTのみ。profiles/progressの匿名・一般に過大ACL/TRUNCATEが残る。UNIQUE/RPC/privateスキーマなし。
@@ -12,7 +20,7 @@
 - **バックアップ未取得**：Free/no backups。非公開ローカルbackup取得/検証と復元手順を本番書込の前提へ設定。既存DBパスワードの本人による非表示入力等が必要になり得る。チャットへ資格情報を求めない。
 - [最新の最小変更・保全・復旧・承認計画](./docs/release-readiness.md)と[本番レビューmanifest](./docs/production-release.review.json)を準備。RPCの本番用提案はコメント2行以外staging原本と同一。原本と既存承認は保持し、新しい本番承認だけを求める。
 - 本番DB/Auth/権限・メール送信・ユーザー作成/削除・Vercel設定・mainマージは未実施。今回の読取でmigration履歴表がなく1照会が失敗したが、変更なし。後続は存在確認へ修正し、成功と混同しない。
-- 次の一手：DB/Auth（バックアップ検証条件付き）とmain/Production（全公開条件付き）の明示承認、既存本番1アカウントの本人確認、使用可能SMTP/送信元の回答を受け取る。backup未準備なら本番DB適用を止める。SMTP未準備ならメール確認ON/マージを保留し、承認範囲内の独立したDB安全化だけ進められる。追加機能・緊急停止試験は不要。
+- 当初の承認質問は回答受領済み。以後は最上段の未達条件だけを解決し、同じ承認質問を繰り返さない。
 
 ## 2026-10-21 本人の最新決定：本番公開が完成条件
 

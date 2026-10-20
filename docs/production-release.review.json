@@ -1,6 +1,6 @@
 {
   "reviewed_on": "2026-10-21",
-  "state": "proposed_not_approved_not_applied",
+  "state": "conditionally_approved_backup_and_identity_gates_not_completed",
   "project_id": "xdnmlfoblqdygsnhkxxp",
   "base_app_head": "6836a44050216fed528706be9bb6eb5e2c236354",
   "files": [
@@ -46,5 +46,18 @@
     "No staging approval or saved tool request is reused. Generate tool request from current file after approval and recheck hash.",
     "RPC source differs from staging original in two comments only. Applying function does not delete rows; later explicit admin calls can.",
     "Abort on unexpected metadata, duplicates, backup failure or unknown commit result. No automatic data repair."
-  ]
+  ],
+  "human_decision": {
+    "recorded_on": "2026-10-21",
+    "db_auth": "approved_only_after_private_backup_integrity_and_restore_verification_and_owner_identity_confirmation",
+    "owner_attestation": "user_confirmed_existing_single_account_is_their_own; exact_target_id_not_yet_captured",
+    "main_production": "not_approved; ask_again_immediately_before_merge_after_release_gates_pass",
+    "smtp": "none_or_unknown; no_new_contract_or_payment_authorized"
+  },
+  "execution": {
+    "production_db_auth_changes": "none",
+    "backup": "not_created_or_restore_verified",
+    "local_tools": "Homebrew installation stopped: unsupported macOS 27; no compatibility override",
+    "next_gate": "obtain_verified_private_backup_and_restore_path_before_any_production_write"
+  }
 }
