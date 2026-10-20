@@ -37,6 +37,10 @@
 - デモの390px CRUD・進捗削除・リセットの前後で、架空Auth/Data API記録件数12→12（追加0）。デモのruntime依存にも実クライアント/通常repositoryが含まれないことを自動検査。任意の利用者による直接API要求への認可は、変更していない通常Auth/RLSが担う。
 - 検証専用`npm run verify:admin-ui`を追加。接続先は127.0.0.1だけ。実Supabaseを含むビルドは起動拒否。実資格情報・DBデータを使わず、メソッド/パス/状態だけを一時記録。終了後3100/54321のLISTENなしを確認。
 
+## 公開stagingへの反映
+
+コードb07a65fの[CI成功](https://github.com/bonbabo108/codestep/actions/runs/39364164572)と、[Vercel Preview Ready](https://vercel.com/touya1896-7818s-projects/codestep/3KQPoc6DfR1NHA1Ks4HhRVFdsaqC)を確認。チーム/プロジェクトcodestep、同じ作業ブランチ/commit、固定ドメインへの割当を画面で照合した（ビルド17秒）。公開デモでPCの連打1件作成→390pxの編集/保存→削除→リセットを成功確認。390=scrollWidth390。[公開PC画像](./screenshots/admin-parity-20261020/staging-demo-pc.jpg)、[公開390px画像](./screenshots/admin-parity-20261020/staging-demo-mobile.jpg)。Vercelアカウント不要で到達し、メモリ操作のみ。実Android操作とは区別する。
+
 ## 未確認と残る差分
 
 - 実staging管理者での最新PC/スマホ画面・実DB CRUD再試験は未実施。既存管理者のログインを本人へ依頼済みで、資格情報のリセットや認証迂回はしていない。2026-10-17の既存staging CRUD/RLS結果と今回のモック試験を区別する。

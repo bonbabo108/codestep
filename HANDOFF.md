@@ -10,7 +10,7 @@
 
 - cwdはcodestepルート、worktreeは1件、branch `codex/admin-rls-portfolio`。開始HEAD `f77050e079f471c4d965441ae89350413bdb4896`、開始statusは空。想定外差分なし、破棄なし。
 - [既存アプリPR #3](https://github.com/bonbabo108/codestep/pull/3)はopen/draft/未マージ。今回も同PRへ集約。最新HEAD/statusは再開時に実Gitで確認する。
-- 今回のソース/資料/画像は保存済み、commit/push・最新CIとstaging反映の確認へ進む途中。中断時の差分は`git status --short`で特定し保持する。新たなPRは作らない。
+- 共通UIのコード/比較資料は`b07a65f77b6a789a8315a6f4baa4b855c941f2d6`でcommit/push済み。公開確認を記録する後続資料も同PRへ保存。最新HEAD/statusは実Gitで確認し、想定外差分を保持する。新たなPRは作らない。
 - 提出用READMEは[既存portfolio PR #3](https://github.com/bonbabo108/codestep-portfolio/pull/3)、branch `codex/staging-auth-status-20261019`、前回確認commit `3fc35442d37ddfc04729833b8c5f5cd11e2b2ba9`。今回は移動/削除/重複作成していない。
 - `codestep_key_files.txt`と既存画像は保持、Git対象へ追加しない。`git add .`禁止。
 
@@ -41,7 +41,7 @@
 
 ## 未確認・承認と次の一手
 
-1. commit/push→既存PR更新→最新CIと固定stagingの新UI/CRUDを確認し、この節を完了状態へ更新する。mainマージ/本番デプロイはしない。
+1. コード[CI成功](https://github.com/bonbabo108/codestep/actions/runs/39364164572)、[Preview Ready](https://vercel.com/touya1896-7818s-projects/codestep/3KQPoc6DfR1NHA1Ks4HhRVFdsaqC)、固定stagingの新UI/PC追加・390px編集/削除/リセットを確認済み。次は本人の操作感と実管理画面のログイン後比較。main/本番へ進めない。
 2. 本人が既存管理者でログイン済みになれば、実画面比較を追加する。資格情報はチャット/公開資料へ保存しない。
 3. [認証の8項目](./docs/auth-release-checklist.md)：修正後の新しいアカウントによるAndroid/PC実メール確認・ログイン・再読込維持・再送後確認・dark/autofillは本人結果が未確認。以前のメール受信/別アカウント成功と混同しない。
 4. 本人の操作感・技術説明確認。OAuth・独立外部API・画像/音声入力は未実装、満点達成と説明しない。メール日本語化/差出人ブランド化は低優先。

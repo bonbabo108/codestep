@@ -658,3 +658,5 @@ https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）�
 成功：77テスト（追加repository7）、lint、typecheck、ダミーWebpackビルド。通常UI＋架空APIとデモのPC/390px CRUD、編集表示、取消、変更なし、入力保持、進捗警告、保存拒否/遅延/削除確認失敗、匿名/一般の管理UI拒否。デモCRUD前後のAuth/Data要求12→12。即時デモでダブルクリック後に空入力エラーが出る点は共通送信ボタンで抑制し、最終ビルドで通知と1件追加を確認した。
 
 未実施：実staging管理者セッションがないため最新の実DB/管理画面比較。認証迂回・資格情報変更はしない。本人のAndroid/PCメール確認も未確認のまま。既存staging実API/RLS証拠は再利用し、新たなDB操作/本番変更/公開解除/mainマージ/緊急停止試験なし。ローカルfixtureは停止し3100/54321のLISTENなし。最新CI/公開反映はHANDOFFへ保存する。
+
+公開反映：b07a65fを既存PR #3へpush、Quality checks成功（39364164572）。Vercel Preview 3KQPoc6DfR1NHA1Ks4HhRVFdsaqC/Ready/同commit/固定domainを照合。公開デモのPC作成連打1件→390px編集/削除/リセット、横溢れなしを確認。画像と限界はadmin-demo-parity.md。実管理者ログイン・Android本人結果は未確認、main未マージ。
