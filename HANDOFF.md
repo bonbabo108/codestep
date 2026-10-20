@@ -1,6 +1,6 @@
 # CodeStep 再開用の現在地
 
-更新：2026-10-20。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
+更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
 ## 現在の目的と今回の訂正
 
@@ -29,6 +29,7 @@
 - 通常UI＋モックで保存拒否時の入力保持、900ms保存中の操作禁止、履歴確認拒否時の削除禁止、匿名/一般の管理フォーム拒否。デモCRUD/進捗削除/リセット中のAuth/Data追加要求0。PCダブルクリックも作成1件/成功通知。
 - 学習正解→デモ管理へ戻ると関連進捗の警告を表示。再読み込み/リセットで初期化。
 - [画像と範囲](./docs/admin-demo-parity.md)、[テスト記録](./docs/test-plan.md)。旧2026-10-19画像/70件成功は履歴で、現在UIの比較証拠は2026-10-20を参照。
+- **2026-10-21の本人Android確認：** 修正版の公開管理画面デモについて、前版から改善し操作感に問題ないとの本人報告を受領。本人報告の範囲は管理デモであり、実staging管理者ログイン・実DB CRUD・修正後の実メール認証まで成功した根拠ではない。
 - **実staging管理者での最新画面/実DB CRUD再確認は未実施**。Chromeに有効セッションがなく、一時資格情報も残っていない。本人へ既存管理者でのログインを依頼済み。認証迂回/アカウント作成/パスワード変更はしていない。本人の返答がなければ同じ質問やDB調査を繰り返さない。
 - 通常UIの最新証拠は架空API。2026-10-17の実staging CRUD/RLS結果を再利用するが、今回実DBを再検証したとは説明しない。
 
@@ -41,10 +42,10 @@
 
 ## 未確認・承認と次の一手
 
-1. コード[CI成功](https://github.com/bonbabo108/codestep/actions/runs/39364164572)、[Preview Ready](https://vercel.com/touya1896-7818s-projects/codestep/3KQPoc6DfR1NHA1Ks4HhRVFdsaqC)、固定stagingの新UI/PC追加・390px編集/削除/リセットを確認済み。次は本人の操作感と実管理画面のログイン後比較。main/本番へ進めない。
+1. コード[CI成功](https://github.com/bonbabo108/codestep/actions/runs/39364164572)、[Preview Ready](https://vercel.com/touya1896-7818s-projects/codestep/3KQPoc6DfR1NHA1Ks4HhRVFdsaqC)、固定stagingの新UI/PC追加・390px編集/削除/リセットを確認済み。本人Androidの管理デモ操作感は確認済み。次は実管理画面への既存管理者ログイン後の比較と認証確認。main/本番へ進めない。
 2. 本人が既存管理者でログイン済みになれば、実画面比較を追加する。資格情報はチャット/公開資料へ保存しない。
 3. [認証の8項目](./docs/auth-release-checklist.md)：修正後の新しいアカウントによるAndroid/PC実メール確認・ログイン・再読込維持・再送後確認・dark/autofillは本人結果が未確認。以前のメール受信/別アカウント成功と混同しない。
-4. 本人の操作感・技術説明確認。OAuth・独立外部API・画像/音声入力は未実装、満点達成と説明しない。メール日本語化/差出人ブランド化は低優先。
+4. 本人の技術説明確認（Androidでの管理デモ操作感は本人確認済み）。OAuth・独立外部API・画像/音声入力は未実装、満点達成と説明しない。メール日本語化/差出人ブランド化は低優先。
 5. 本番DB/Auth/RLS/ACL/RPC/制約への反映・mainマージ/Productionは最終承認待ち。[公開前提](./docs/release-readiness.md)。緊急停止/復旧・旧7→4試験は再開禁止。
 
 安全な通常編集・仮API/テスト・作業ブランチcommit/push・既存PR更新・通常stagingデプロイは包括承認済み。高リスクとツール自体の許可は正規に扱う。再開時はAGENTS→AI_WORKFLOW→本書と実Git/PR/プロセスを照合し、差分と未完了から継続する。
