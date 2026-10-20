@@ -1,5 +1,17 @@
 # 公開判断とPreview準備（2026-10-16更新）
 
+## 2026-10-21 本人の公開完成条件の更新（旧・新規登録OFF案に優先）
+
+本人の最新指示：**採点者が受信可能な任意のメールアドレスで新規登録→確認メール受信→リンクで本人確認→ログインし、問題を解けること。管理者の実CRUDも評価で実演できるようにする。** そのため、直下に残す「新規登録OFF、実管理者操作はデモのみ」の**以前のAI提案は撤回・非採用**。講座課題以上の商用品質を要求するわけではないが、実際に評価者が操作できる機能を縮小しない。承認境界・記録・本番データ保護は維持。
+
+- **メール**：Supabase標準SMTPは組織の承認宛先だけ/2通毎時。一般宛先への送信には本人がSMTP送信サービスを用意し、Supabaseの本番Custom SMTP設定へ安全に入力する必要がある。低コスト候補として無料Brevo SMTP（公表300通/日）を調査。ただし送信元検証、差出人置換、配信事業者の審査/制限、Gmail等の受信先での到達率を未検証。**無料＝確実な配信ではない**。本人専用テスト宛先で実送信・到着・リンク確認を先に検証。実メール確認のため本番Confirm email ON/Allow new users to sign up ONを要し、適用は本番設定の個別承認後のみ。受信リンク・鍵・パスワードを公開しない。
+- **管理者**：一般登録者が管理者にならないよう、正規Auth Admin APIで本人所有の既存アカウントだけに`app_metadata.codestep_admin=true`を設定、新JWTを確認。次いでレビュー済みquestions admin RLS→削除RPC SQLを対象/順序限定で適用。本番SQLは未承認・未実行。通常アカウントの拒否、本人管理者の作成/編集/削除を使い捨てテスト問題のみで実証。危険な旧RLS・ACLへ戻さない。
+- **動作確認の順番**：メール送信サービスの契約/設定準備 → stagingで実認証フロー → 本番Auth/権限の承認済み安全変更 → 本番の登録・受信・認証・再ログインと管理者CRUDの限定確認 → README更新（唯一の提出先`bonbabo108/codestep-portfolio`） → **PR Draft解除・mainマージ・Production自動公開の個別承認** → 公開URLで最終確認。現時点でVercelコネクタはチームscope 403、ログイン済みBrowserの読取画面とGitHub PR/CIは参照可能。Vercel権限の迂回をしない。
+- **原則**：既存backup/移行SQL/テストを再利用、受講者本人の講座範囲・説明可能性を維持、課金やドメイン購入は無断でしない。SMTP取得が不能なら事実を報告し、未確認メールで登録成功と虚偽表示しない。
+
+参照：[Supabase Custom SMTP](https://supabase.com/docs/guides/auth/auth-smtp)、[Password-based Auth](https://supabase.com/docs/guides/auth/passwords)、[Brevo SMTP](https://help.brevo.com/hc/en-us/articles/7924908994450-Send-transactional-emails-using-Brevo-SMTP)、[Brevo無料プラン](https://help.brevo.com/hc/en-us/articles/208589409-About-Brevo-s-pricing-plans)。
+
+
 ## 2026-10-21 講座課題限定の最短公開案（AIの提案・本番未実行）
 
 **位置づけ：** [本人の完成基準](./course-completion-policy.md)と[評価証拠](./evaluation-evidence.md)に沿った、低工数・低リスクの**提案**。本人による本番変更・mainマージの承認ではない。この節を、下に残した「一般利用者向けメール認証/実管理CRUDまで公開する」従来の広い公開条件より先に判断する。後段の本番適用履歴・バックアップ・禁止事項は引き続き有効。課題の採点最低条件は未確認であり、メンターの最終判断を推測しない。
