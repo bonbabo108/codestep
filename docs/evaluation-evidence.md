@@ -29,6 +29,14 @@
 | READMEの分かりやすさ | [提出用README](https://github.com/bonbabo108/codestep-portfolio) | 使い方・URL・画像・目的・技術・起動・制約・証拠をUTF-8で再整理。過去の重複状態説明を履歴資料へ集約 |
 | 面接・想定質問 | [メンター説明](./mentor-notes.md)と本書 | 本人による説明/質疑は未実施。下記5分デモと質問で準備 |
 
+## 2026-10-21 公開・採点の最新確認（下の当時記録に優先）
+
+- **完了**：作業ブランチの77件テスト、lint、型検査、ダミービルドとGitHub Actions（最新参照時成功）。stagingの実管理者CRUDと一般拒否、ログイン済み本人進捗、管理デモのAndroidでの操作感。本人による回答・説明練習は未実施。
+- **本番適用済み**：profiles/user_progressの本人RLS・必要列ACL・進捗の一意制約、Supabase AuthのSite URLと/ login の戻り先（URL上のスペースなし）。questionsはSELECTのみの安全な停止状態。既存1 Authユーザーの`codestep_admin`指定は未実施。
+- **本番未実施**：Auth Admin APIによる管理者指定、questions管理RLS・削除RPC、本番の実CRUD、mainマージ・Productionリリース、公開URLでの本人/評価者実操作。
+- **メール**：本番Signup ON／Confirm email OFF／独自SMTP OFF。2026-10-17の実確認メールは**stagingのみ**。任意メール宛先でのメール所有確認は未達。Brevo登録は本人の手間削減希望により中止。**それだけでは本人確認要件が撤回されたと解釈しない。**
+- **提出README**：唯一の提出先`bonbabo108/codestep-portfolio`のmain READMEには旧「62件」「本番URL未設定」「進捗ACL未適用」等の記載がある。**公開文書の最終更新は、実際のリリース内容の確定・公開承認のあと一括で行う**。PRの作業資料と混同しない。
+
 ## 5分の説明・デモ
 
 1. 30秒：仕事の合間に学ぶ初学者の「検索・準備負担」「入力不足」「中断」を説明する。
