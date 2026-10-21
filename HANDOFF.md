@@ -1,5 +1,15 @@
 # CodeStep 再開用の現在地
 
+## 2026-10-21 追加：提出直前の独立確認・Auth Admin実行経路（読取のみ）
+
+- GitHub PR #3の直近HEAD `972bf517aad70424610830a0eecdb589dd3fc223` はopen/draft/未マージ。該当コミットのGitHub Actions `Quality checks` はcompleted/success、Vercelのcommit statusもsuccess。**本番公開成功や実メール認証の証拠ではない**。アプリコード・SQLは今回変更せず、成功済み77件のテストを重複実行しない。
+- 公式 [Supabase Auth Admin API](https://supabase.com/docs/reference/javascript/auth-admin-updateuserbyid) で、既存ユーザーを対象にサーバー側の `auth.admin.updateUserById(userId, { app_metadata: { ...現在値, codestep_admin: true } })` が使える。既存の `app_metadata` を読み、認証関連キーを保持して対象1ユーザーのみ変更し、**戻り値と再読取で検証**、本人が再ログイン/トークン更新する。実行前に本番環境と対象本人を再照合する。これは**方法の確認のみ**で、今回呼び出し・権限付与はしていない。
+- 接続SupabaseコネクタにはAuth Admin APIの直接変更操作がない。ChatモードのBrowserは読取専用。Workモードは複数のGUI確認・提出資料の最終照合に適するが、今回ユーザー詳細Raw JSONは編集不可であり、**GUI操作だけで管理者指定できると保証しない**。service_role/secret keyをWorkクラウド、チャット、公開コード、ブラウザJS、`NEXT_PUBLIC_` に渡す代替案は採らない。必要時は本人が管理する信頼済みのローカル・サーバー側実行環境から、明示承認後に1回限定のAuth Admin操作を行う。直接 `auth.users` SQL UPDATEは代替しない。
+- [SupabaseのSMTP仕様](https://supabase.com/docs/guides/auth/auth-smtp)：既定SMTPは組織の許可済みアドレスのみ（現行公式記載の送信上限は2通/時）。Confirm email OFF／Custom SMTP OFFのままでは、メンターの任意メールでの確認リンク受信という本人の要件は満たさない。Brevo中止は継続。確認メール要件を撤回したとは解釈せず、送信手段の外部契約・Auth変更は未承認のまま。
+- [codestep-portfolio README](https://github.com/bonbabo108/codestep-portfolio/blob/main/README.md) の「62件」「進捗ACL/UNIQUE未適用」「URL localhost」等は現状より古い。既存の公開READMEを重複作成・途中上書きせず、公開条件と実機検証結果が確定してから1回で修正する。講座評価資料・説明資料は既存 `docs/evaluation-evidence.md` と `docs/mentor-notes.md` を再利用する。
+- **次の本人ゲート**：①安全な本番Auth Admin API実行経路の確保と管理者指定への明示承認、②既存ハッシュ照合済みquestions RLS/削除RPCの本番適用承認、③任意宛先メール送信手段の本人判断・設定承認、④全条件成立後のPR #3マージ/本番公開承認、⑤公開後の本人実端末・実メール確認。機能拡張やバックアップ・過去SQL・staging実験の再実行は不要。課金・秘密入力はチャットに求めない。
+
+
 更新：2026-10-21。恒久ルールは[AGENTS.md](./AGENTS.md)、改善・承認基準は[AI_WORKFLOW.md](./AI_WORKFLOW.md)。最新状態を本書へ集約し、詳細は[判断記録](./docs/decisions.md)。
 
 ## 2026-10-21 本番管理者移行：実行直前Read-only事前条件の追加照合
