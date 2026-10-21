@@ -1,19 +1,15 @@
-# 設計ドキュメント
+# 開発用資料一覧
 
 - [提出用ポートフォリオREADME](https://github.com/bonbabo108/codestep-portfolio)
 - [開発手順・機能ガイド](./implementation-guide.md)
 
-- [最終設計・機能一覧・全16列ER図](./final-design.md)
+- [設計補足（開発用参考資料）](./final-design.md)
 - [評価基準と実装・画面・テストの対応](./evaluation-evidence.md)
 - [メール認証の確認と設定変更案](./auth-release-checklist.md)
 
-以下は過去の設計・試験記録を含みます。最新の仕様は最終設計を優先します。
+このフォルダには、技術的な補足と開発中の判断・検証履歴を保管しています。提出用の要件定義・設計書は[Week 9のGoogleスプレッドシート](https://docs.google.com/spreadsheets/d/1l6_wH24I4Cq1jhvHi1VtDjarj5fr8KK6jS0g7HTAtds/edit)を参照してください。
 
 - [帰宅後の公開判断・承認と反映順序](./release-readiness.md)
-- [ワイヤーフレーム](./wireframe.png)
-- [ER図](./er-diagram.png)
-
-画像は変更前の原本です。最新の権限・Auth・画面遷移との差分は以下を併読してください。
 
 - [全5シート照合・変更案・ER/ワークフロー補足](./design-review.md)
 - [プロジェクト共通コンテキスト](./project-context.md)
@@ -29,4 +25,4 @@
 - [最新ログイン画面](./screenshots/login-staging.jpg) / [スマートフォン幅](./screenshots/login-mobile-staging.jpg)
 - [実DB保存成功](./screenshots/learning-saved-staging.jpg) / [再ログイン復元](./screenshots/learning-restored-staging.jpg) / [スマホ学習](./screenshots/learning-mobile-staging.jpg) / [管理者の編集](./screenshots/admin-staging.jpg)
 
-**2026-10-21 現在地：** stagingの管理者RLS/CRUD/本人保存・停止/限定復旧は実DBで成功。**本番では進捗ACL・本人進捗一意制約・Auth公開URL/ログイン戻り先を適用済み**。本番管理者フラグは未設定、questions管理RLS/削除RPCは未適用、問題書込は停止したまま。Supabase標準メール（独自SMTP OFF）・Confirm email OFFのため、任意宛先への確認メールは未達。PR #3はDraft、Production/mainの更新は未実施。最新は[HANDOFF](../HANDOFF.md)を参照。
+**公開状況：** アプリ本体のPR #3は`main`へマージ済みで、本番公開されています。本人進捗の権限制御・一意制約、管理者用RLS・削除RPCは適用済み。登録・ログイン、学習進捗の保存と端末間復元、管理者CRUDは本人が本番で動作確認済みです。メール所有確認は未実装（Confirm email OFF）です。公開状況は[提出用ポートフォリオ](https://github.com/bonbabo108/codestep-portfolio)にまとめています。開発時点の詳細な履歴は[HANDOFF](../HANDOFF.md)を参照。
