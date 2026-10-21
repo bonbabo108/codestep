@@ -1,6 +1,4 @@
-# CodeStep 最終設計（2026-10-20）
-
-最新版の外部設計資料は[Week9設計シート](https://docs.google.com/spreadsheets/d/1l6_wH24I4Cq1jhvHi1VtDjarj5fr8KK6jS0g7HTAtds/edit)。2026-10-19に本文とメタデータを読み取り、更新日時2026-10-15T01:34:41.267Zを確認した。外部シートは未編集。本書は実装との差分を解消するローカル改訂版。旧PNG原本は保持する。
+# CodeStep 設計補足
 
 ## 対象者・課題・解決策
 
@@ -15,7 +13,7 @@
 | 中断すると進み具合を失う | 9. 本人の正解進捗を保存・復元 | 採用。再ログイン後も再開できる |
 | 同上 | 10. 通知・学習ランキング | 今回対象外。継続支援の効果検証や他者データ公開が必要 |
 
-講座課題として、認証・問題CRUD・本人進捗・RLSまでを説明できる範囲に絞る。OneCodeのライブプレビュー・VFS・音響・多段学習はCodeStepの実装済み機能に含めない。文字列一致判定なので別解は採点しない。問題の正解コードは公開データであり、厳格な試験や不正防止には使わない。
+実装範囲は認証・問題管理・本人の学習進捗・RLSを中心とする。入力中にコードの表示結果が変わるリアルタイムプレビューは、当初目指していた学習体験だが未実装であり、改善案として整理している。現行の回答判定は文字列一致のため別解を採点できない。問題の正解コードは公開データであり、厳格な試験や不正防止には使わない。
 
 ## 基本構成と画面遷移
 
@@ -24,9 +22,7 @@
 ```mermaid
 flowchart TD
   H[学習画面 /] --> L[ログイン・登録 /login]
-  L --> M[確認メール]
-  M --> V[同じ公開サイトの /login]
-  V --> H
+  L -->|登録・ログイン後| H
   H --> A[管理者入口 /admin/login]
   A --> C{有効なセッションと管理者フラグ}
   C -->|管理者| Q[管理画面 /admin]
@@ -42,8 +38,7 @@ flowchart TD
 | --- | --- |
 | 共通header/nav/footer | 学習・ログイン・管理入口・体験デモ・ソースへのリンク。flex-wrapで折返す。デモはAuthProviderを読み込まない |
 | 学習main/section/textarea/button | 認証確認→問題読込→回答→正誤→解説。読み込み/空/失敗を区別。正解だけ本人保存、応答を確認後に保存済み表示。ログアウト/利用者切替で個人状態を破棄 |
-| ログインform/label/input | 確認中・処理中は送信を無効化。登録/ログイン/メール確認待ちを区別。登録・再送のemailRedirectToは現在originの/login。確認後のセッションを検出して/へ移動 |
-| メール確認エラー/再送button | 期限切れ・使用済みを固定文言で表示。メールアドレス形式を確認し、60秒の再送間隔とSDKの送信制限エラーを扱う。メールアドレスの登録有無を断定しない |
+| ログインform/label/input | 登録とログインのモードを切り替え、送信中は二重送信を防ぐ。Supabase Authで認証し、有効なセッションでは学習画面へ遷移。メール所有確認は現在必須にしていない |
 | 管理画面form/一覧/確認 | app_metadata.codestep_adminがboolean trueの有効セッションのみ。入力必須、変更なし送信なし、二重操作防止、0件は失敗。削除は関連進捗警告→取消/明示確定→限定RPC |
 | デモmain/nav/form/details | 管理デモへ1クリックで直達。本物と共通のQuestionManager/SiteHeaderを使い、データ処理だけメモリrepositoryへ切替。架空3問の回答/解説/一時クリア、問題の作成/編集/削除確認/初期化。デモ内の学習/管理遷移でメモリを共有し、デモ外離脱・再読込時に初期化。Auth/実DB試験の代用ではない |
 
@@ -51,7 +46,7 @@ flowchart TD
 
 | 機能 | 呼出・対象 | 成功条件 / 異常時 |
 | --- | --- | --- |
-| 登録・確認・再送 | auth.signUp / auth.resend | sessionなしは確認待ち。emailRedirectToとSupabase許可URLの両方が必要。送信・配信は別段階 |
+| ユーザー登録 | auth.signUp | Supabase Authでメールアドレス・パスワードを登録。現行のConfirm emailはOFFで、メール所有確認は行わない |
 | ログイン・維持・ログアウト | signInWithPassword / AuthProvider | セッション共有、期限切れ・切替時は管理UI破棄。通信失敗を成功にしない |
 | 問題Read | questions SELECT | ゲストも閲覧。配列/列型確認、0件は空表示 |
 | 問題Create/Update | questions INSERT/UPDATE | 管理者のみ。5列限定。返却1行・対象ID一致 |
@@ -61,9 +56,9 @@ flowchart TD
 
 管理者UIの表示条件はDB認可の代わりにならない。最終保証はRLSとSQL権限。user_metadataで認可しない。JWT内の権限には更新遅延がある。
 
-## ER図（staging実装、全16列）
+## データベース構成
 
-2026-10-15の構造照合と適用済みSQL原本を根拠に記載。今回DBへ再照会していない。日付付き観測であり現在の本番構造を保証しない。
+Supabase Authが認証を担当し、学習アプリのデータは`profiles`・`questions`・`user_progress`の3テーブルで管理する。以下はテーブル間の関係を示す補足図。
 
 ```mermaid
 erDiagram
@@ -94,11 +89,9 @@ erDiagram
 ```
 
 - FK2本はON UPDATE/DELETE NO ACTION。CASCADEなし。問題削除RPCが明示承認された関連進捗だけを先に削除する。
-- UNIQUE(user_id, question_id)はstagingのみ適用済み。本番未適用。アプリは最新行の確認→UPDATE/INSERT、一意競合時だけ再確認する。
+- UNIQUE(user_id, question_id)は本番にも適用済み。アプリは最新行の確認→UPDATE/INSERT、一意競合時だけ再確認する。
 - Auth利用者はSupabase管理。profiles.idと同じUUIDをアプリで使うが、auth.usersへのFKは存在しない。管理者フラグもpublicの独自テーブルではない。
 - created_at/updated_atはNULL可。更新時刻はクライアント指定で、DB自動更新トリガーなし。
-- 本番はquestions書込停止中。stagingの管理者RLS/RPC成功を本番適用済みと説明しない。
-
-旧画像：[ER原本](./er-diagram.png)、[ワイヤーフレーム原本](./wireframe.png)。本書が現実装との差分を補足する。
+- 本番の管理者専用RLSと問題削除RPCは適用済み。問題の作成・編集・削除を管理者本人が本番環境で動作確認済み。管理画面の表示制御に加え、DB側の認可でも一般ユーザーの書き込みを制限する。
 
 管理UIの境界：通常の`/admin`は既存Authガード→共通QuestionManager→SupabaseQuestionRepository→既存CRUD/RPC。`/demo/admin`はDemoProvider→同じQuestionManager→DemoQuestionRepositoryのメモリだけを操作する。通常ルートの認可を維持し、デモから通常repositoryへのフォールバックはない。[比較画像・検証範囲](./admin-demo-parity.md)。
