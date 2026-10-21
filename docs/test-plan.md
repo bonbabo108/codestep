@@ -683,3 +683,10 @@ https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）�
 本番は承認ハッシュ一致のACL縮小→進捗UNIQUEを別TXで適用成功。6本人ポリシー/RLS維持、匿名権限なし、authenticatedの必要SELECT/列I/Uのみ、UNIQUE定義・重複0・全行不変を読取確認。Auth URLは公開originと/login完全一致1件へ保存し再読込確認。Authユーザー/メタデータ未変更。security advisorは漏洩パスワード保護OFFのWARN1件（https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection）。補助スクリプトの構文/ESLint/既存backup再検証も成功。アプリ77テスト/CIの既存結果は再利用。
 
 未実施：管理者指定（接続ツールにAuth Admin操作なし・GUIメタデータは閲覧のみ）、新JWT、questions RLS/削除RPC。直接auth.users UPDATEや資格情報探索で代用せず、questionsの書込停止を保持。SMTPなし/Confirm email OFFのため一般メール認証未完成。標準SMTPは事前承認宛先のみ/2通毎時で一般配信の代替にしない。本番CRUD/新規Auth/メール/本人実端末、mainマージ/Production更新も未実施。新規契約/課金なし、緊急停止/復旧試験なし。main/Productionは条件が揃う直前に別承認を求める。
+
+## 登録画面の案内と現在のメール確認設定の整合（公開反映前）
+
+- 公開時のSupabase AuthはConfirm email OFF。通常の登録・ログイン画面に確認メール再送案内を常時表示しないよう変更。
+- 確認メールが実際に要求された場合（検証環境の登録でセッションが返らない場合、`email_not_confirmed`エラー、失効した確認リンク）の条件付き再送機能は維持。登録・ログインの処理や本番Supabaseの設定は変更しない。
+- 回帰検査：`tests/login-confirmation-ui.test.mjs`で通常時の常時表示がないこと、必要時の再送分岐が残ることを静的に確認する。実ブラウザ・実メール送信のテストとは区別する。
+- ステータス：作業ブランチでの変更。CI・Preview・Productionの結果はそれぞれ確認後に追記し、マージ前は本番適用済みと表示しない。
