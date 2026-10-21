@@ -1,0 +1,101 @@
+{
+  "reviewed_on": "2026-10-21",
+  "state": "partially_applied_acl_unique_and_auth_urls_remaining_admin_smtp_and_release_gates",
+  "project_id": "xdnmlfoblqdygsnhkxxp",
+  "base_app_head": "6836a44050216fed528706be9bb6eb5e2c236354",
+  "files": [
+    {
+      "path": "docs/sql/progress-release-proposal.sql",
+      "sha256": "dadb38ecbcb5e7183a82e8436724fbbbb2587acd0aba2478023f1b51a19818ad"
+    },
+    {
+      "path": "docs/sql/progress-unique-proposal.sql",
+      "sha256": "2cb9f8cc60ee870e5f153f638f4ee614244e048583156bbc4c85f81f15113bed"
+    },
+    {
+      "path": "docs/sql/questions-admin-rls.sql",
+      "sha256": "8cb9b9303631fbaa0b3b7ff69eb2be01562da9b81dcf254a4fac0d733defeec4"
+    },
+    {
+      "path": "docs/sql/questions-delete-production-proposal.sql",
+      "sha256": "9ac28607e11e6f1da4bdf81ff0647ace473a1a79fccc56c4e9c5a6e27476772a"
+    }
+  ],
+  "preconditions": [
+    "private_backup_created_and_verified",
+    "latest_read_only_metadata_matches_review",
+    "existing_admin_identity_confirmed_by_owner",
+    "fresh_explicit_production_approval"
+  ],
+  "unchanged": [
+    "existing_rows",
+    "FK_NO_ACTION",
+    "column_types_nullability_defaults",
+    "service_role",
+    "staging"
+  ],
+  "release_gates": [
+    "production_custom_smtp_ready_before_confirm_email_enable",
+    "production_auth_urls_verified",
+    "admin_new_jwt_verified",
+    "latest_pr_checks_pass",
+    "existing_branch_review_rules_satisfied",
+    "explicit_main_and_production_approval"
+  ],
+  "notes": [
+    "No staging approval or saved tool request is reused. Generate tool request from current file after approval and recheck hash.",
+    "RPC source differs from staging original in two comments only. Applying function does not delete rows; later explicit admin calls can.",
+    "Abort on unexpected metadata, duplicates, backup failure or unknown commit result. No automatic data repair."
+  ],
+  "human_decision": {
+    "recorded_on": "2026-10-21",
+    "db_auth": "approved_only_after_private_backup_integrity_and_restore_verification_and_owner_identity_confirmation",
+    "owner_attestation": "user_confirmed_sole_existing_account; target_id_matches_encrypted_backup_privately",
+    "main_production": "not_approved; ask_again_immediately_before_merge_after_release_gates_pass",
+    "smtp": "none_or_unknown; no_new_contract_or_payment_authorized"
+  },
+  "execution": {
+    "production_db_auth_changes": "progress_acl_and_unique_applied; auth_site_url_and_exact_login_redirect_saved",
+    "backup": "created_verified_restored_and_compared",
+    "local_tools": "Homebrew installation stopped: unsupported macOS 27; no compatibility override",
+    "next_gate": "legitimate_auth_admin_api_and_owner_new_jwt_before_questions_rls_rpc; smtp_before_confirm_email; no_merge_authorization",
+    "applied_migrations": [
+      "codestep_production_progress_acl_20261021",
+      "codestep_production_progress_unique_20261021"
+    ],
+    "not_applied": [
+      "questions_admin_rls",
+      "questions_delete_rpc",
+      "admin_app_metadata",
+      "confirm_email_enable",
+      "main_merge",
+      "production_deploy"
+    ],
+    "post_apply_verification": {
+      "all_existing_rows_unchanged": true,
+      "auth_target_and_metadata_unchanged": true,
+      "rls_and_six_owner_policies_preserved": true,
+      "unique_pair_verified": true,
+      "auth_urls_reloaded_verified": true,
+      "actual_user_crud_and_email_tests": "not_performed",
+      "security_advisor": "one_existing_leaked_password_protection_disabled_warning"
+    }
+  },
+  "backup_verification": {
+    "verified_on": "2026-10-21",
+    "storage": "private_local_outside_git_0700_0600",
+    "export": "read_only_openpgp_encrypted_inside_production",
+    "source_postgres": "17.6",
+    "restore_postgres": "17.5_wasm_isolated_memory",
+    "tables_counts": {
+      "profiles": 1,
+      "questions": 2,
+      "user_progress": 0
+    },
+    "rows_and_catalog_equal": true,
+    "auth_app_metadata_roundtrip": true,
+    "current_production_matches_backup": true,
+    "owner_target": "human_attested_sole_account; current_id_matches_encrypted_backup; id_not_published",
+    "limitations": "not a full Supabase Auth credentials/session/PITR restore"
+  }
+}

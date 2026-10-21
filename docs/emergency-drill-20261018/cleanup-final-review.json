@@ -1,0 +1,179 @@
+{
+  "project_id": "ezjzgebehancbxqpgany",
+  "observed": {
+    "observed_at": "2026-10-18 19:21:33.569358+00",
+    "read_only": "on",
+    "tables": [
+      {
+        "kind": "r",
+        "table": "profiles",
+        "children": 0,
+        "partition": false
+      },
+      {
+        "kind": "r",
+        "table": "questions",
+        "children": 0,
+        "partition": false
+      },
+      {
+        "kind": "r",
+        "table": "user_progress",
+        "children": 0,
+        "partition": false
+      }
+    ],
+    "foreign_keys": [
+      {
+        "name": "user_progress_question_id_fkey",
+        "to_table": "questions",
+        "definition": "FOREIGN KEY (question_id) REFERENCES questions(id)",
+        "from_table": "user_progress",
+        "delete_action": "a",
+        "update_action": "a"
+      },
+      {
+        "name": "user_progress_user_id_fkey",
+        "to_table": "profiles",
+        "definition": "FOREIGN KEY (user_id) REFERENCES profiles(id)",
+        "from_table": "user_progress",
+        "delete_action": "a",
+        "update_action": "a"
+      }
+    ],
+    "triggers": [
+      {
+        "name": "RI_ConstraintTrigger_a_17655",
+        "table": "questions",
+        "enabled": "O",
+        "internal": true,
+        "function_name": "RI_FKey_noaction_del",
+        "constraint_type": "f",
+        "function_schema": "pg_catalog"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_17656",
+        "table": "questions",
+        "enabled": "O",
+        "internal": true,
+        "function_name": "RI_FKey_noaction_upd",
+        "constraint_type": "f",
+        "function_schema": "pg_catalog"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_17650",
+        "table": "profiles",
+        "enabled": "O",
+        "internal": true,
+        "function_name": "RI_FKey_noaction_del",
+        "constraint_type": "f",
+        "function_schema": "pg_catalog"
+      },
+      {
+        "name": "RI_ConstraintTrigger_a_17651",
+        "table": "profiles",
+        "enabled": "O",
+        "internal": true,
+        "function_name": "RI_FKey_noaction_upd",
+        "constraint_type": "f",
+        "function_schema": "pg_catalog"
+      },
+      {
+        "name": "RI_ConstraintTrigger_c_17652",
+        "table": "user_progress",
+        "enabled": "O",
+        "internal": true,
+        "function_name": "RI_FKey_check_ins",
+        "constraint_type": "f",
+        "function_schema": "pg_catalog"
+      },
+      {
+        "name": "RI_ConstraintTrigger_c_17653",
+        "table": "user_progress",
+        "enabled": "O",
+        "internal": true,
+        "function_name": "RI_FKey_check_upd",
+        "constraint_type": "f",
+        "function_schema": "pg_catalog"
+      },
+      {
+        "name": "RI_ConstraintTrigger_c_17657",
+        "table": "user_progress",
+        "enabled": "O",
+        "internal": true,
+        "function_name": "RI_FKey_check_ins",
+        "constraint_type": "f",
+        "function_schema": "pg_catalog"
+      },
+      {
+        "name": "RI_ConstraintTrigger_c_17658",
+        "table": "user_progress",
+        "enabled": "O",
+        "internal": true,
+        "function_name": "RI_FKey_check_upd",
+        "constraint_type": "f",
+        "function_schema": "pg_catalog"
+      }
+    ],
+    "rules": [],
+    "questions": 2,
+    "exact_questions": 2,
+    "progress": 1,
+    "exact_progress": 1,
+    "profiles": 1,
+    "exact_profiles": 1,
+    "unrecorded_attached_progress": 0,
+    "other_progress_for_trial_profile": 0
+  },
+  "checks": {
+    "counts": true,
+    "noUnrecordedProgress": true,
+    "regularTables": true,
+    "noCascade": true,
+    "onlyInternalForeignKeyTriggers": true,
+    "noRules": true
+  },
+  "source_record": "live-run-results.json",
+  "testIds": {
+    "users": {
+      "admin": {
+        "id": "d2c1b05b-f104-48d3-b01c-0f348074d53a",
+        "created": true,
+        "tokenExpiresAt": 1792334670
+      },
+      "learner": {
+        "id": "a4bbe847-4a60-4574-b00e-dce8f4e10adc",
+        "created": true,
+        "tokenExpiresAt": 1792334671
+      }
+    },
+    "questionIds": [
+      "2f1569c5-8375-4c95-a431-761dff17bbdd",
+      "9757b1d9-47ae-4a15-9812-1484c248de6f"
+    ],
+    "progressIds": [
+      "4f62451b-8d24-43b2-8e89-92f55d3d4111"
+    ],
+    "profileId": "a4bbe847-4a60-4574-b00e-dce8f4e10adc"
+  },
+  "sqlExecuted": false,
+  "dbChanges": 0,
+  "supabaseReadCallsThisTurn": 1,
+  "originalCleanupRetained": "live-cleanup-data.sql",
+  "newProposedCleanup": "live-cleanup-data-reviewed.sql",
+  "oldToolErrorNotRetried": true,
+  "sql_sha256": "cb183dcda4a43c5ca113034560cf1d72d726418e989425486ba777c32ecf84f1",
+  "original_sql_sha256": "92c9d2421f7f44eff79b505e28c78a1a6f86141cc2e3bb51a8bdc789c124ae92",
+  "static_checks": {
+    "only_recorded_four_ids": true,
+    "three_id_limited_deletes": true,
+    "delete_tables": true,
+    "no_other_change_commands": true,
+    "one_transaction": true,
+    "all_preconditions_before_first_delete": true,
+    "three_post_delete_checks": true,
+    "metadata_guards": true,
+    "old_original_unchanged": true
+  },
+  "sql_full_database_parse_or_execution": "not performed"
+}
