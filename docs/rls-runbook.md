@@ -1,5 +1,16 @@
 # questions RLS 適用・停止・復旧手順
 
+> **注意：以下の旧SQL切替手順は当時の履歴であり、現在の本番へ再適用しない。**
+> 
+> **2026-10-22 本番DB再監査（読み取り専用）**
+> - public.questions・public.profiles・public.user_progressのRLSはすべて有効。
+> - questions：公開SELECT 1件＋管理者限定INSERT/UPDATE/DELETE 3件。旧7ポリシーは残存しない。
+> - anonは問題を書き込めない。authenticatedの指定5列にINSERT/UPDATE許可はあるが、DBのRLSはapp_metadata.codestep_admin=trueの管理者だけを許可。
+> - 管理者フラグありのユーザー数1件、削除用関数delete_question_with_progressあり（SECURITY INVOKER、匿名実行権限なし）、進捗ペアUNIQUE制約あり。問題2件・profiles 2件・進捗0件（観測時点）。
+> - 本番RLS・Auth・DBを今回変更していない。移行は別工程で完了済み。staging旧7→4件のリハーサルは当時未完了のまま省略しており、成功と称さない。
+> - 以下の「本番適用」「緊急停止後の切り替え」は旧計画・復旧資料。現在のDBにSQLを再実行すると安全性を損なう可能性がある。必要時は必ず現在の設定を再監査し、新規計画と承認を取る。
+> - PR #4/#5は画面側の変更でDB/RLSは対象外。公開済みかどうかはその都度GitHubとVercelで照合する。
+
 状態：本番は緊急停止SQLだけ適用済み（production-emergency-stop.md）。本番管理者RLS・Auth/制約変更は未承認。stagingは初期構築・実API41項目・停止/限定復旧が成功。本番旧7件からの切替試験は別途未完了。docs/sqlは自動マイグレーションではない。
 
 公開全体の依存関係・進捗ACL/UNIQUE案・PCでの判断は[release-readiness.md](./release-readiness.md)へ集約。questions以外の本番変更も未承認・未適用。
@@ -32,7 +43,7 @@ has_table_privilege/aclexplodeでanon/authenticatedのSELECT/INSERT/UPDATE/DELET
 7. 管理者本人の再ログイン等でJWTを更新する。JWTは表示・保存しない。欠落/false/文字列trueは拒否する。
 8. test-plan.mdの実DB試験、緊急停止・復旧の結果を確認し、未検証範囲を本番承認資料へ載せる。旧7件再現試験の今回省略については末尾の最新方針を優先する。
 
-## 本番適用（すべて別途承認後）
+## 過去の本番適用計画（既に実施済み・再適用しない）
 
 検証済み画面修正の反映 → 本番管理者のフラグ付与とJWT更新 → 最新の読取監査とバックアップ確認 → questions-admin-rls.sqlを所有者相当の接続で一括適用 → ポリシー/実効権限と公開閲覧を確認 → 承認された架空データだけで管理CRUDを確認。
 
@@ -71,7 +82,7 @@ COMMIT;
 
 通常解除は信頼できる管理環境でフラグをfalseにし、新JWTで拒否を確認する。古いアクセストークンは更新/有効期限まで管理者情報を持ち得る。UIのログアウトや手動更新だけで他端末の旧JWTを失効させたと断定しない。緊急時は先にquestionsの全ブラウザ書き込みを止める。JWT有効期間と既存Authフックの設定は未確認。
 
-## 緊急停止後からの切り替え確認
+## 過去の緊急停止後からの切り替え確認（現状ではない）
 
 現在は既存7ポリシーのままACLで書き込みを止めている。questions-admin-rls.sqlの7件照合は引き続き一致する構成。新規ポリシー/権限差異があれば停止する。管理者JWT準備と検証を終えてから、危険な6件の削除と限定GRANTを同じトランザクションで行う。復旧も停止状態を起点とし、以前の全員許可を復活させない。
 
