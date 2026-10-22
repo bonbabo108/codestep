@@ -683,3 +683,10 @@ https://github.com/bonbabo108/codestep/actions/runs/39113394619 （ESLint #4）�
 本番は承認ハッシュ一致のACL縮小→進捗UNIQUEを別TXで適用成功。6本人ポリシー/RLS維持、匿名権限なし、authenticatedの必要SELECT/列I/Uのみ、UNIQUE定義・重複0・全行不変を読取確認。Auth URLは公開originと/login完全一致1件へ保存し再読込確認。Authユーザー/メタデータ未変更。security advisorは漏洩パスワード保護OFFのWARN1件（https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection）。補助スクリプトの構文/ESLint/既存backup再検証も成功。アプリ77テスト/CIの既存結果は再利用。
 
 未実施：管理者指定（接続ツールにAuth Admin操作なし・GUIメタデータは閲覧のみ）、新JWT、questions RLS/削除RPC。直接auth.users UPDATEや資格情報探索で代用せず、questionsの書込停止を保持。SMTPなし/Confirm email OFFのため一般メール認証未完成。標準SMTPは事前承認宛先のみ/2通毎時で一般配信の代替にしない。本番CRUD/新規Auth/メール/本人実端末、mainマージ/Production更新も未実施。新規契約/課金なし、緊急停止/復旧試験なし。main/Productionは条件が揃う直前に別承認を求める。
+
+## 学習画面とデモの移動・問題選択（メンタリング前UI修正候補）
+
+- 本番学習の`/`：読み込み済み`questions`を一覧表示し、直接問題を選べるようにする。カテゴリーと問題名で識別し、回答入力・判定表示は切替時に初期化する。ログイン済みで保存した正解コードだけ既存`restoredAnswer`で復元。保存中は切替禁止。DBに教材を追加・編集せず、本人進捗の保存ロジックも変更しない。
+- デモ`/demo`・`/demo/admin`：`DemoNotice`に「通常の学習画面へ（デモ終了）」「管理者ログインへ」への明示的リンクを追加。デモは引き続きメモリ内だけを操作し、実Supabase Auth/DBクライアントはデモから初期化しない。
+- 自動回帰確認：`tests/navigation-parity.test.mjs`。ただし静的テストであり、PC/Androidでの表示・クリックを自動保証するものではない。
+- 結果：作業ブランチでPR・CIを確認した上で追記。本番へのマージ・デプロイはユーザーが別に明示承認するまで保留。PR #4の確認メール案内修正は別件のまま維持。
