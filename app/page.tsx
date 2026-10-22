@@ -111,9 +111,8 @@ function LearningSession({ userId }: { userId: string | null }) {
     if (correct && userId && !progressError) void persist()
   }
 
-  function nextQuestion() {
-    if (saving || !questions.length) return
-    const next = (index + 1) % questions.length
+  function selectQuestion(next: number) {
+    if (saving || next < 0 || next >= questions.length || next === index) return
     const previousAnswer = restoredAnswer(progress[questions[next].id])
     setIndex(next)
     setAnswer(previousAnswer)
@@ -121,6 +120,11 @@ function LearningSession({ userId }: { userId: string | null }) {
     setResult(null)
     setSaveState('idle')
     setSaveError('')
+  }
+
+  function nextQuestion() {
+    if (!questions.length) return
+    selectQuestion((index + 1) % questions.length)
   }
 
   if (loading) return <main className="p-8" role="status">問題と学習進捗を読み込み中...</main>
@@ -140,6 +144,21 @@ function LearningSession({ userId }: { userId: string | null }) {
           </div>
           <div className="hidden items-center gap-1.5 text-sm text-slate-400 sm:flex"><span className="font-semibold text-slate-600">{index + 1}</span> / {questions.length}</div>
         </div>
+        <nav aria-label="学習問題を選択" className="flex flex-wrap gap-2">
+          {questions.map((item, position) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => selectQuestion(position)}
+              disabled={saving}
+              aria-current={position === index ? 'step' : undefined}
+              className={`min-h-10 rounded-full border px-4 py-2 text-sm font-bold transition disabled:opacity-50 ${position === index ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-200 bg-white text-slate-700 hover:border-blue-300'}`}
+            >
+              {position + 1}. {item.category ?? '未分類'} · {item.title}
+              {progress[item.id]?.is_completed === true ? ' ✓' : ''}
+            </button>
+          ))}
+        </nav>
         {progressError && <p role="alert" className="rounded-xl bg-rose-50 p-3 text-sm text-rose-700">進捗を取得できないため、回答は判定のみで保存しません。{progressError}</p>}
         <section className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_16px_45px_-25px_rgba(30,64,175,0.28)]">
           <div className="border-b border-slate-100 px-6 py-6 sm:px-9 sm:py-8">
