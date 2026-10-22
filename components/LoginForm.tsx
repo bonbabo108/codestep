@@ -172,7 +172,6 @@ export default function LoginForm({ adminOnly = false }: { adminOnly?: boolean }
             <p className="text-xs text-slate-600">確認に成功すると学習画面へ進みます。別の端末・ブラウザで確認した場合は、この画面で通常のログインを行ってください。</p>
           </div>}
 
-          {!adminOnly && !canResend && <button type="button" disabled={unavailable} onClick={() => { setCanResend(true); setIsSignUp(false); setError(''); setNotice('登録済みのメールアドレスを入力し、確認メールを再送してください。') }} className="mt-5 w-full text-sm text-blue-700 underline">確認メールが届かない・リンクを開けない方</button>}
 
           {!adminOnly && <div className="mt-8 text-center">
             <button type="button" disabled={unavailable} onClick={() => { setIsSignUp(!isSignUp); setShowPassword(false); setError(''); setNotice('') }} className="text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
